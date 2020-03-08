@@ -1,0 +1,18 @@
+[
+  {
+    "modid": "AscendencyClient",
+    "name": "AscendencyClient",
+    "description": "Ascendency Client-Side mod",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "",
+    "updateUrl": "",
+    "authorList": [
+      "andrewandy"
+    ],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]
