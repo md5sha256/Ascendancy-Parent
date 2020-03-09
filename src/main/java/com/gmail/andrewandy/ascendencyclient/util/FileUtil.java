@@ -1,5 +1,6 @@
 package com.gmail.andrewandy.ascendencyclient.util;
 
+import com.gmail.andrewandy.ascendencyserverplugin.io.packet.FileDataPacket;
 import com.gmail.andrewandy.ascendencyserverplugin.io.packet.FileRequestPacket;
 
 import java.util.Objects;
@@ -12,8 +13,9 @@ public class FileUtil {
         Objects.requireNonNull(timeUnit);
         waitTime = waitTime < 0 ? -1 : waitTime;
         FileRequestPacket fileRequestPacket = new FileRequestPacket(fileName);
-        //TODO
-        return new byte[0];
+        //TODO;
+        FileDataPacket packet = new FileDataPacket(); //TODO change to get from msg channel.
+        return packet.getData();
     }
 
 }
