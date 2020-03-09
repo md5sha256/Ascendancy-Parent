@@ -1,4 +1,3 @@
-
 buildscript {
     repositories {
         jcenter()
@@ -39,9 +38,11 @@ minecraft {
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
 dependencies {
+   compileOnly "com.gmail.andrewandy:AscendencyServerPlugin:".concat(modVersion)
 }
 
 processResources {
