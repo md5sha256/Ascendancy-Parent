@@ -7,12 +7,17 @@ buildscript {
         }
     }
     dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.2'
         classpath "net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT"
     }
-
 }
+
+
+
 apply plugin: "net.minecraftforge.gradle.forge"
 apply plugin: "java-library"
+apply plugin: 'com.github.johnrengelman.shadow'
+
 version = modVersion
 group = modGroup
 archivesBaseName = modBaseName
@@ -42,7 +47,7 @@ repositories {
 }
 
 dependencies {
-   compileOnly "com.gmail.andrewandy:AscendencyServerPlugin:".concat(modVersion)
+    compile "com.gmail.andrewandy:AscendencyServerPlugin:".concat(modVersion)
 }
 
 processResources {
@@ -64,6 +69,20 @@ processResources {
     }
 }
 
-jar {
+assemble {
+    dependsOn project.shadowJar
+}
 
+shadowJar {
+    baseName = modBaseName
+    classifier = null
+    version = modVersion
+    dependencies {
+        include (dependency("com.gmail.andrewandy:AscendencyServerPlugin:".concat(modVersion)))
+    }
+    exclude 'com.gmail.andrewandy.ascendencyserverplugin.io.sponge'
+    exclude 'com.gmail.andrewandy.ascendencyserverplugin.listener'
+    minimize()
+    relocate('com.gmail.andrewandy.ascendencyserverplugin', 'com.gmail.andrewandy.shaded.ascendencyserverplugin') {
+    }
 }
