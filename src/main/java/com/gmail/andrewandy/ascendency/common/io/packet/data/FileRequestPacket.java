@@ -72,7 +72,7 @@ public class FileRequestPacket extends DataRequestPacket {
 
     @Override
     public byte[] getFormattedData() {
-        String str = getClass().getCanonicalName() + SPLITTER + PROTOCOL_VERSION + SPLITTER + filePath.toString();
+        String str = FileRequestPacket.class.getCanonicalName() + SPLITTER + PROTOCOL_VERSION + SPLITTER + filePath.toString();
         return str.getBytes();
     }
 

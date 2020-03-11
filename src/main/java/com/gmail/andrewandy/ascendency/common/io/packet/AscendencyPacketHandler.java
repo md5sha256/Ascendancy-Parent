@@ -3,10 +3,9 @@ package com.gmail.andrewandy.ascendency.common.io.packet;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
 import java.util.function.Function;
 
 /**
@@ -15,12 +14,11 @@ import java.util.function.Function;
  */
 public class AscendencyPacketHandler implements IMessageHandler<AscendencyPacket, AscendencyPacket> {
 
+    //TODO Add a packet tracker class!
+
     private static final AscendencyPacketHandler instance = new AscendencyPacketHandler();
     private static final String CHANNEL_NAME = "Ascendency_Data_Channel";
     private Map<Class<?>, Function<? extends AscendencyPacket, ? extends AscendencyPacket>> handlerMap = new ConcurrentHashMap<>();
-
-    private AscendencyPacketHandler() {
-    }
 
     public static AscendencyPacketHandler getInstance() {
         return instance;

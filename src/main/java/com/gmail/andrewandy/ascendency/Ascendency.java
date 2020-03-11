@@ -1,14 +1,27 @@
 package com.gmail.andrewandy.ascendency;
 
+import com.gmail.andrewandy.ascendency.common.io.packet.AscendencyPacket;
+import com.gmail.andrewandy.ascendency.common.io.packet.AscendencyPacketHandler;
+import com.gmail.andrewandy.ascendency.common.io.packet.data.FileRequestPacket;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraftforge.client.ForgeHooksClient;
+import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.common.ForgeModContainer;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.*;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleChannelHandlerWrapper;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 
 @Mod(
         modid = Ascendency.MOD_ID,
@@ -17,16 +30,18 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 )
 public class Ascendency {
 
-    public static final String MOD_ID = "AscendencyClient";
-    public static final String MOD_NAME = "AscendencyClient";
+    public static final String MOD_ID = "AscendencyCustomMod";
+    public static final String MOD_NAME = "AscendencyCustomMod";
     public static final String VERSION = "2019.3-1.3.2";
+    public static final String DATA_CHANNEL_NAME ="ASCENDENCY_DATA_CHANNEL";
+    public static final int CHANNEL_DISCRIMINATOR = 232;
+    private SimpleNetworkWrapper channel;
 
     /**
      * This is the instance of your mod as created by Forge. It will never be null.
      */
     @Mod.Instance(MOD_ID)
     public static Ascendency INSTANCE;
-
     /**
      * This is the first initialization event. Register tile entities here.
      * The registry events below will have fired prior to entry to this method.
@@ -49,7 +64,29 @@ public class Ascendency {
      */
     @Mod.EventHandler
     public void postinit(FMLPostInitializationEvent event) {
+        if (event.getSide() == Side.CLIENT) {
+            loadClient();
+        }
+        else {
+            loadServer();
+        }
+    }
 
+    public SimpleNetworkWrapper getChannel() {
+        return channel;
+    }
+
+    private final void loadClient() {
+        if (channel != null) {
+            return;
+        }
+        channel = NetworkRegistry.INSTANCE.newSimpleChannel(DATA_CHANNEL_NAME);
+        channel.registerMessage(AscendencyPacketHandler.getInstance(), AscendencyPacket.class, CHANNEL_DISCRIMINATOR, Side.CLIENT);
+    }
+
+    private final void loadServer() {
+        channel = NetworkRegistry.INSTANCE.newSimpleChannel(DATA_CHANNEL_NAME);
+        channel.registerMessage(AscendencyPacketHandler.getInstance(), AscendencyPacket.class, CHANNEL_DISCRIMINATOR, Side.SERVER);
     }
 
     /**

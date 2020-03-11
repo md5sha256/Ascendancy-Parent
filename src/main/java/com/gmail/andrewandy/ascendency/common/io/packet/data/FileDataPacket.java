@@ -1,8 +1,8 @@
 package com.gmail.andrewandy.ascendency.common.io.packet.data;
 
-import com.gmail.andrewandy.ascendencyserverplugin.io.packet.AscendencyPacket;
-import com.gmail.andrewandy.ascendencyserverplugin.io.packet.results.AscendencyResultPacket;
-import com.gmail.andrewandy.ascendencyserverplugin.io.packet.results.Result;
+import com.gmail.andrewandy.ascendency.common.io.packet.AscendencyPacket;
+import com.gmail.andrewandy.ascendency.common.io.packet.results.AscendencyResultPacket;
+import com.gmail.andrewandy.ascendency.common.io.packet.results.Result;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 

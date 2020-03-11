@@ -1,7 +1,7 @@
 package com.gmail.andrewandy.ascendency.common.io.packet.data;
 
-import com.gmail.andrewandy.ascendencyserverplugin.io.packet.AscendencyPacket;
-import com.gmail.andrewandy.ascendencyserverplugin.util.Common;
+import com.gmail.andrewandy.ascendency.common.io.packet.AscendencyPacket;
+import com.gmail.andrewandy.ascendency.common.util.Common;
 import io.netty.buffer.ByteBuf;
 
 import java.io.IOException;

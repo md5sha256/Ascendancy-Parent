@@ -1,6 +1,6 @@
 package com.gmail.andrewandy.ascendency.common.io.packet.data;
 
-import com.gmail.andrewandy.ascendencyserverplugin.io.packet.AscendencyPacket;
+import com.gmail.andrewandy.ascendency.common.io.packet.AscendencyPacket;
 
 public abstract class DataRequestPacket extends AscendencyPacket {
 

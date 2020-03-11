@@ -1,6 +1,6 @@
 package com.gmail.andrewandy.ascendency.common.io.packet.results;
 
-import com.gmail.andrewandy.ascendencyserverplugin.io.packet.AscendencyPacket;
+import com.gmail.andrewandy.ascendency.common.io.packet.AscendencyPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 
@@ -47,6 +47,11 @@ public class AscendencyResultPacket extends AscendencyPacket implements ResultPa
         int ordinal = buf.readInt();
         this.result = Result.values()[ordinal];
         return buf.readerIndex();
+    }
+
+    @Override
+    public String getIdentifier() {
+        return AscendencyResultPacket.class.getCanonicalName();
     }
 
 

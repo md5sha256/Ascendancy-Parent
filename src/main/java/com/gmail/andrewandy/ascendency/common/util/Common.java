@@ -3,16 +3,14 @@ package com.gmail.andrewandy.ascendency.common.util;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.common.ForgeHooks;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
- * Contains classes for BOTH the client and server.
+ * Contains utility methods which are common to both the client and the server.
  * //TODO Migrate Client-Only methods to the client side and server only to server side.
  */
 public class Common {
@@ -23,25 +21,10 @@ public class Common {
         Common.prefix = prefix;
     }
 
-
-    public static void tellClient(String... messages) {
-        tell(ForgeHooks.getCraftingPlayer(), messages);
-    }
-
     public static void tell(EntityPlayer player, String... messages) {
         Objects.requireNonNull(player);
         for (String s : messages) {
             player.sendMessage(new TextComponentString(colourise(s)));
-        }
-    }
-
-    public static void tellServerPlayer(UUID player, String... message) {
-        tell(net.minecraftforge.fml.server.FMLServerHandler.instance().getServer().getPlayerList().getPlayerByUUID(player));
-    }
-
-    public static void tellServerPlayer(Collection<UUID> players, String... message) {
-        for (UUID uuid : players) {
-            tellServerPlayer(uuid, message);
         }
     }
 

@@ -2,7 +2,6 @@ package com.gmail.andrewandy.ascendency.common.io.packet;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import org.spongepowered.api.network.ChannelBuf;
 
 /**
  * Represents a packet from Ascendency
@@ -12,7 +11,7 @@ public abstract class AscendencyPacket implements IMessage {
     public abstract byte[] getFormattedData();
 
     /**
-     * Read the data from a byte array. Equivalent to {@link #fromBytes(ByteBuf) and {@link #readFrom(ChannelBuf)}}
+     * Read the data from a byte array. Equivalent to {@link #fromBytes(ByteBuf)
      *
      * @param bytes the data.
      * @return The new position we have read to.
