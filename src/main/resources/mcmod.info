@@ -1,8 +1,8 @@
 [
   {
-    "modid": "AscendencyClient",
-    "name": "AscendencyClient",
-    "description": "Ascendency Client-Side mod",
+    "modid": "AscendencyCustomMod",
+    "name": "AscendencyCustomMod",
+    "description": "Custom mod for Ascendency.",
     "version": "${version}",
     "mcversion": "${mcversion}",
     "url": "",

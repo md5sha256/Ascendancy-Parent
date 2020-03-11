@@ -1,4 +1,4 @@
-package com.gmail.andrewandy.ascendencyclient;
+package com.gmail.andrewandy.ascendency;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -8,15 +8,14 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleChannelHandlerWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 @Mod(
-        modid = AscendencyClient.MOD_ID,
-        name = AscendencyClient.MOD_NAME,
-        version = AscendencyClient.VERSION
+        modid = Ascendency.MOD_ID,
+        name = Ascendency.MOD_NAME,
+        version = Ascendency.VERSION
 )
-public class AscendencyClient {
+public class Ascendency {
 
     public static final String MOD_ID = "AscendencyClient";
     public static final String MOD_NAME = "AscendencyClient";
@@ -26,7 +25,7 @@ public class AscendencyClient {
      * This is the instance of your mod as created by Forge. It will never be null.
      */
     @Mod.Instance(MOD_ID)
-    public static AscendencyClient INSTANCE;
+    public static Ascendency INSTANCE;
 
     /**
      * This is the first initialization event. Register tile entities here.
