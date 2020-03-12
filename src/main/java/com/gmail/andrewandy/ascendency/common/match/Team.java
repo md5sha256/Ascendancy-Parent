@@ -2,11 +2,10 @@ package com.gmail.andrewandy.ascendency.common.match;
 
 import java.util.*;
 
-public class Team {
+public class Team implements Cloneable {
 
-    private List<UUID> players;
     private final int startingPlayerCount;
-    private UUID teamUID;
+    private List<UUID> players;
     private String name;
 
     public Team(String name, int startSize) {
@@ -14,7 +13,6 @@ public class Team {
     }
 
     public Team(String name, Collection<UUID> players) {
-        teamUID = UUID.randomUUID();
         this.name = Objects.requireNonNull(name);
         this.players = new ArrayList<>(players);
         this.startingPlayerCount = players.size();
@@ -53,7 +51,15 @@ public class Team {
         return name;
     }
 
-    public UUID getTeamUID() {
-        return teamUID;
+    @Override
+    public Team clone() {
+        try {
+            super.clone();
+        } catch (CloneNotSupportedException ex) {
+            ex.printStackTrace();
+        }
+        Team team = new Team(name, startingPlayerCount);
+        team.players.addAll(this.players);
+        return team;
     }
 }

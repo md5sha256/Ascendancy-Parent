@@ -1,4 +1,6 @@
-package com.gmail.andrewandy.ascendency.common.match;
+package com.gmail.andrewandy.ascendency.server.match;
+
+import com.gmail.andrewandy.ascendency.common.match.Team;
 
 import java.util.*;
 
@@ -153,12 +155,44 @@ public interface PlayerMatchManager {
     /**
      * Represents whether there would be a conflict if the player joined the new match. Such as,
      * if the new match was already started.
-     * This method should also liaise with the newMatch's {@link PlayerMatchManager}
      *
      * @param player   The UUID of the player.
      * @param newMatch The instance of the new match.
      * @return Returns whether the player can be moved based on criteria discussed above.
      */
     boolean canMovePlayerTo(UUID player, ManagedMatch newMatch);
+
+    /**
+     * Asks this manager to start a given match. The manager will
+     * check if any existing matches conflict with this current match's
+     * supposed player count.
+     * The manager will register the match if it isnt already.
+     *
+     * @param managedMatch The match to start.
+     * @return Returns whether the match was successfully started.
+     */
+    boolean startMatch(ManagedMatch managedMatch);
+
+    /**
+     * Explicitly ask this manager to register this match instance
+     * so that the lobby state is verified by the match manager.
+     *
+     * @param managedMatch The match to be managed.
+     */
+    void registerMatch(ManagedMatch managedMatch);
+
+    void unregisterMatch(ManagedMatch managedMatch);
+
+    default boolean verifyMatch(ManagedMatch managedMatch) {
+        if (!managedMatch.isLobby()) {
+            return false;
+        }
+        for (UUID player : managedMatch.getPlayers()) {
+            if (getMatchOf(player).isPresent() && getMatchOf(player).get() != managedMatch) {
+                return false;
+            }
+        }
+        return true;
+    }
 
 }

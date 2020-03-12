@@ -1,4 +1,4 @@
-package com.gmail.andrewandy.ascendency.common.match;
+package com.gmail.andrewandy.ascendency.server.match;
 
 public class MatchStartedException extends IllegalArgumentException {
     public MatchStartedException() {
