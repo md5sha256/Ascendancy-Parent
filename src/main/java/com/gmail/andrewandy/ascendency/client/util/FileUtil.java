@@ -1,7 +1,7 @@
 package com.gmail.andrewandy.ascendency.client.util;
 
-import com.gmail.andrewandy.ascendencyserverplugin.io.packet.FileDataPacket;
-import com.gmail.andrewandy.ascendencyserverplugin.io.packet.FileRequestPacket;
+import com.gmail.andrewandy.ascendencyserverplugin.io.packet.data.FileDataPacket;
+import com.gmail.andrewandy.ascendencyserverplugin.io.packet.data.FileRequestPacket;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;

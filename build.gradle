@@ -45,7 +45,7 @@ repositories {
 }
 
 dependencies {
-    //compile "com.gmail.andrewandy:AscendencyServerPlugin:".concat(modVersion)
+    compile "com.gmail.andrewandy:AscendencyServerPlugin:".concat(modVersion)
 }
 
 processResources {
@@ -70,6 +70,22 @@ processResources {
 task deobfJar(type: Jar, dependsOn: 'jar') {
     from "build/source/main"
     classifier "dev"
+}
+
+assemble {
+    dependsOn(project.shadowJar)
+}
+
+shadowJar {
+    baseName = archivesBaseName
+    version = modVersion
+    classifier = null
+    dependencies {
+        include(dependency("com.gmail.andrewandy.AscendencyServerPlugin:".concat(modVersion)))
+    }
+    include("com.gmail.andrewandy.ascendencyserverplugin.io")
+    exclude("com.gmail.andrewandy.ascendencyserverplugin.io.sponge")
+    relocate("com.gmail.andrewandy.ascendencyserverplugin", "com.gmail.andrewandy.ascendency.shaded")
 }
 
 artifacts {

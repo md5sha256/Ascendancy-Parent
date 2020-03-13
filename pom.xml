@@ -9,7 +9,7 @@
         <version>0.1-ALPHA</version>
     </parent>
     <packaging>pom</packaging>
-    <artifactId>AscendencyClient</artifactId>
+    <artifactId>AscendencyCustomMod</artifactId>
     <version>0.1-ALPHA</version>
     <build>
         <defaultGoal>clean install</defaultGoal>

@@ -1,8 +1,8 @@
 package com.gmail.andrewandy.ascendency;
 
-import com.gmail.andrewandy.ascendency.common.io.packet.AscendencyPacket;
-import com.gmail.andrewandy.ascendency.common.io.packet.AscendencyPacketHandler;
-import com.gmail.andrewandy.ascendency.server.match.SimplePlayerMatchManager;
+import com.gmail.andrewandy.ascendencyserverplugin.io.packet.AscendencyPacket;
+import com.gmail.andrewandy.ascendencyserverplugin.io.packet.AscendencyPacketHandler;
+import com.gmail.andrewandy.ascendencyserverplugin.matchmaking.match.SimplePlayerMatchManager;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.event.RegistryEvent;
