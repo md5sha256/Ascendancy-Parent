@@ -67,6 +67,7 @@ public class FileDataPacket extends DataPacket {
         buf.writeBytes(bytes);
         int idLength = Objects.requireNonNull(buf).readInt();
         String identifier = new String(buf.readSlice(idLength).array());
+        buf = buf.readBytes(idLength); //Since buf is immutable we must reassign.
         String[] arr = identifier.split(SPLITTER);
         if (arr.length < 2) {
             throw new IllegalArgumentException("Invalid identifier!");
@@ -126,7 +127,7 @@ public class FileDataPacket extends DataPacket {
         }
         ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
         byte[] nameBytes = fileName.getBytes();
-        String identifier = this.getClass().getCanonicalName() + SPLITTER + PROTOCOL_VERSION;
+        String identifier = getIdentifier();
         byte[] identifierBytes = identifier.getBytes();
         byte[] data = getData();
         buf.writeInt(identifierBytes.length)
