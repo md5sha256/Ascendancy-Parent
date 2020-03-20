@@ -1,8 +1,7 @@
 package com.gmail.andrewandy.ascendency;
 
-import com.gmail.andrewandy.ascendencyserverplugin.io.packet.AscendencyPacket;
-import com.gmail.andrewandy.ascendencyserverplugin.io.packet.AscendencyPacketHandler;
-import com.gmail.andrewandy.ascendencyserverplugin.matchmaking.match.SimplePlayerMatchManager;
+import com.gmail.andrewandy.ascendency.lib.packet.AscendencyPacket;
+import com.gmail.andrewandy.ascendency.lib.packet.AscendencyPacketHandler;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.event.RegistryEvent;
@@ -17,11 +16,11 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
 @Mod(
-        modid = Ascendency.MOD_ID,
-        name = Ascendency.MOD_NAME,
-        version = Ascendency.VERSION
+        modid = AscendencyClient.MOD_ID,
+        name = AscendencyClient.MOD_NAME,
+        version = AscendencyClient.VERSION
 )
-public class Ascendency {
+public class AscendencyClient {
 
     public static final String MOD_ID = "AscendencyCustomMod";
     public static final String MOD_NAME = "AscendencyCustomMod";
@@ -32,7 +31,7 @@ public class Ascendency {
      * This is the instance of your mod as created by Forge. It will never be null.
      */
     @Mod.Instance(MOD_ID)
-    public static Ascendency INSTANCE;
+    public static AscendencyClient INSTANCE;
     private SimpleNetworkWrapper channel;
 
     /**
@@ -60,7 +59,7 @@ public class Ascendency {
         if (event.getSide() == Side.CLIENT) {
             loadClient();
         } else {
-            loadServer();
+            throw new UnsupportedOperationException("This is a client-side only mod!");
         }
     }
 
@@ -74,12 +73,6 @@ public class Ascendency {
         }
         channel = NetworkRegistry.INSTANCE.newSimpleChannel(DATA_CHANNEL_NAME);
         channel.registerMessage(AscendencyPacketHandler.getInstance(), AscendencyPacket.class, CHANNEL_DISCRIMINATOR, Side.CLIENT);
-    }
-
-    private final void loadServer() {
-        channel = NetworkRegistry.INSTANCE.newSimpleChannel(DATA_CHANNEL_NAME);
-        channel.registerMessage(AscendencyPacketHandler.getInstance(), AscendencyPacket.class, CHANNEL_DISCRIMINATOR, Side.SERVER);
-        SimplePlayerMatchManager.enableManager(); //Load the match manager.
     }
 
     /**

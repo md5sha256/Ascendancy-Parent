@@ -81,11 +81,9 @@ shadowJar {
     version = modVersion
     classifier = null
     dependencies {
-        include(dependency("com.gmail.andrewandy.AscendencyServerPlugin:".concat(modVersion)))
+        include(dependency("com.gmail.andrewandy.AscendencyLib:0.1-ALPHA"))
     }
-    include("com.gmail.andrewandy.ascendencyserverplugin.io")
-    exclude("com.gmail.andrewandy.ascendencyserverplugin.io.sponge")
-    relocate("com.gmail.andrewandy.ascendencyserverplugin", "com.gmail.andrewandy.ascendency.shaded")
+    include("com.gmail.andrewandy.ascendency.lib.*")
 }
 
 artifacts {
