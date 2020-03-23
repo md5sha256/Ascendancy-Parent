@@ -1,7 +1,7 @@
 package com.gmail.andrewandy.ascendency.lib.packet.keybind;
 
-public enum KeyPressAction {
+public enum AscendencyKey {
 
-    PRESS, HOLDING, RELEASE;
+    ACTIVE_KEY;
 
 }

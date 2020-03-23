@@ -10,6 +10,7 @@ public class CustomKeyPressedPacket extends AscendencyPacket {
     private static final String VERSION = "0";
 
     private KeyPressAction pressAction;
+    private AscendencyKey key;
 
     public CustomKeyPressedPacket() {
 
@@ -19,6 +20,11 @@ public class CustomKeyPressedPacket extends AscendencyPacket {
         this.pressAction = action;
     }
 
+    public CustomKeyPressedPacket(KeyPressAction action, AscendencyKey key) {
+        this(action);
+        this.key = key;
+    }
+
     @Override
     public byte[] getFormattedData() {
         ByteBuf buf = ByteBufAllocator.DEFAULT.buffer(Integer.BYTES);
@@ -26,7 +32,8 @@ public class CustomKeyPressedPacket extends AscendencyPacket {
         byte[] identifierBytes = identifier.getBytes();
         buf.writeInt(identifierBytes.length)
                 .writeBytes(identifierBytes)
-                .writeInt(pressAction == null ? -1 : pressAction.ordinal());
+                .writeInt(pressAction == null ? -1 : pressAction.ordinal())
+                .writeInt(key == null ? -1 : key.ordinal());
         return buf.array();
     }
 
@@ -49,12 +56,10 @@ public class CustomKeyPressedPacket extends AscendencyPacket {
         } catch (ClassNotFoundException ex) {
             throw new IllegalArgumentException("Packet identifier not type of FileDataPacket!");
         }
-        int ordinal = buf.readInt();
-        if (ordinal > 0) {
-            pressAction = KeyPressAction.values()[ordinal];
-        } else {
-            pressAction = null;
-        }
+        int actionOrdinal = buf.readInt();
+        pressAction = actionOrdinal > 0 ? KeyPressAction.values()[actionOrdinal] : null;
+        int keyOrdinal = buf.readInt();
+        key = keyOrdinal > 0 ? AscendencyKey.values()[keyOrdinal] : null;
         return buf.readerIndex();
     }
 
