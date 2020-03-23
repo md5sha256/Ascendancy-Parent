@@ -45,7 +45,7 @@ repositories {
 }
 
 dependencies {
-    compile "com.gmail.andrewandy:AscendencyServerPlugin:".concat(modVersion)
+    compile "com.gmail.andrewandy:AscendencyLib:0.1-ALPHA"
 }
 
 processResources {

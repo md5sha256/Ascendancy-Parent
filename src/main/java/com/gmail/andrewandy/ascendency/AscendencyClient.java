@@ -1,10 +1,13 @@
 package com.gmail.andrewandy.ascendency;
 
+import com.gmail.andrewandy.ascendency.client.keybinds.ActiveKeyBind;
 import com.gmail.andrewandy.ascendency.lib.packet.AscendencyPacket;
 import com.gmail.andrewandy.ascendency.lib.packet.AscendencyPacketHandler;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -67,12 +70,14 @@ public class AscendencyClient {
         return channel;
     }
 
-    private final void loadClient() {
+    private void loadClient() {
         if (channel != null) {
             return;
         }
         channel = NetworkRegistry.INSTANCE.newSimpleChannel(DATA_CHANNEL_NAME);
         channel.registerMessage(AscendencyPacketHandler.getInstance(), AscendencyPacket.class, CHANNEL_DISCRIMINATOR, Side.CLIENT);
+        ClientRegistry.registerKeyBinding(ActiveKeyBind.INSTANCE.getKeyBinding());
+        MinecraftForge.EVENT_BUS.register(ActiveKeyBind.INSTANCE);
     }
 
     /**
