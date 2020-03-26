@@ -25,13 +25,17 @@ public class FileDataPacket extends DataPacket {
     public FileDataPacket() {
     }
 
-    public FileDataPacket(File file) throws IOException {
-        this(new FileInputStream(file), file.getName(), file.length());
+    public FileDataPacket(UUID player) {
+        super(player);
+    }
+
+    public FileDataPacket(UUID player, File file) throws IOException {
+        this(player, new FileInputStream(file), file.getName(), file.length());
     }
 
 
-    public FileDataPacket(InputStream src, String fileName, long targetFileSize) throws IOException {
-        super(src);
+    public FileDataPacket(UUID player, InputStream src, String fileName, long targetFileSize) throws IOException {
+        super(player, src);
         this.fileName = fileName;
         if (targetFileSize < 0) {
             throw new IllegalArgumentException("Invalid file size!");

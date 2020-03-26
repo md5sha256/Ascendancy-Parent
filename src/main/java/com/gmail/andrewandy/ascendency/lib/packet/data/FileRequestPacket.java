@@ -6,6 +6,7 @@ import io.netty.buffer.ByteBufAllocator;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Represents a packet to request for a file.
@@ -20,6 +21,10 @@ public class FileRequestPacket extends DataRequestPacket {
 
     }
 
+    public FileRequestPacket(UUID player) {
+        super(player);
+    }
+
     public FileRequestPacket(FileRequestPacket other) {
         if (other == null) {
             return;
@@ -27,13 +32,15 @@ public class FileRequestPacket extends DataRequestPacket {
         if (other.filePath != null) {
             this.filePath = Paths.get(other.filePath.toString());
         }
+        super.setTargetPlayer(other.getTargetPlayer());
     }
 
-    public FileRequestPacket(String filePath) {
-        this(Paths.get(filePath));
+    public FileRequestPacket(UUID player, String filePath) {
+        this(player, Paths.get(filePath));
     }
 
-    public FileRequestPacket(Path path) {
+    public FileRequestPacket(UUID player, Path path) {
+        this(player);
         this.filePath = Objects.requireNonNull(path);
     }
 

@@ -13,18 +13,9 @@ import java.util.function.Function;
  * Represents the main packet handler for Ascendency.
  * Packet implementations should register their handling methods on class loading.
  */
-public class AscendencyPacketHandler implements IMessageHandler<AscendencyPacket, AscendencyPacket> {
+public abstract class AscendencyPacketHandler implements IMessageHandler<AscendencyPacket, AscendencyPacket> {
 
-    private static final AscendencyPacketHandler instance = new AscendencyPacketHandler();
-    private static final String CHANNEL_NAME = "Ascendency_Data_Channel";
     private Map<Class<?>, Function<? extends AscendencyPacket, ? extends AscendencyPacket>> handlerMap = new ConcurrentHashMap<>();
-
-    private AscendencyPacketHandler() {
-    }
-
-    public static AscendencyPacketHandler getInstance() {
-        return instance;
-    }
 
     public <T extends AscendencyPacket, R extends AscendencyPacket> void registerHandler(Class<T> clazz, Function<T, R> handleFunction) {
         removeHandler(clazz);

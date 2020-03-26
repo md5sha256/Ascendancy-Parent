@@ -2,6 +2,8 @@ package com.gmail.andrewandy.ascendency.lib.packet.data;
 
 import com.gmail.andrewandy.ascendency.lib.packet.AscendencyPacket;
 
+import java.util.UUID;
+
 public abstract class DataRequestPacket extends AscendencyPacket {
 
     private byte[] requestMessage;
@@ -9,7 +11,12 @@ public abstract class DataRequestPacket extends AscendencyPacket {
     public DataRequestPacket() {
     }
 
-    public DataRequestPacket(byte[] requestMessage) {
+    public DataRequestPacket(UUID player) {
+        super(player);
+    }
+
+    public DataRequestPacket(UUID player, byte[] requestMessage) {
+        this(player);
         this.requestMessage = requestMessage;
     }
 

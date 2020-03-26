@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Represents a packet which holds a larger quantity of data (Such as the contents of a file)
@@ -21,11 +22,17 @@ public abstract class DataPacket extends AscendencyPacket {
 
     }
 
-    public DataPacket(byte[] data) {
+    public DataPacket(UUID player) {
+        super(player);
+    }
+
+    public DataPacket(UUID player, byte[] data) {
+        this(player);
         this.data = data;
     }
 
-    public DataPacket(InputStream src) throws IOException {
+    public DataPacket(UUID player, InputStream src) throws IOException {
+        this(player);
         data = CommonUtils.readFromStream(src);
     }
 

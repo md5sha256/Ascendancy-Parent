@@ -5,6 +5,8 @@ import com.gmail.andrewandy.ascendency.lib.packet.data.FileDataPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 
+import java.util.UUID;
+
 public class CustomKeyPressedPacket extends AscendencyPacket {
 
     private static final String VERSION = "0";
@@ -16,12 +18,13 @@ public class CustomKeyPressedPacket extends AscendencyPacket {
 
     }
 
-    public CustomKeyPressedPacket(KeyPressAction action) {
+    public CustomKeyPressedPacket(UUID player, KeyPressAction action) {
+        super(player);
         this.pressAction = action;
     }
 
-    public CustomKeyPressedPacket(KeyPressAction action, AscendencyKey key) {
-        this(action);
+    public CustomKeyPressedPacket(UUID player, KeyPressAction action, AscendencyKey key) {
+        this(player, action);
         this.key = key;
     }
 

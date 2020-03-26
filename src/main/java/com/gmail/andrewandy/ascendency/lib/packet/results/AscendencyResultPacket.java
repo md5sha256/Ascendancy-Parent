@@ -4,6 +4,8 @@ import com.gmail.andrewandy.ascendency.lib.packet.AscendencyPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 
+import java.util.UUID;
+
 public class AscendencyResultPacket extends AscendencyPacket implements ResultPacket {
 
     public static AscendencyResultPacket SUCCESS = new AscendencyResultPacket("SUCCESS", Result.SUCCESS);
@@ -22,6 +24,17 @@ public class AscendencyResultPacket extends AscendencyPacket implements ResultPa
     public AscendencyResultPacket(String name, Result result) {
         this(name);
         this.result = result;
+    }
+
+    private AscendencyResultPacket(AscendencyResultPacket other) {
+        this.name = other.name;
+        this.result = other.result;
+    }
+
+    public AscendencyResultPacket forPlayer(UUID targetPlayer) {
+        AscendencyResultPacket resultPacket = new AscendencyResultPacket(this);
+        resultPacket.setTargetPlayer(targetPlayer);
+        return resultPacket;
     }
 
     public String getName() {
