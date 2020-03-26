@@ -1,13 +1,15 @@
 package com.gmail.andrewandy.ascendency.client.keybinds;
 
+import com.gmail.andrewandy.ascendency.client.io.ClientPacketHandler;
 import com.gmail.andrewandy.ascendency.lib.packet.AscendencyPacket;
-import com.gmail.andrewandy.ascendency.lib.packet.AscendencyPacketHandler;
 import com.gmail.andrewandy.ascendency.lib.packet.keybind.AscendencyKey;
 import com.gmail.andrewandy.ascendency.lib.packet.keybind.CustomKeyPressedPacket;
 import com.gmail.andrewandy.ascendency.lib.packet.keybind.KeyPressAction;
 import com.gmail.andrewandy.ascendency.lib.packet.results.AscendencyResultPacket;
 import com.gmail.andrewandy.ascendency.lib.packet.results.Result;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraftforge.client.ForgeHooksClient;
+import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import org.lwjgl.input.Keyboard;
@@ -15,11 +17,10 @@ import org.lwjgl.input.Keyboard;
 public enum ActiveKeyBind {
     INSTANCE;
     private final KeyBinding keyBinding = new KeyBinding("Active Key", Keyboard.KEY_F, "key.Ascendency");
+    private boolean pressed = false;
 
     ActiveKeyBind() {
     }
-
-    private boolean pressed = false;
 
     public KeyBinding getKeyBinding() {
         return keyBinding;
@@ -42,8 +43,8 @@ public enum ActiveKeyBind {
                 throw new IllegalStateException("Invalid state! Unknown key press status!");
             }
         }
-        CustomKeyPressedPacket packet = new CustomKeyPressedPacket(action, AscendencyKey.ACTIVE_KEY);
-        AscendencyPacket result = AscendencyPacketHandler.getInstance().onMessage(packet);
+        CustomKeyPressedPacket packet = new CustomKeyPressedPacket(ForgeHooks.getCraftingPlayer().getPersistentID(), action, AscendencyKey.ACTIVE_KEY);
+        AscendencyPacket result = ClientPacketHandler.getInstance().onMessage(packet);
         assert result instanceof AscendencyResultPacket;
         AscendencyResultPacket resultPacket = (AscendencyResultPacket) result;
         if (resultPacket.getResult() != Result.SUCCESS) {

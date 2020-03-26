@@ -1,8 +1,7 @@
 package com.gmail.andrewandy.ascendency;
 
+import com.gmail.andrewandy.ascendency.client.io.ClientPacketHandler;
 import com.gmail.andrewandy.ascendency.client.keybinds.ActiveKeyBind;
-import com.gmail.andrewandy.ascendency.lib.packet.AscendencyPacket;
-import com.gmail.andrewandy.ascendency.lib.packet.AscendencyPacketHandler;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
@@ -13,8 +12,6 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -29,13 +26,11 @@ public class AscendencyClient {
     public static final String MOD_NAME = "AscendencyCustomMod";
     public static final String VERSION = "2019.3-1.3.2";
     public static final String DATA_CHANNEL_NAME = "ASCENDENCY_DATA_CHANNEL";
-    public static final int CHANNEL_DISCRIMINATOR = 232;
     /**
      * This is the instance of your mod as created by Forge. It will never be null.
      */
     @Mod.Instance(MOD_ID)
     public static AscendencyClient INSTANCE;
-    private SimpleNetworkWrapper channel;
 
     /**
      * This is the first initialization event. Register tile entities here.
@@ -66,16 +61,9 @@ public class AscendencyClient {
         }
     }
 
-    public SimpleNetworkWrapper getChannel() {
-        return channel;
-    }
 
     private void loadClient() {
-        if (channel != null) {
-            return;
-        }
-        channel = NetworkRegistry.INSTANCE.newSimpleChannel(DATA_CHANNEL_NAME);
-        channel.registerMessage(AscendencyPacketHandler.getInstance(), AscendencyPacket.class, CHANNEL_DISCRIMINATOR, Side.CLIENT);
+        ClientPacketHandler.getInstance().initForge();
         ClientRegistry.registerKeyBinding(ActiveKeyBind.INSTANCE.getKeyBinding());
         MinecraftForge.EVENT_BUS.register(ActiveKeyBind.INSTANCE);
     }
