@@ -1,7 +1,7 @@
 package com.gmail.andrewandy.ascendency.client.io;
 
-import com.gmail.andrewandy.ascendency.lib.packet.AscendencyPacket;
-import com.gmail.andrewandy.ascendency.lib.packet.AscendencyPacketHandler;
+import com.gmail.andrewandy.ascendency.lib.AscendencyPacket;
+import com.gmail.andrewandy.ascendency.lib.AscendencyPacketHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;

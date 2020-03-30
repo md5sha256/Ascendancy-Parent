@@ -1,21 +1,22 @@
 package com.gmail.andrewandy.ascendency.client.keybinds;
 
 import com.gmail.andrewandy.ascendency.client.io.ClientPacketHandler;
-import com.gmail.andrewandy.ascendency.lib.packet.AscendencyPacket;
-import com.gmail.andrewandy.ascendency.lib.packet.keybind.AscendencyKey;
-import com.gmail.andrewandy.ascendency.lib.packet.keybind.CustomKeyPressedPacket;
-import com.gmail.andrewandy.ascendency.lib.packet.keybind.KeyPressAction;
-import com.gmail.andrewandy.ascendency.lib.packet.results.AscendencyResultPacket;
-import com.gmail.andrewandy.ascendency.lib.packet.results.Result;
+import com.gmail.andrewandy.ascendency.lib.AscendencyPacket;
+import com.gmail.andrewandy.ascendency.lib.keybind.AscendencyKey;
+import com.gmail.andrewandy.ascendency.lib.keybind.CustomKeyPressedPacket;
+import com.gmail.andrewandy.ascendency.lib.keybind.KeyPressAction;
+import com.gmail.andrewandy.ascendency.lib.results.AscendencyResultPacket;
+import com.gmail.andrewandy.ascendency.lib.results.Result;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import org.lwjgl.input.Keyboard;
 
 public enum ActiveKeyBind {
+
     INSTANCE;
+
     private final KeyBinding keyBinding = new KeyBinding("Active Key", Keyboard.KEY_F, "key.Ascendency");
     private boolean pressed = false;
 

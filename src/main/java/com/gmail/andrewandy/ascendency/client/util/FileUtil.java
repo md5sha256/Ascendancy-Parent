@@ -1,7 +1,7 @@
 package com.gmail.andrewandy.ascendency.client.util;
 
-import com.gmail.andrewandy.ascendency.lib.packet.data.FileDataPacket;
-import com.gmail.andrewandy.ascendency.lib.packet.data.FileRequestPacket;
+import com.gmail.andrewandy.ascendency.lib.data.FileDataPacket;
+import com.gmail.andrewandy.ascendency.lib.data.FileRequestPacket;
 import net.minecraftforge.common.ForgeHooks;
 
 import java.util.Objects;

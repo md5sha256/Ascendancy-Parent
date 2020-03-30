@@ -1,4 +1,4 @@
-package com.gmail.andrewandy.ascendency;
+package com.gmail.andrewandy.ascendency.client;
 
 import com.gmail.andrewandy.ascendency.client.io.ClientPacketHandler;
 import com.gmail.andrewandy.ascendency.client.keybinds.ActiveKeyBind;
