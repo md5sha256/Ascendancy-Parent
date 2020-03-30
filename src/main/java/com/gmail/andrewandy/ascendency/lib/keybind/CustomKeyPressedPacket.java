@@ -1,7 +1,7 @@
-package com.gmail.andrewandy.ascendency.lib.packet.keybind;
+package com.gmail.andrewandy.ascendency.lib.keybind;
 
-import com.gmail.andrewandy.ascendency.lib.packet.AscendencyPacket;
-import com.gmail.andrewandy.ascendency.lib.packet.data.FileDataPacket;
+import com.gmail.andrewandy.ascendency.lib.AscendencyPacket;
+import com.gmail.andrewandy.ascendency.lib.data.FileDataPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 

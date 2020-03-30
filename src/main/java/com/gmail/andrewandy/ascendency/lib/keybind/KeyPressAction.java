@@ -1,4 +1,4 @@
-package com.gmail.andrewandy.ascendency.lib.packet.keybind;
+package com.gmail.andrewandy.ascendency.lib.keybind;
 
 public enum KeyPressAction {
 

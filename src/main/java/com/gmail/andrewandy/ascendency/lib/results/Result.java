@@ -1,4 +1,4 @@
-package com.gmail.andrewandy.ascendency.lib.packet.results;
+package com.gmail.andrewandy.ascendency.lib.results;
 
 public enum Result {
 

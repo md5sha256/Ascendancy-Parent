@@ -1,4 +1,4 @@
-package com.gmail.andrewandy.ascendency.lib.packet;
+package com.gmail.andrewandy.ascendency.lib;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -10,7 +10,7 @@ import java.util.UUID;
  */
 public abstract class AscendencyPacket implements IMessage {
 
-    private UUID targetPlayer; //Used to actually send the packet to a player.
+    private transient UUID targetPlayer; //Used to actually send the packet to a player.
 
     public AscendencyPacket() {
     }
@@ -32,6 +32,10 @@ public abstract class AscendencyPacket implements IMessage {
         this.targetPlayer = targetPlayer;
     }
 
+    /**
+     * Get the processed data which can be sent.
+     * @return Returns the formatted data.
+     */
     public abstract byte[] getFormattedData();
 
     /**
@@ -53,5 +57,9 @@ public abstract class AscendencyPacket implements IMessage {
         buf.writeBytes(getFormattedData());
     }
 
+    /**
+     * Get the String identifier of this packet.
+     * @return Returns the String identifier.
+     */
     public abstract String getIdentifier();
 }

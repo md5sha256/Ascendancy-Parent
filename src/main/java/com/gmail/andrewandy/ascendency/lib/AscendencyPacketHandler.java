@@ -1,4 +1,4 @@
-package com.gmail.andrewandy.ascendency.lib.packet;
+package com.gmail.andrewandy.ascendency.lib;
 
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;

@@ -1,6 +1,6 @@
-package com.gmail.andrewandy.ascendency.lib.packet.results;
+package com.gmail.andrewandy.ascendency.lib.results;
 
-import com.gmail.andrewandy.ascendency.lib.packet.AscendencyPacket;
+import com.gmail.andrewandy.ascendency.lib.AscendencyPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 
