@@ -40,8 +40,8 @@ minecraft {
 
 
 repositories {
-    mavenCentral()
     mavenLocal()
+    mavenCentral()
 }
 
 dependencies {
@@ -80,11 +80,8 @@ shadowJar {
     baseName = archivesBaseName
     version = modVersion
     classifier = null
-    dependencies {
-        include(dependency("com.gmail.andrewandy.AscendencyLib:0.1-ALPHA"))
-    }
-    include("com.gmail.andrewandy.ascendency.client.*")
-    include("com.gmail.andrewandy.ascendency.lib.*")
+    minimize()
+    relocate("com.gmail.andrewandy.ascendency.lib", "com.gmail.andrewandy.ascendency.shaded.lib");
 }
 
 artifacts {
