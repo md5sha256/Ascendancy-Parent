@@ -1,5 +1,8 @@
 package com.gmail.andrewandy.ascendency.serverplugin.game.challenger;
 
+import am2.api.extensions.IEntityExtension;
+import am2.extensions.EntityExtension;
+import am2.spell.component.ManaDrain;
 import com.gmail.andrewandy.ascendency.lib.game.data.IChampionData;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.Ability;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractAbility;
@@ -8,6 +11,7 @@ import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.ChallengerUti
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.PlayerSpecificRune;
 import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
 import com.gmail.andrewandy.ascendency.serverplugin.util.game.Tickable;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.manipulator.mutable.entity.HealthData;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
@@ -25,11 +29,15 @@ public class Solace extends AbstractChallenger {
 
     private static final Solace instance = new Solace();
 
+    public static Solace getInstance() {
+        return instance;
+    }
+
     private Solace() {
         super("Solace",
                 new Ability[0],
                 new PlayerSpecificRune[0],
-                Season1Challengers.getLoreOf("Solace"));
+                Challengers.getLoreOf("Solace"));
     }
 
 
@@ -39,7 +47,7 @@ public class Solace extends AbstractChallenger {
         private final UUID uuid = UUID.randomUUID();
         private static final long tickCount = Common.toTicks(5, TimeUnit.SECONDS);
 
-        private Map<UUID, Long> registered = new HashMap<>();
+        private Map<UUID, Long> registered = new HashMap<>(); //Whoever has the souls
         private Map<UUID, UUID> soulMap = new HashMap<>(); //Maps Solace to its target.
 
         public static CallbackOfTheAfterlife getInstance() {
@@ -53,6 +61,15 @@ public class Solace extends AbstractChallenger {
         @Override
         public UUID getUniqueID() {
             return uuid;
+        }
+
+        public void activateAs(UUID uuid) {
+           Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(uuid);
+           if (!optionalPlayer.isPresent()) {
+               throw new IllegalArgumentException("Player does not exist!");
+           }
+           Player player = optionalPlayer.get();
+           IEntityExtension extension = EntityExtension.For(null);
         }
 
         @Listener(order = Order.LATE)

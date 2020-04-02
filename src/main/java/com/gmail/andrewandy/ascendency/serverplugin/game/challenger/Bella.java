@@ -6,8 +6,10 @@ import com.gmail.andrewandy.ascendency.serverplugin.api.ability.Ability;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.AbstractChallenger;
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.PlayerSpecificRune;
 import com.gmail.andrewandy.ascendency.serverplugin.game.util.MathUtils;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockTypes;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -15,6 +17,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
+import java.util.UUID;
 
 public class Bella extends AbstractChallenger {
 
@@ -24,7 +28,7 @@ public class Bella extends AbstractChallenger {
         super("Bella",
                 new Ability[0],
                 new PlayerSpecificRune[0],
-                Season1Challengers.getLoreOf("Bella"));
+                Challengers.getLoreOf("Bella"));
     }
 
     public static Bella getInstance() {
@@ -52,6 +56,14 @@ public class Bella extends AbstractChallenger {
 
     private static class CircletOfTheAccused {
 
+        public void activateAs(UUID uuid) {
+            Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(uuid);
+            if (!optionalPlayer.isPresent()) {
+                throw new IllegalArgumentException("Player does not exist!");
+            }
+            Player player = optionalPlayer.get();
+
+        }
 
 
     }

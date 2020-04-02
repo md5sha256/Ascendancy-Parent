@@ -1,0 +1,61 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            name = "forge"
+            url = "https://files.minecraftforge.net/maven"
+        }
+        mavenCentral()
+        maven {
+            name = 'sponge'
+            url = 'https://repo.spongepowered.org/maven'
+        }
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.2'
+        classpath "net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT"
+    }
+}
+
+plugins {
+    id 'org.spongepowered.plugin' version '0.8.1'
+}
+
+apply plugin: "net.minecraftforge.gradle.forge"
+apply plugin: "java-library"
+apply plugin: 'com.github.johnrengelman.shadow'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+
+dependencies {
+    compile 'org.spongepowered:spongeapi:5.1.0' //SpongeAPI
+    compile project(':AscendencyLib') //AscendencyLib
+    compile 'am2:arsmagica2:1.5.0-21' //AM2 Dependency
+}
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+
+minecraft {
+    // TODO: Configure Forge build here
+    forgeVersion = pluginForgeVersion
+    // TODO: Replace with your mappings version, e.g. stable_39 or snapshot_20180814
+    mappings = project.properties.mcpVersion
+}
+
+assemble {
+    dependsOn(project.shadowJar)
+}
+
+shadowJar {
+    baseName = archivesBaseName
+    version = pluginVersion
+    classifier = null
+    dependencies {
+        include(dependency(":AscendencyLib"))
+    }
+    minimize()
+}

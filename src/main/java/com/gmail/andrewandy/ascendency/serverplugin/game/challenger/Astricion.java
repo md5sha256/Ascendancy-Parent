@@ -33,7 +33,7 @@ public class Astricion extends AbstractChallenger {
         super("Astricion",
                 new Ability[]{Suppression.instance, DemonicCapacity.instance},
                 new PlayerSpecificRune[]{ReleasedLimit.instance, DiabolicResistance.instance, EmpoweringRage.instance},
-                Season1Challengers.getLoreOf("Astricion"));
+                Challengers.getLoreOf("Astricion"));
     }
 
     public static Astricion getInstance() {
@@ -208,21 +208,20 @@ public class Astricion extends AbstractChallenger {
             Entity entity = event.getTargetEntity();
             if ((!active.contains(entity.getUniqueId())) || (!(entity instanceof Player))) {
                 return;
-            } else {
-                int astricionHealth = (int) Math.round(((Player) entity).getHealthData().health().get());
-                Optional<PotionEffectData> optional = entity.getOrCreate(PotionEffectData.class);
-                if (!optional.isPresent()) {
-                    throw new IllegalStateException("Potion effect data could not be gathered for " + entity.getUniqueId().toString());
-                }
+            }
+            int astricionHealth = (int) Math.round(((Player) entity).getHealthData().health().get());
+            Optional<PotionEffectData> optional = entity.getOrCreate(PotionEffectData.class);
+            if (!optional.isPresent()) {
+                throw new IllegalStateException("Potion effect data could not be gathered for " + entity.getUniqueId().toString());
+            }
 
-                PotionEffectData data = optional.get();
-                PotionEffect[] effects = new PotionEffect[]{PotionEffect.builder()
-                        //Strength scaling on current health
-                        .potionType(PotionEffectTypes.STRENGTH)
-                        .duration(999999).amplifier((int) Math.round((astricionHealth - 10) / 10D)).build()};
-                for (PotionEffect effect : effects) {
-                    data.addElement(effect);
-                }
+            PotionEffectData data = optional.get();
+            PotionEffect[] effects = new PotionEffect[]{PotionEffect.builder()
+                    //Strength scaling on current health
+                    .potionType(PotionEffectTypes.STRENGTH)
+                    .duration(999999).amplifier((int) Math.round((astricionHealth - 10) / 10D)).build()};
+            for (PotionEffect effect : effects) {
+                data.addElement(effect);
             }
         }
 
@@ -242,7 +241,6 @@ public class Astricion extends AbstractChallenger {
             PotionEffect[] effects = new PotionEffect[]{PotionEffect.builder()
                     //Strength scaling on current health
                     .potionType(PotionEffectTypes.STRENGTH)
-
                     .duration(999999).amplifier((int) Math.round((astricionHealth - 10) / 10D)).build()};
             for (PotionEffect effect : effects) {
                 data.addElement(effect);

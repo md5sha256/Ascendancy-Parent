@@ -54,7 +54,7 @@ public class Knavis extends AbstractChallenger implements Challenger {
         super("Knavis",
                 new Ability[]{ShadowsRetreat.instance, LivingGift.instance}, //Abilities
                 new PlayerSpecificRune[]{ChosenOTEarth.instance, HeartOfTheDryad.instance, BlessingOfTeleportation.instance}, //Runes
-                Season1Challengers.getLoreOf("Knavis")); //Lore
+                Challengers.getLoreOf("Knavis")); //Lore
     }
 
     public static Knavis getInstance() {

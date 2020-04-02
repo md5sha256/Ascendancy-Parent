@@ -1,8 +1,12 @@
 package com.gmail.andrewandy.ascendency.serverplugin.game.challenger;
 
 import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
+import com.gmail.andrewandy.ascendency.serverplugin.api.ability.Ability;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.Challenger;
+import com.gmail.andrewandy.ascendency.serverplugin.api.rune.Rune;
 import ninja.leaping.configurate.ConfigurationNode;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.event.EventManager;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,11 +14,11 @@ import java.util.stream.Collectors;
 /**
  * Reprsents the instances of all champions in "Season 1"
  */
-public enum Season1Challengers {
+public enum Challengers {
 
     KNAVIS(Knavis.getInstance()),
     ASTSRICTION(Astricion.getInstance()),
-    SOLACE(null),
+    SOLACE(Solace.getInstance()),
     VENGLIS(null),
     BREEZY(null);
 
@@ -22,8 +26,27 @@ public enum Season1Challengers {
     private final int version = 0;
     private final Challenger challengerObject;
 
-    Season1Challengers(Challenger challengerObject) {
+    Challengers(Challenger challengerObject) {
         this.challengerObject = challengerObject;
+    }
+
+    public static void initHandlers() {
+        EventManager manager = Sponge.getEventManager();
+        Object plugin = AscendencyServerPlugin.getInstance();
+        for (Challengers s1Challenger : values()) {
+            Challenger challenger = s1Challenger.challengerObject;
+            if (challenger == null) {
+                continue;
+            }
+            for (Ability ability : challenger.getAbilities()) {
+                manager.unregisterListeners(ability);
+                manager.registerListeners(plugin, ability);
+            }
+            for (Rune rune : challenger.getRunes()) {
+                manager.unregisterListeners(rune);
+                manager.registerListeners(plugin, rune);
+            }
+        }
     }
 
     public static List<String> getLoreOf(String name) {
