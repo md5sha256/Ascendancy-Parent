@@ -9,6 +9,9 @@ import org.spongepowered.api.scoreboard.critieria.Criteria;
 import org.spongepowered.api.scoreboard.objective.Objective;
 import org.spongepowered.api.text.Text;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public enum ActiveKeyHandler implements KeyBindHandler {
@@ -17,6 +20,7 @@ public enum ActiveKeyHandler implements KeyBindHandler {
 
     private String scoreName;
     private Objective objective;
+    private Collection<UUID> pressed = new HashSet<>();
 
     ActiveKeyHandler() {
     }
@@ -41,14 +45,23 @@ public enum ActiveKeyHandler implements KeyBindHandler {
     }
 
     @Override
+    public boolean isKeyPressed(Player player) {
+        return pressed.contains(player.getUniqueId());
+    }
+
+    @Override
     public void onKeyPress(Player player) {
-        player.getScoreboard().addObjective(objective);
-        objective.getOrCreateScore(Text.of(scoreName)).setScore(1);
+        if (new ActiveKeyPressedEvent(player.getUniqueId()).callEvent()) {
+            player.getScoreboard().addObjective(objective);
+            objective.getOrCreateScore(Text.of(scoreName)).setScore(1);
+            pressed.add(player.getUniqueId());
+        }
     }
 
     @Override
     public void onKeyRelease(Player player) {
         player.getScoreboard().addObjective(objective);
         objective.getOrCreateScore(Text.of(scoreName)).setScore(0);
+        pressed.remove(player.getUniqueId());
     }
 }

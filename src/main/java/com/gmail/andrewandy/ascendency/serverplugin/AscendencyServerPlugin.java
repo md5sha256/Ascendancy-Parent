@@ -86,6 +86,7 @@ public class AscendencyServerPlugin {
         loadKeybindHandlers();
         ForceLoadChunks.getInstance().loadSettings(); //Register the force event handler.
         SimplePlayerMatchManager.enableManager();
+        Challengers.initHandlers();
         loadMatchMaking(); //Load after the player match manager.
         Common.log(Level.INFO, "Plugin enabled!");
     }

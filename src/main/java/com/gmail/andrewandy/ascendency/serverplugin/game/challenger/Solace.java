@@ -11,6 +11,7 @@ import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.ChallengerUti
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.PlayerSpecificRune;
 import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
 import com.gmail.andrewandy.ascendency.serverplugin.util.game.Tickable;
+import net.minecraft.entity.EntityLivingBase;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.manipulator.mutable.entity.HealthData;
 import org.spongepowered.api.entity.Entity;
@@ -35,7 +36,7 @@ public class Solace extends AbstractChallenger {
 
     private Solace() {
         super("Solace",
-                new Ability[0],
+                new Ability[]{CallbackOfTheAfterlife.instance},
                 new PlayerSpecificRune[0],
                 Challengers.getLoreOf("Solace"));
     }
@@ -69,7 +70,8 @@ public class Solace extends AbstractChallenger {
                throw new IllegalArgumentException("Player does not exist!");
            }
            Player player = optionalPlayer.get();
-           IEntityExtension extension = EntityExtension.For(null);
+           IEntityExtension extension = EntityExtension.For((EntityLivingBase) player);
+           extension.setCurrentMana(extension.getCurrentMana() - 10f);
         }
 
         @Listener(order = Order.LATE)

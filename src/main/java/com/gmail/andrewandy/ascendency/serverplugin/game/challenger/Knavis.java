@@ -507,6 +507,7 @@ public class Knavis extends AbstractChallenger implements Challenger {
                     health += index++;
                 }
                 Common.addHealth(playerObj, health - 3); //Sets the total health to a value between 3 and 7 (adds on to LivingGift)
+
                 return stackVal == 4 ? stackVal : stackVal + 1; //If stack = 4, then max has been reached, therefore its 4 or stack + 1;
             }));
         }

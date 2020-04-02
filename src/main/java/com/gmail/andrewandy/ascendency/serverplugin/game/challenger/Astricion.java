@@ -176,7 +176,7 @@ public class Astricion extends AbstractChallenger {
             if (!(entity instanceof Player) || !active.contains(entity.getUniqueId())) {
                 return;
             }
-            PotionEffect entanglement = (PotionEffect) (Object) new BuffEffectEntangled(4, 1); //Safe cast as per forge's runtime changes
+            PotionEffect entanglement = (PotionEffect) new BuffEffectEntangled(4, 1); //Safe cast as per forge's runtime changes
             event.setBaseDamage(calculateIncomingDamage(event.getBaseDamage())); //Modifies the base damage directly
         }
 

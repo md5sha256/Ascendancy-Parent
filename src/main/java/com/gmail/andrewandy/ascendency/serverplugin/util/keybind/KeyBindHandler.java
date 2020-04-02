@@ -19,4 +19,6 @@ public interface KeyBindHandler {
         onKeyRelease(event.getTargetEntity());
     }
 
+    boolean isKeyPressed(Player player);
+
 }

@@ -1,6 +1,9 @@
 package com.gmail.andrewandy.ascendency.serverplugin.util;
 
+import am2.api.extensions.IEntityExtension;
+import am2.extensions.EntityExtension;
 import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
+import net.minecraft.entity.EntityLivingBase;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.manipulator.mutable.entity.HealthData;
@@ -56,8 +59,18 @@ public class Common {
     }
 
     public static void addHealth(Player player, double health) {
+        addHealth(player, health, false);
+    }
+
+    public static void addHealth(Player player, double health, boolean overheal) {
         HealthData data = player.getHealthData();
-        data.set(data.health().transform((val) -> val + health));
+        data.set(data.health().transform((val) -> {
+            double ret = health + val;
+            if (val + health > data.maxHealth().get()) {
+                ret = overheal ? ret : data.maxHealth().get();
+            }
+            return ret;
+        }));
         player.offer(data);
     }
 
@@ -76,4 +89,23 @@ public class Common {
     public static String stripColor(Text text) {
         return stripColor(Objects.requireNonNull(text).toString());
     }
+
+    public static IEntityExtension getExtensionFor(Player player) {
+        return EntityExtension.For((EntityLivingBase) player);
+    }
+
+    public static float getMana(Player player) {
+        return getExtensionFor(player).getCurrentMana();
+    }
+
+    public static void addMana(Player player, float mana) {
+        IEntityExtension extension = getExtensionFor(player);
+        extension.setCurrentMana(extension.getCurrentMana() + mana);
+    }
+
+    public static void removeMana(Player player, float mana) {
+        getExtensionFor(player).deductMana(mana);
+    }
+
+
 }

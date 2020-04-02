@@ -10,8 +10,14 @@ public class TickHandler {
 
     private Collection<TickData> toTick = new HashSet<>();
 
-    public TickHandler() {
+    private static final TickHandler instance = new TickHandler();
+
+    private TickHandler() {
         Sponge.getScheduler().createTaskBuilder().execute(this::run).intervalTicks(1).submit(AscendencyServerPlugin.getInstance());
+    }
+
+    public static TickHandler getInstance() {
+        return instance;
     }
 
     public void submitTickable(Tickable tickable) {

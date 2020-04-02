@@ -4,6 +4,8 @@ import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.Ability;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.Challenger;
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.Rune;
+import com.gmail.andrewandy.ascendency.serverplugin.util.game.TickHandler;
+import com.gmail.andrewandy.ascendency.serverplugin.util.game.Tickable;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.EventManager;
@@ -20,7 +22,8 @@ public enum Challengers {
     ASTSRICTION(Astricion.getInstance()),
     SOLACE(Solace.getInstance()),
     VENGLIS(null),
-    BREEZY(null);
+    BREEZY(null),
+    BELLA(Bella.getInstance());
 
     public static final String LOAD = null; //Invoke to force classloader to load this class
     private final int version = 0;
@@ -41,10 +44,16 @@ public enum Challengers {
             for (Ability ability : challenger.getAbilities()) {
                 manager.unregisterListeners(ability);
                 manager.registerListeners(plugin, ability);
+                if (ability instanceof Tickable) {
+                    TickHandler.getInstance().removeTickable((Tickable) ability);
+                    TickHandler.getInstance().submitTickable((Tickable) ability);
+                }
             }
             for (Rune rune : challenger.getRunes()) {
                 manager.unregisterListeners(rune);
                 manager.registerListeners(plugin, rune);
+                TickHandler.getInstance().removeTickable(rune);
+                TickHandler.getInstance().submitTickable(rune);
             }
         }
     }
