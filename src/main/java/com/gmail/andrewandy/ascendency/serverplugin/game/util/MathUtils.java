@@ -36,7 +36,7 @@ public class MathUtils {
      * @param radius The radius.
      * @return Returns a Collection of locations which are within this cuboid.
      */
-    public static Collection<Location<World>> createCube(Location<World> centre, int radius) {
+    public static Collection<Location<World>> createSphere(Location<World> centre, int radius) {
         if (radius < 0) {
             radius = -radius;
         }
