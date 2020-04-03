@@ -1,6 +1,6 @@
 package com.gmail.andrewandy.ascendency.serverplugin.test;
 
-import com.gmail.andrewandy.ascendency.lib.testutils.MockPlayer;
+import com.gmail.andrewandy.ascendency.serverplugin.test.util.MockPlayer;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.MatchMakingService;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.Team;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.draftpick.DraftPickMatch;

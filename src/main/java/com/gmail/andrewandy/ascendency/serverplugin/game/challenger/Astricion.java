@@ -1,8 +1,8 @@
 package com.gmail.andrewandy.ascendency.serverplugin.game.challenger;
 
 import am2.buffs.BuffEffectEntangled;
-import com.gmail.andrewandy.ascendency.lib.game.data.IChampionData;
-import com.gmail.andrewandy.ascendency.lib.game.data.game.ChampionDataImpl;
+import com.gmail.andrewandy.ascendency.lib.game.data.IChallengerData;
+import com.gmail.andrewandy.ascendency.lib.game.data.game.ChallengerDataImpl;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.Ability;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractAbility;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.AbstractChallenger;
@@ -47,9 +47,9 @@ public class Astricion extends AbstractChallenger {
     }
 
     @Override
-    public IChampionData toData() {
+    public IChallengerData toData() {
         try {
-            return new ChampionDataImpl(getName(), new File("Path to data"), getLore());
+            return new ChallengerDataImpl(getName(), new File("Path to data"), getLore());
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }

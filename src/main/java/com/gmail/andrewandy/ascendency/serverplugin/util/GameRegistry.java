@@ -2,8 +2,8 @@ package com.gmail.andrewandy.ascendency.serverplugin.util;
 
 import com.gmail.andrewandy.ascendency.lib.AscendencyPacket;
 import com.gmail.andrewandy.ascendency.lib.game.AscendencyChampions;
-import com.gmail.andrewandy.ascendency.lib.game.data.game.ChampionDataMarkerPacket;
-import com.gmail.andrewandy.ascendency.lib.game.data.game.ChampionDataPacket;
+import com.gmail.andrewandy.ascendency.lib.game.data.game.ChallengerDataMarkerPacket;
+import com.gmail.andrewandy.ascendency.lib.game.data.game.ChallengerDataPacket;
 import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.Challenger;
 import com.gmail.andrewandy.ascendency.serverplugin.io.SpongeAscendencyPacketHandler;
@@ -90,9 +90,9 @@ public enum GameRegistry {
             return;
         }
         syncGuard.put(uuid, null);
-        ChampionDataMarkerPacket packet = new ChampionDataMarkerPacket(championRegistry.size());
+        ChallengerDataMarkerPacket packet = new ChallengerDataMarkerPacket(championRegistry.size());
         Queue<AscendencyPacket> packets = new ArrayDeque<>(championRegistry.size() + 1);
-        championRegistry.values().forEach((challenger -> packets.add(new ChampionDataPacket(challenger.toData()))));
+        championRegistry.values().forEach((challenger -> packets.add(new ChallengerDataPacket(challenger.toData()))));
         packets.add(packet);
         Optional<Player> optional;
         if (async) {

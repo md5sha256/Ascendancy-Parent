@@ -1,7 +1,7 @@
 package com.gmail.andrewandy.ascendency.serverplugin.game.challenger;
 
-import com.gmail.andrewandy.ascendency.lib.game.data.IChampionData;
-import com.gmail.andrewandy.ascendency.lib.game.data.game.ChampionDataImpl;
+import com.gmail.andrewandy.ascendency.lib.game.data.IChallengerData;
+import com.gmail.andrewandy.ascendency.lib.game.data.game.ChallengerDataImpl;
 import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.Ability;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractAbility;
@@ -67,9 +67,9 @@ public class Knavis extends AbstractChallenger implements Challenger {
     }
 
     @Override
-    public IChampionData toData() {
+    public IChallengerData toData() {
         try {
-            return new ChampionDataImpl(getName(), new File("Path to file on server"), getLore());
+            return new ChallengerDataImpl(getName(), new File("Path to file on server"), getLore());
         } catch (IOException ex) {
             throw new IllegalStateException("Unable to create ChampionData", ex);
         }

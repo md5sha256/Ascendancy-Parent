@@ -2,7 +2,7 @@ package com.gmail.andrewandy.ascendency.serverplugin.game.challenger;
 
 import am2.api.extensions.IEntityExtension;
 import am2.extensions.EntityExtension;
-import com.gmail.andrewandy.ascendency.lib.game.data.IChampionData;
+import com.gmail.andrewandy.ascendency.lib.game.data.IChallengerData;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.Ability;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractAbility;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.AbstractChallenger;
@@ -41,7 +41,7 @@ public class Solace extends AbstractChallenger {
     }
 
     @Override
-    public IChampionData toData() {
+    public IChallengerData toData() {
         return null;
     }
 

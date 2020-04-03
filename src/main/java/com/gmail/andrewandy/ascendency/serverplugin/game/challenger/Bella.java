@@ -1,8 +1,8 @@
 package com.gmail.andrewandy.ascendency.serverplugin.game.challenger;
 
 import am2.buffs.BuffEffectAstralDistortion;
-import com.gmail.andrewandy.ascendency.lib.game.data.IChampionData;
-import com.gmail.andrewandy.ascendency.lib.game.data.game.ChampionDataImpl;
+import com.gmail.andrewandy.ascendency.lib.game.data.IChallengerData;
+import com.gmail.andrewandy.ascendency.lib.game.data.game.ChallengerDataImpl;
 import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.Ability;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractAbility;
@@ -72,9 +72,9 @@ public class Bella extends AbstractChallenger {
     }
 
     @Override
-    public IChampionData toData() {
+    public IChallengerData toData() {
         try {
-            return new ChampionDataImpl(getName(), new File("Path to icon"), getLore());
+            return new ChallengerDataImpl(getName(), new File("Path to icon"), getLore());
         } catch (IOException ex) {
             throw new IllegalStateException(ex);
         }
