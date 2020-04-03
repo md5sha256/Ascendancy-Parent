@@ -1,7 +1,7 @@
 package com.gmail.andrewandy.ascendency.lib.game.data.game;
 
 import com.gmail.andrewandy.ascendency.lib.data.DataPacket;
-import com.gmail.andrewandy.ascendency.lib.game.data.IChampionData;
+import com.gmail.andrewandy.ascendency.lib.game.data.IChallengerData;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 
@@ -16,14 +16,14 @@ import java.util.UUID;
 /**
  * Packet used to synchronise champion data as the player joins.
  */
-public class ChampionDataPacket extends DataPacket {
+public class ChallengerDataPacket extends DataPacket {
 
     private static final String VERSION = "0";
 
-    public ChampionDataPacket() {
+    public ChallengerDataPacket() {
     }
 
-    public ChampionDataPacket(UUID player, IChampionData data) {
+    public ChallengerDataPacket(UUID player, IChallengerData data) {
         super(player);
         //Write the champion data to bytes.
         ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
@@ -42,7 +42,7 @@ public class ChampionDataPacket extends DataPacket {
         super.setData(buf.array());
     }
 
-    public ChampionDataPacket(IChampionData data) {
+    public ChallengerDataPacket(IChallengerData data) {
         this(null, data);
     }
 
@@ -73,11 +73,11 @@ public class ChampionDataPacket extends DataPacket {
 
     /**
      * Read from the current packet's data to reconstruct the
-     * {@link IChampionData} object.
+     * {@link IChallengerData} object.
      *
      * @return
      */
-    public IChampionData toObject() {
+    public IChallengerData toObject() {
         ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
         buf.writeBytes(getData());
         int len = buf.readInt();
@@ -95,27 +95,27 @@ public class ChampionDataPacket extends DataPacket {
             byte[] data = loreBuf.slice().array();
             list.add(new String(data));
         }
-        return new ChampionDataImpl(name, icon, new ArrayList<>(list));
+        return new ChallengerDataImpl(name, icon, new ArrayList<>(list));
     }
 
     @Override
     public String getIdentifier() {
-        return ChampionDataPacket.class.getCanonicalName() + "::" + VERSION;
+        return ChallengerDataPacket.class.getCanonicalName() + "::" + VERSION;
     }
 
-    public ChampionDataPacket(UUID player, byte[] data) {
+    public ChallengerDataPacket(UUID player, byte[] data) {
         super(player, data);
     }
 
-    public ChampionDataPacket(UUID player, InputStream src) throws IOException {
+    public ChallengerDataPacket(UUID player, InputStream src) throws IOException {
         super(player, src);
     }
 
-    public ChampionDataPacket(ByteBuf buffer) {
+    public ChallengerDataPacket(ByteBuf buffer) {
         super(buffer);
     }
 
-    public ChampionDataPacket(ByteBuffer buffer) {
+    public ChallengerDataPacket(ByteBuffer buffer) {
         super(buffer);
     }
 }

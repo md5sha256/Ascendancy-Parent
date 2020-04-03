@@ -6,25 +6,25 @@ import io.netty.buffer.ByteBufAllocator;
 
 import java.util.UUID;
 
-public final class ChampionDataMarkerPacket extends DataPacket {
+public final class ChallengerDataMarkerPacket extends DataPacket {
 
     private int totalPackets;
     private UUID uuid;
 
-    public ChampionDataMarkerPacket() {
+    public ChallengerDataMarkerPacket() {
         this(UUID.randomUUID(), 0);
     }
 
-    public ChampionDataMarkerPacket(ChampionDataMarkerPacket other) {
+    public ChallengerDataMarkerPacket(ChallengerDataMarkerPacket other) {
         this(other.uuid, other.totalPackets);
     }
 
-    public ChampionDataMarkerPacket(UUID uuid, int totalPackets) {
+    public ChallengerDataMarkerPacket(UUID uuid, int totalPackets) {
         this.uuid = uuid;
         this.totalPackets = totalPackets;
     }
 
-    public ChampionDataMarkerPacket(int totalPackets) {
+    public ChallengerDataMarkerPacket(int totalPackets) {
         this.totalPackets = totalPackets;
     }
 
@@ -71,7 +71,7 @@ public final class ChampionDataMarkerPacket extends DataPacket {
 
     @Override
     public String getIdentifier() {
-        return ChampionDataMarkerPacket.class.getCanonicalName();
+        return ChallengerDataMarkerPacket.class.getCanonicalName();
     }
 
     public UUID getUuid() {

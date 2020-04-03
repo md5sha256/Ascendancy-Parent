@@ -2,7 +2,7 @@ package com.gmail.andrewandy.ascendency.lib.game.data;
 
 import java.util.List;
 
-public interface IChampionData {
+public interface IChallengerData {
 
     byte[] getIcon();
 

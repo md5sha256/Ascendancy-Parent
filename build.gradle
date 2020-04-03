@@ -38,22 +38,15 @@ archivesBaseName = pluginName + "-" + pluginVersion
 
 repositories {
     mavenCentral()
-    maven {
-        name = 'sponge'
-        url = 'https://repo.spongepowered.org/maven'
-    }
 
 }
 
 dependencies {
     compileOnly 'io.netty:netty-buffer:4.0.23.Final'
-    compile 'org.spongepowered:spongeapi:5.1.0'
 }
 
 
 dependencies {
-    compileOnly 'org.spongepowered:spongeapi:5.1.0'
-    annotationProcessor 'org.spongepowered:spongeapi:5.1.0'
 }
 
 jar {
