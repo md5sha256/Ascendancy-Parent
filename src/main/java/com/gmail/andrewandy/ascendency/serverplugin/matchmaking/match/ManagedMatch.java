@@ -2,6 +2,7 @@ package com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match;
 
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.Team;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.engine.GameEngine;
+import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.engine.GamePlayer;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -39,5 +40,9 @@ public interface ManagedMatch extends Match {
     boolean canStart();
 
     GameEngine getGameEngine();
+
+    default Optional<? extends GamePlayer> getGamePlayerOf(UUID player) {
+        return getGameEngine().getGamePlayerOf(player);
+    }
 
 }

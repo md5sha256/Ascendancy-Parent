@@ -3,10 +3,11 @@ package com.gmail.andrewandy.ascendency.serverplugin.game.challenger;
 import com.gmail.andrewandy.ascendency.lib.game.data.IChampionData;
 import com.gmail.andrewandy.ascendency.lib.game.data.game.ChampionDataImpl;
 import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
+import com.gmail.andrewandy.ascendency.serverplugin.api.ability.Ability;
+import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractAbility;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.AbstractChallenger;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.Challenger;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.ChallengerUtils;
-import com.gmail.andrewandy.ascendency.serverplugin.api.ability.Ability;
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.AbstractRune;
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.PlayerSpecificRune;
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.Rune;
@@ -18,6 +19,7 @@ import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.engine.Gam
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.engine.GamePlayer;
 import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
 import com.gmail.andrewandy.ascendency.serverplugin.util.game.Tickable;
+import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyPressedEvent;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
@@ -27,6 +29,7 @@ import org.spongepowered.api.effect.potion.PotionEffect;
 import org.spongepowered.api.effect.potion.PotionEffectType;
 import org.spongepowered.api.effect.potion.PotionEffectTypes;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.entity.ChangeEntityPotionEffectEvent;
@@ -35,6 +38,8 @@ import org.spongepowered.api.event.item.inventory.ChangeInventoryEvent;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 import java.io.File;
 import java.io.IOException;
@@ -132,16 +137,18 @@ public class Knavis extends AbstractChallenger implements Challenger {
         }
     }
 
-    public static class ShadowsRetreat implements Ability, Tickable {
+    public static class ShadowsRetreat extends AbstractAbility implements Tickable {
 
         public static final Long[] defaultTickThreshold = new Long[]{Common.toTicks(6, TimeUnit.SECONDS), Common.toTicks(6, TimeUnit.SECONDS)};
         private static final ShadowsRetreat instance = new ShadowsRetreat();
         private UUID uuid = UUID.randomUUID();
         private Map<UUID, LocationMark> dataMap = new HashMap<>();
+        private Map<UUID, Integer> castCounter = new HashMap<>();
         private BiFunction<UUID, LocationMark, Long[]> tickThresholdFunction;
         private BiConsumer<Player, Integer> onMark;
 
         private ShadowsRetreat() {
+            super("Shadow's Retreat", true);
         }
 
         public static ShadowsRetreat getInstance() {
@@ -161,26 +168,6 @@ public class Knavis extends AbstractChallenger implements Challenger {
                 return Optional.of(dataMap.get(player));
             }
             return Optional.empty();
-        }
-
-        @Override
-        public UUID getUniqueID() {
-            return uuid;
-        }
-
-        @Override
-        public String getName() {
-            return "Shadow's Retreat";
-        }
-
-        @Override
-        public boolean isPassive() {
-            return false;
-        }
-
-        @Override
-        public boolean isActive() {
-            return true;
         }
 
         @Override
@@ -204,14 +191,32 @@ public class Knavis extends AbstractChallenger implements Challenger {
             });
         }
 
+        @Override
+        public UUID getUniqueID() {
+            return uuid;
+        }
 
-        private void mark(Player player) {
+        private void castAbilityAs(Player player) {
             if (!dataMap.containsKey(player.getUniqueId())) {
                 throw new IllegalArgumentException("Player does not have this ability!");
             }
             LocationMark mark = dataMap.get(player.getUniqueId());
-            mark.setPrimaryMark(player.getLocation());
-            mark.resetPrimaryTick();
+            castCounter.compute(player.getUniqueId(), (uuid, castCount) -> {
+                if (castCount == null) {
+                    castCount = 0;
+                }
+                if (castCount == 0) {
+                    mark.setPrimaryMark(player.getLocation());
+                    mark.resetPrimaryTick();
+                } else {
+                    MarkTeleportationEvent event = new MarkTeleportationEvent(player, mark.getPrimaryMark());
+                    if (event.callEvent()) {
+                        player.setLocationSafely(event.getTargetLocation());
+                    }
+                }
+                return ++castCount;
+            });
+
         }
 
         //TODO add listeners
@@ -219,11 +224,16 @@ public class Knavis extends AbstractChallenger implements Challenger {
         @Listener
         public void onHotbarChange(ChangeInventoryEvent.Held event) {
             Cause cause = event.getCause();
-            Collection<Player> livings = cause.allOf(Player.class);
-            if (livings.size() < 1) {
+            Optional<Player> optionalPlayer = cause.allOf(UUID.class)
+                    .parallelStream()
+                    .map((uniqueID) -> Sponge.getServer().getPlayer(uniqueID))
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .findAny();
+            if (!optionalPlayer.isPresent()) {
                 return;
             }
-            Player player = livings.iterator().next();
+            Player player = optionalPlayer.get();
             if (!dataMap.containsKey(player.getUniqueId())) {
                 return;
             }
@@ -239,10 +249,69 @@ public class Knavis extends AbstractChallenger implements Challenger {
                     if (slotIndex.getValue() != 2 || slotIndex.getValue() != 1) {
                         return;
                     }
-                    mark(player);
+                    castAbilityAs(player);
                 });
 
             });
+        }
+
+        @Listener
+        public void onActiveKeyPress(ActiveKeyPressedEvent event) {
+            Player player = event.getPlayer();
+            Optional<ManagedMatch> managedMatch = SimplePlayerMatchManager.INSTANCE.getMatchOf(player.getUniqueId());
+            if (!managedMatch.isPresent()) {
+                return;
+            }
+            ManagedMatch match = managedMatch.get();
+            Optional<? extends GamePlayer> optional = match.getGamePlayerOf(player.getUniqueId());
+            optional.ifPresent(gamePlayer -> {
+                Challenger challenger = gamePlayer.getChallenger();
+                if (challenger != Knavis.getInstance()) {
+                    return;
+                }
+                //TODO call a mark given event so that runes can alter which slot the rune should go to.
+            });
+        }
+
+        private static class MarkTeleportationEvent extends AscendencyServerEvent implements Cancellable {
+
+            private boolean cancel;
+            private Player player;
+            private Location<World> location;
+            private Cause cause;
+
+            public MarkTeleportationEvent(Player player, Location<World> toTeleport) {
+                this.player = player;
+                this.location = toTeleport;
+                this.cause = Cause.builder().named("Knavis", Knavis.getInstance()).build();
+            }
+
+            public Location<World> getTargetLocation() {
+                return location;
+            }
+
+            public void setTargetLocation(Location<World> location) {
+                this.location = location;
+            }
+
+            public Player getPlayer() {
+                return player;
+            }
+
+            @Override
+            public Cause getCause() {
+                return cause;
+            }
+
+            @Override
+            public boolean isCancelled() {
+                return cancel;
+            }
+
+            @Override
+            public void setCancelled(boolean cancel) {
+                this.cancel = cancel;
+            }
         }
     }
 
@@ -439,7 +508,7 @@ public class Knavis extends AbstractChallenger implements Challenger {
             PotionEffectType effect = event.getPotionEffect().getType();
 
             String name = effect.getName().toLowerCase();
-            if (name.contains("fury")  || effect == PotionEffectTypes.STRENGTH || effect == PotionEffectTypes.RESISTANCE) {
+            if (name.contains("fury") || effect == PotionEffectTypes.STRENGTH || effect == PotionEffectTypes.RESISTANCE) {
                 assert event.getTargetEntity() instanceof Player;
                 applyTo((Player) event.getTargetEntity());
             }

@@ -51,7 +51,7 @@ public enum ActiveKeyHandler implements KeyBindHandler {
 
     @Override
     public void onKeyPress(Player player) {
-        if (new ActiveKeyPressedEvent(player.getUniqueId()).callEvent()) {
+        if (new ActiveKeyPressedEvent(player).callEvent()) {
             player.getScoreboard().addObjective(objective);
             objective.getOrCreateScore(Text.of(scoreName)).setScore(1);
             pressed.add(player.getUniqueId());

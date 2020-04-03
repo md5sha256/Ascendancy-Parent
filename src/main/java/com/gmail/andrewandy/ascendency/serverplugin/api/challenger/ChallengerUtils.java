@@ -24,8 +24,9 @@ public class ChallengerUtils {
 
     /**
      * Increment the tick count of each individual element in a map.
+     *
      * @param removeAfter The tick count in which the entry should be removed.
-     * @param onRemove An action to be done when an element is removed, can be null/
+     * @param onRemove    An action to be done when an element is removed, can be null/
      * @return Returns a predicate to be used in {@link java.util.Collection#removeIf(Predicate)}
      */
     public static Predicate<Map.Entry<UUID, Long>> mapTickPredicate(long removeAfter, Consumer<UUID> onRemove) {

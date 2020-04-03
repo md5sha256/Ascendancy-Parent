@@ -17,6 +17,7 @@ import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.SimplePlay
 import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
 import com.gmail.andrewandy.ascendency.serverplugin.util.game.Tickable;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyPressedEvent;
+import javafx.util.Pair;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
@@ -70,33 +71,48 @@ public class Bella extends AbstractChallenger {
         return rawCircle;
     }
 
-    private static class CircletOfTheAccused extends AbstractAbility implements Tickable {
+    @Override
+    public IChampionData toData() {
+        try {
+            return new ChampionDataImpl(getName(), new File("Path to icon"), getLore());
+        } catch (IOException ex) {
+            throw new IllegalStateException(ex);
+        }
+    }
+
+    public static class CircletOfTheAccused extends AbstractAbility implements Tickable {
         private static final CircletOfTheAccused instance = new CircletOfTheAccused();
         private static final long timeout = Common.toTicks(5, TimeUnit.SECONDS);
-
-        public static CircletOfTheAccused getInstance() {
-            return instance;
-        }
-
+        private UUID uniqueID = UUID.randomUUID();
+        private Map<UUID, CircletData> registeredMap = new HashMap<>();
+        private Map<UUID, Long> cooldownMap = new HashMap<>();
+        private DamageEntityEvent lastDamageEvent;
         private CircletOfTheAccused() {
             super("Circlet Of The Accused", true);
         }
 
-        private UUID uniqueID = UUID.randomUUID();
-        private Map<UUID, CircletData> registeredMap = new HashMap<>();
-        private Map<UUID, Long> cooldownMap = new HashMap<>();
+        public static CircletOfTheAccused getInstance() {
+            return instance;
+        }
 
         @Override
         public UUID getUniqueID() {
             return uniqueID;
         }
 
-        public void activateAs(UUID uuid, boolean respectCooldowns) {
-            Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(uuid);
+        /**
+         * Activates this ability as a certain player.
+         *
+         * @param targetUID        The UUID to activate as.
+         * @param radius
+         * @param respectCooldowns
+         */
+        public void activateAs(UUID caster, UUID targetUID, int radius, boolean respectCooldowns) {
+            Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(targetUID);
             if (!optionalPlayer.isPresent()) {
                 throw new IllegalArgumentException("Player does not exist!");
             }
-            if (respectCooldowns && cooldownMap.containsKey(uuid)) {
+            if (respectCooldowns && cooldownMap.containsKey(caster) || registeredMap.containsKey(caster)) {
                 return;
             }
 
@@ -118,15 +134,24 @@ public class Bella extends AbstractChallenger {
             if (target == null) {
                 return;
             }
-            registeredMap.compute(player.getUniqueId(), (playerUID, circletData) -> {
+            registeredMap.compute(target.getUniqueId(), (playerUID, circletData) -> {
                 if (circletData == null) {
-                    circletData = new CircletData(playerUID);
+                    circletData = new CircletData(caster); //Caster is the playerUID
                 }
                 circletData.reset();
-                circletData.setRingBlocks(generateCircleBlocks(location, 4));
+                circletData.setRingBlocks(generateCircleBlocks(location, radius));
                 circletData.setRingCenter(location);
                 return circletData;
             }); //Update the map.
+        }
+
+        public boolean clearCircletFrom(Player player) {
+            if (!registeredMap.containsKey(player.getUniqueId())) {
+                return false;
+            }
+            registeredMap.get(player.getUniqueId()).reset();
+            registeredMap.remove(uniqueID);
+            return true;
         }
 
         @Override
@@ -173,19 +198,16 @@ public class Bella extends AbstractChallenger {
         //TODO
         @Listener
         public void onActiveKeyPress(ActiveKeyPressedEvent event) {
-            UUID uniqueID = UUID.randomUUID();
-            ProcEvent procEvent = new ProcEvent(event.getPlayer(), event.getPlayer());
+            ProcEvent procEvent = new ProcEvent(event.getPlayer(), event.getPlayer(), 4);
             if (procEvent.callEvent()) { //If not cancelled
                 Optional<ManagedMatch> match = SimplePlayerMatchManager.INSTANCE.getMatchOf(uniqueID);
                 if (!match.isPresent()) {
                     return;
                 }
                 Player target = procEvent.getTarget();
-                activateAs(target.getUniqueId(), true);
+                activateAs(procEvent.getInvoker().getUniqueId(), target.getUniqueId(), procEvent.circletRadius, true);
             }
         }
-
-        private DamageEntityEvent lastDamageEvent;
 
         @Listener
         public void onFatalDamage(DamageEntityEvent event) {
@@ -212,13 +234,18 @@ public class Bella extends AbstractChallenger {
 
             private boolean cancel;
             private Cause cause;
+            private int circletRadius;
             private Player invoker;
             private Player target;
 
-            ProcEvent(Player invoker, Player target) {
+            ProcEvent(Player invoker, Player target, int circletRadius) {
                 this.cause = Cause.builder().named("Bella", invoker).build();
                 this.invoker = invoker;
                 this.target = target;
+                if (circletRadius < 1) {
+                    throw new IllegalArgumentException("Circle radius must be greater than 0");
+                }
+                this.circletRadius = circletRadius;
             }
 
             @Override
@@ -261,32 +288,32 @@ public class Bella extends AbstractChallenger {
                 this.caster = caster;
             }
 
-            public void setCaster(UUID caster) {
-                this.caster = caster;
-            }
-
             public UUID getCaster() {
                 return caster;
+            }
+
+            public void setCaster(UUID caster) {
+                this.caster = caster;
             }
 
             public void incrementTick() {
                 this.tickCount++;
             }
 
-            public void setRingCenter(Location<World> ringCenter) {
-                this.ringCenter = ringCenter;
+            public Collection<Location<World>> getRingBlocks() {
+                return ringBlocks == null ? new HashSet<>() : new HashSet<>(ringBlocks);
             }
 
             public void setRingBlocks(Collection<Location<World>> ringBlocks) {
                 this.ringBlocks = ringBlocks;
             }
 
-            public Collection<Location<World>> getRingBlocks() {
-                return ringBlocks == null ? new HashSet<>() : new HashSet<>(ringBlocks);
-            }
-
             public Location<World> getRingCenter() {
                 return ringCenter;
+            }
+
+            public void setRingCenter(Location<World> ringCenter) {
+                this.ringCenter = ringCenter;
             }
 
             public long getTickCount() {
@@ -310,12 +337,68 @@ public class Bella extends AbstractChallenger {
         }
     }
 
-    @Override
-    public IChampionData toData() {
-        try {
-            return new ChampionDataImpl(getName(), new File("Path to icon"), getLore());
-        } catch (IOException ex) {
-            throw new IllegalStateException(ex);
+    private static class ReleasedRebellion extends AbstractAbility implements Tickable {
+
+        private static final ReleasedRebellion instance = new ReleasedRebellion();
+        private UUID uuid = UUID.randomUUID();
+        private Collection<UUID> active = new HashSet<>();
+        private Map<UUID, Pair<UUID, Long>> tickMap = new HashMap<>();
+
+        private ReleasedRebellion() {
+            super("Released Rebellion", false);
+        }
+
+        public static ReleasedRebellion getInstance() {
+            return instance;
+        }
+
+        public void register(UUID player) {
+            active.remove(player);
+            active.add(player);
+        }
+
+        public void unregister(UUID player) {
+            active.remove(player);
+            active.add(player);
+        }
+
+        @Listener
+        public void onPlayerAttack(DamageEntityEvent event) {
+            Entity target = event.getTargetEntity();
+            Player player;
+            Optional<Optional<Player>> optionalPlayer = event.getCause().allOf(UUID.class).stream().map((uuid) -> Sponge.getServer().getPlayer(uuid)).findAny();
+            player = optionalPlayer.orElse(Optional.empty()).orElse(null);
+            if (player == null || !active.contains(player.getUniqueId())) {
+                return;
+            }
+            tickMap.compute(player.getUniqueId(), ((uuid, pair) -> new Pair<>(target.getUniqueId(), 0L)));
+        }
+
+
+        @Override
+        public UUID getUniqueID() {
+            return uuid;
+        }
+
+        @Override
+        public void tick() {
+            long ticks = Common.toTicks(3, TimeUnit.SECONDS);
+            tickMap.entrySet().removeIf(entry -> {
+                Pair<UUID, Long> pair = entry.getValue();
+                long val = pair.getValue() + 1;
+                entry.setValue(new Pair<>(pair.getKey(), val));
+                return val >= ticks;
+            });
+        }
+
+        @Listener
+        public void onProc(CircletOfTheAccused.ProcEvent event) { //Handles the proc event
+            Player invoker = event.getInvoker();
+            if (!tickMap.containsKey(invoker.getUniqueId())) {
+                return;
+            }
+            Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(tickMap.get(invoker.getUniqueId()).getKey());
+            optionalPlayer.ifPresent(event::setTarget);
         }
     }
 }

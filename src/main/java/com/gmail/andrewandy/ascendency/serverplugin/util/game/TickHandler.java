@@ -8,9 +8,8 @@ import java.util.HashSet;
 
 public class TickHandler {
 
-    private Collection<TickData> toTick = new HashSet<>();
-
     private static final TickHandler instance = new TickHandler();
+    private Collection<TickData> toTick = new HashSet<>();
 
     private TickHandler() {
         Sponge.getScheduler().createTaskBuilder().execute(this::run).intervalTicks(1).submit(AscendencyServerPlugin.getInstance());

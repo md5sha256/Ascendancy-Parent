@@ -2,7 +2,6 @@ package com.gmail.andrewandy.ascendency.serverplugin.game.challenger;
 
 import am2.api.extensions.IEntityExtension;
 import am2.extensions.EntityExtension;
-import am2.spell.component.ManaDrain;
 import com.gmail.andrewandy.ascendency.lib.game.data.IChampionData;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.Ability;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractAbility;
@@ -30,10 +29,6 @@ public class Solace extends AbstractChallenger {
 
     private static final Solace instance = new Solace();
 
-    public static Solace getInstance() {
-        return instance;
-    }
-
     private Solace() {
         super("Solace",
                 new Ability[]{CallbackOfTheAfterlife.instance},
@@ -41,22 +36,29 @@ public class Solace extends AbstractChallenger {
                 Challengers.getLoreOf("Solace"));
     }
 
+    public static Solace getInstance() {
+        return instance;
+    }
+
+    @Override
+    public IChampionData toData() {
+        return null;
+    }
 
     public static class CallbackOfTheAfterlife extends AbstractAbility implements Tickable {
 
         public static final CallbackOfTheAfterlife instance = new CallbackOfTheAfterlife();
-        private final UUID uuid = UUID.randomUUID();
         private static final long tickCount = Common.toTicks(5, TimeUnit.SECONDS);
-
+        private final UUID uuid = UUID.randomUUID();
         private Map<UUID, Long> registered = new HashMap<>(); //Whoever has the souls
         private Map<UUID, UUID> soulMap = new HashMap<>(); //Maps Solace to its target.
 
-        public static CallbackOfTheAfterlife getInstance() {
-            return instance;
-        }
-
         private CallbackOfTheAfterlife() {
             super("CallBackOfTheAfterlife", true);
+        }
+
+        public static CallbackOfTheAfterlife getInstance() {
+            return instance;
         }
 
         @Override
@@ -65,13 +67,13 @@ public class Solace extends AbstractChallenger {
         }
 
         public void activateAs(UUID uuid) {
-           Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(uuid);
-           if (!optionalPlayer.isPresent()) {
-               throw new IllegalArgumentException("Player does not exist!");
-           }
-           Player player = optionalPlayer.get();
-           IEntityExtension extension = EntityExtension.For((EntityLivingBase) player);
-           extension.setCurrentMana(extension.getCurrentMana() - 10f);
+            Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(uuid);
+            if (!optionalPlayer.isPresent()) {
+                throw new IllegalArgumentException("Player does not exist!");
+            }
+            Player player = optionalPlayer.get();
+            IEntityExtension extension = EntityExtension.For((EntityLivingBase) player);
+            extension.setCurrentMana(extension.getCurrentMana() - 10f);
         }
 
         @Listener(order = Order.LATE)
@@ -99,10 +101,5 @@ public class Solace extends AbstractChallenger {
         public void tick() {
             registered.entrySet().removeIf(ChallengerUtils.mapTickPredicate(tickCount, soulMap::remove));
         }
-    }
-
-    @Override
-    public IChampionData toData() {
-        return null;
     }
 }
