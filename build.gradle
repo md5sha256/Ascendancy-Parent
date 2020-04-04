@@ -30,13 +30,6 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-repositories {
-    maven {
-        // location of the maven that hosts JEI files
-        name = "Progwml6 maven"
-        url = "https://dvs1.progwml6.com/files/maven/"
-    }
-}
 
 dependencies {
     compile 'org.spongepowered:spongeapi:5.1.0' //SpongeAPI
