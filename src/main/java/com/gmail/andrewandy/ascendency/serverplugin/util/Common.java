@@ -7,15 +7,21 @@ import net.minecraft.entity.EntityLivingBase;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.manipulator.mutable.entity.HealthData;
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.world.extent.Extent;
 
+import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Common {
 
@@ -105,6 +111,24 @@ public class Common {
 
     public static void removeMana(Player player, float mana) {
         getExtensionFor(player).deductMana(mana);
+    }
+
+    /**
+     * Get all entities in a given extent which are of a particular class type and based off a predicate.
+     *
+     * @param <T>       The type of entity
+     * @param type      The type of the entity - needed due to type erasure.
+     * @param location  The extent which to loop through
+     * @param predicate The predicate to test, can be null.
+     */
+    public static <T extends Entity> Collection<T> getEntities(Class<T> type, Extent location, Predicate<T> predicate) {
+        Objects.requireNonNull(type);
+        Objects.requireNonNull(location);
+        Stream<T> stream = location.getEntities().stream().filter(type::isInstance).map(type::cast);
+        if (predicate != null) {
+            stream = stream.filter(predicate);
+        }
+        return stream.collect(Collectors.toSet());
     }
 
 

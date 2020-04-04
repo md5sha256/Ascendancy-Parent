@@ -1,7 +1,8 @@
 package com.gmail.andrewandy.ascendency.serverplugin.game.challenger;
 
 import am2.buffs.BuffEffectAstralDistortion;
-import com.flowpowered.math.vector.Vector3d;
+import am2.buffs.BuffEffectManaRegen;
+import am2.buffs.BuffEffectSilence;
 import com.flowpowered.math.vector.Vector3i;
 import com.gmail.andrewandy.ascendency.lib.game.data.IChallengerData;
 import com.gmail.andrewandy.ascendency.lib.game.data.game.ChallengerDataImpl;
@@ -19,11 +20,13 @@ import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.ManagedMat
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.SimplePlayerMatchManager;
 import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
 import com.gmail.andrewandy.ascendency.serverplugin.util.game.Tickable;
+import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyHandler;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyPressedEvent;
 import javafx.util.Pair;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.DataContainer;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
 import org.spongepowered.api.effect.potion.PotionEffect;
 import org.spongepowered.api.effect.potion.PotionEffectTypes;
@@ -46,8 +49,10 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
+/**
+ * Represents the "Bella" Character in ascendency.
+ */
 public class Bella extends AbstractChallenger {
 
     private static final Bella instance = new Bella();
@@ -55,7 +60,7 @@ public class Bella extends AbstractChallenger {
     private Bella() {
         super("Bella",
                 new Ability[]{CircletOfTheAccused.instance, ReleasedRebellion.instance},
-                new PlayerSpecificRune[0],
+                new PlayerSpecificRune[]{CoupDEclat.instance, DivineCrown.instance, ExpandingAgony.instance},
                 Challengers.getLoreOf("Bella"));
     }
 
@@ -111,8 +116,8 @@ public class Bella extends AbstractChallenger {
          * Activates this ability as a certain player.
          *
          * @param targetUID        The UUID to activate as.
-         * @param radius
-         * @param respectCooldowns
+         * @param radius           The radius of the circle.
+         * @param respectCooldowns Whether we should respect cooldowns.
          */
         public void activateAs(UUID caster, UUID targetUID, int radius, boolean respectCooldowns) {
             Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(targetUID);
@@ -122,7 +127,8 @@ public class Bella extends AbstractChallenger {
             if (respectCooldowns && cooldownMap.containsKey(caster) || registeredMap.containsKey(caster)) {
                 return;
             }
-
+            cooldownMap.remove(caster);
+            cooldownMap.put(caster, 0L); //Update cooldowns
             Player player = optionalPlayer.get();
             Collection<Entity> nearby = player.getNearbyEntities((entity) -> MathUtils.calculateDistance(entity.getLocation(), player.getLocation()) <= 10D);
             Player target = null;
@@ -152,7 +158,13 @@ public class Bella extends AbstractChallenger {
             }); //Update the map.
         }
 
-        public boolean clearCircletFrom(Player player) {
+        /**
+         * Delete a circlet from a player.
+         *
+         * @param player The player object to clear from.
+         * @return Returns if the operation was successful.
+         */
+        public boolean clearCirclet(Player player) {
             if (!registeredMap.containsKey(player.getUniqueId())) {
                 return false;
             }
@@ -169,42 +181,45 @@ public class Bella extends AbstractChallenger {
                     data.reset(); //Clear the ring
                     cooldownMap.put(key, 0L);
                 }
-            });
-            cooldownMap.entrySet().removeIf(ChallengerUtils.mapTickPredicate(9, TimeUnit.SECONDS, null));
-        }
+                cooldownMap.entrySet().removeIf(ChallengerUtils.mapTickPredicate(9, TimeUnit.SECONDS, (uuid) -> {
+                    Sponge.getServer().getPlayer(uuid).ifPresent(this::clearCirclet);
+                }));
 
-        @Listener
-        public void onPlayerMove(MoveEntityEvent event) {
-            Entity entity = event.getTargetEntity();
-            if (!(entity instanceof Player)) {
-                return;
-            }
-            Optional<ManagedMatch> match = SimplePlayerMatchManager.INSTANCE.getMatchOf(entity.getUniqueId());
-            match.ifPresent(managedMatch -> {
-                for (CircletData data : registeredMap.values()) {
-                    if (!data.generateCircleTest().test(entity.getLocation())) {
-                        continue;
-                    }
-                    Optional<Team> optionalTeam = SimplePlayerMatchManager.INSTANCE.getTeamOf(entity.getUniqueId());
-                    Team entityTeam = managedMatch.getTeamOf(entity.getUniqueId());
-                    if (!data.getCaster().equals(entity.getUniqueId()) && optionalTeam.isPresent() && optionalTeam.get() != entityTeam) {
-                        //Means they are an enemy.
-                        Optional<PotionEffectData> peData = entity.get(PotionEffectData.class);
-                        if (!peData.isPresent()) {
-                            throw new IllegalArgumentException("Unable to get PotionEffect data for " + ((Player) entity).getName());
+
+                Optional<ManagedMatch> match = SimplePlayerMatchManager.INSTANCE.getMatchOf(key);
+                match.ifPresent(managedMatch -> {
+                    Team team = managedMatch.getTeamOf(key);
+                    Collection<Player> players = Common.getEntities(Player.class, CoupDEclat.getInstance().getExtentViewFor(data), (Player player) -> {
+                        Optional<Team> optional = SimplePlayerMatchManager.INSTANCE.getTeamOf(player.getUniqueId());
+                        return optional.isPresent() && optional.get() != team && data.generateCircleTest().test(player.getLocation());
+                    });
+                    players.forEach((Player player) -> {
+                        Optional<Team> optionalTeam = SimplePlayerMatchManager.INSTANCE.getTeamOf(key);
+                        if (!optionalTeam.isPresent()) {
+                            return;
                         }
-                        PotionEffectData effectData = peData.get();
-                        effectData.addElement(
+                        if (optionalTeam.get() == team) { //If allied, skip
+                            return;
+                        }
+                        //Means they are an enemy.
+                        PotionEffectData peData = player.get(PotionEffectData.class)
+                                .orElseThrow(() -> new IllegalArgumentException("Unable to get PotionEffect data for " + player.getName()));
+
+                        peData.addElement(
                                 PotionEffect.builder().potionType(PotionEffectTypes.WITHER).duration(1).amplifier(1).build()) //Wither
-                                .addElement((PotionEffect) new BuffEffectAstralDistortion(1, 1)); //Astral "Distortion" or "Nullification" ??? TODO
-                    }
-                }
+                                .addElement((PotionEffect) new BuffEffectAstralDistortion(1, 1)); //Astral Distorton == Astral Nullifcation
+                        player.offer(peData);
+                    });
+                });
             });
         }
 
-        //TODO
+
         @Listener
         public void onActiveKeyPress(ActiveKeyPressedEvent event) {
+            if (ActiveKeyHandler.INSTANCE.isKeyPressed(event.getPlayer())) { //If player was holding the key then skip.
+                return;
+            }
             ProcEvent procEvent = new ProcEvent(event.getPlayer(), event.getPlayer(), 4);
             if (procEvent.callEvent()) { //If not cancelled
                 Optional<ManagedMatch> match = SimplePlayerMatchManager.INSTANCE.getMatchOf(uniqueID);
@@ -237,12 +252,15 @@ public class Bella extends AbstractChallenger {
             }));
         }
 
+        /**
+         * Represents when {@link CircletOfTheAccused} is activated.
+         */
         private static class ProcEvent extends AscendencyServerEvent implements Cancellable {
 
+            private final Cause cause;
+            private final Player invoker;
             private boolean cancel;
-            private Cause cause;
             private int circletRadius;
-            private Player invoker;
             private Player target;
 
             ProcEvent(Player invoker, Player target, int circletRadius) {
@@ -265,6 +283,13 @@ public class Bella extends AbstractChallenger {
                 this.cancel = cancel;
             }
 
+            public void setCircletRadius(int radius) {
+                if (circletRadius < 1) {
+                    throw new IllegalArgumentException("Circle radius must be greater than 0");
+                }
+                this.circletRadius = radius;
+            }
+
             @Override
             public Cause getCause() {
                 return cause;
@@ -283,7 +308,9 @@ public class Bella extends AbstractChallenger {
             }
         }
 
-
+        /**
+         * Class used to represent data regarding a circlet being cast.
+         */
         private static class CircletData {
 
             private UUID caster;
@@ -421,14 +448,12 @@ public class Bella extends AbstractChallenger {
     public static class CoupDEclat extends AbstractRune {
 
         private static final CoupDEclat instance = new CoupDEclat();
+        private Collection<UUID> active = new HashSet<>();
+        private Map<UUID, StackData> stackCount = new HashMap<>();
 
         public static CoupDEclat getInstance() {
             return instance;
         }
-
-        private Collection<UUID> active = new HashSet<>();
-        private Map<UUID, StackData> stackCount = new HashMap<>();
-
 
         @Override
         public void applyTo(Player player) {
@@ -446,6 +471,23 @@ public class Bella extends AbstractChallenger {
             return "Coup D'eclat";
         }
 
+        /**
+         * Generate a cuboid extent of the spherical region.
+         * Note, this extent will cover all and more of the spherical region
+         * for Bella's AOE, please use {@link CircletOfTheAccused.CircletData#generateCircleTest()}
+         * to filter entities and whatnot in the extent.
+         *
+         * @param circletData The data to create an extent view from.
+         * @return Returns a section (extent) of the world where the ring/spherical region is.
+         */
+        public Extent getExtentViewFor(CircletOfTheAccused.CircletData circletData) {
+            final Location<World> location = circletData.getRingCenter();
+            final double radius = circletData.getRadius();
+            final Vector3i bottom = new Vector3i(location.getX() + radius, location.getY() - radius, location.getZ() - radius), top;
+            top = new Vector3i(location.getX() - radius, location.getY() + radius, location.getZ() + radius);
+            return location.getExtent().getExtentView(top, bottom);
+        }
+
         @Override
         public void tick() {
             Map<UUID, Long> map = CircletOfTheAccused.getInstance().cooldownMap;
@@ -455,12 +497,8 @@ public class Bella extends AbstractChallenger {
                 if (!optional.isPresent()) {
                     return;
                 }
-                Team team = optional.get();
-                Location<World> location = data.getRingCenter();
-                Vector3i vector = new Vector3i();
-                vector.sub(location.getX(), location.getY(), location.getZ());
-                Extent view = location.getExtent().getExtentView(vector, vector);
-                Collection<Player> players = view.getEntities().stream().filter((entity -> entity instanceof Player)).map((entity -> (Player) entity)).collect(Collectors.toSet());
+                final Team team = optional.get();
+                Collection<Player> players = Common.getEntities(Player.class, getExtentViewFor(data), (player -> data.generateCircleTest().test(player.getLocation())));
                 int stacks = 0;
                 for (Player player : players) { //Loop through all nearby entities.
                     optional = SimplePlayerMatchManager.INSTANCE.getTeamOf(player.getUniqueId());
@@ -497,13 +535,18 @@ public class Bella extends AbstractChallenger {
             }
         }
 
-        @Listener //TODO Should we be listening to a move event or a proc event?
+        /**
+         * Handles bella teleporting in and out of the circle.
+         * We don't need to check for the proc event because each entity in the circle will be "ticked".
+         */
+        @Listener
         public void onMove(MoveEntityEvent event) {
             Entity entity = event.getTargetEntity();
             if (!(entity instanceof Player)) {
                 return;
             }
-            Location<World> location = entity.getLocation();
+            Player player = (Player) entity;
+            Location<World> location = player.getLocation();
             CircletOfTheAccused.getInstance().registeredMap.values().forEach(circletData -> {
                 UUID caster = circletData.getCaster();
                 if (!active.contains(caster)) {
@@ -516,14 +559,12 @@ public class Bella extends AbstractChallenger {
                 boolean inCircle = circletData.generateCircleTest().test(location);
                 if (entity.getUniqueId().equals(caster)) { //If the player is bella.
                     Location<World> current = entity.getLocation();
-                    Player player = (Player) entity;
-                    Vector3d headRotation = player.getHeadRotation();
+
                     double distanceToRadius = MathUtils.calculateDistance(current, circletData.getRingCenter());
-                    if (distanceToRadius - 1 <= circletData.radius) { //If on border edge
-                        //TODO Teleport based on direction (Pitch & Roll)
-                        player.setLocationSafely(new Location<>(current.getExtent(), headRotation)); //Teleport bella.
-                        return;
+                    if (Math.abs(distanceToRadius - circletData.radius) <= 1) { //If on border edge
+                        ChallengerUtils.teleportPlayer(player, 1); //Teleport 1 block forward bella.
                     }
+                    return;
                 }
                 if (!inCircle) {
                     stackData.removePlayer(entity.getUniqueId()); //Remove if player is no longer in the circle.
@@ -582,6 +623,153 @@ public class Bella extends AbstractChallenger {
             }
 
 
+        }
+    }
+
+    public static class DivineCrown extends AbstractRune {
+
+        private static final DivineCrown instance = new DivineCrown();
+        private Collection<UUID> casters = new HashSet<>();
+
+        private DivineCrown() {
+        }
+
+        public static DivineCrown getInstance() {
+            return instance;
+        }
+
+        @Override
+        public void applyTo(Player player) {
+            clearFrom(player);
+            casters.add(player.getUniqueId());
+        }
+
+        @Override
+        public void clearFrom(Player player) {
+            casters.remove(player.getUniqueId());
+        }
+
+        @Override
+        public String getName() {
+            return "Divine Crown";
+        }
+
+        @Override
+        public void tick() {
+            for (UUID uuid : casters) {
+                CircletOfTheAccused.CircletData data = CircletOfTheAccused.instance.registeredMap.get(uuid);
+                if (data == null) {
+                    continue;
+                }
+                Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(uuid);
+                if (!optionalPlayer.isPresent()) {
+                    continue;
+                }
+                Player player = optionalPlayer.get();
+                Optional<Team> optionalTeam = SimplePlayerMatchManager.INSTANCE.getTeamOf(player.getUniqueId());
+                if (!optionalTeam.isPresent()) {
+                    return;
+                }
+                Team team = optionalTeam.get();
+                Collection<Player> players = Common.getEntities(Player.class, CoupDEclat.instance.getExtentViewFor(data), (Player p) -> {
+                    Optional<Team> optional = SimplePlayerMatchManager.INSTANCE.getTeamOf(p.getUniqueId());
+                    return optional.isPresent() && optional.get() == team && data.generateCircleTest().test(p.getLocation()); //If in circle and ifallied
+                }); //Get players in circle
+                for (Player p : players) {
+                    PotionEffectData peData = p.get(PotionEffectData.class).orElseThrow(() -> new IllegalStateException("Unable to get potion effect data for " + p.getName()));
+                    peData.asList().removeIf(ChallengerUtils::isEffectNegative); //Remove all negative effects as per ChallengerUtils implementation.
+                    peData.addElement(PotionEffect.builder().potionType(PotionEffectTypes.SPEED).duration(1).amplifier(2).build()) //Speed 2
+                            .addElement((PotionEffect) new BuffEffectManaRegen(1, 2)) // Mana Regen 2 | Safe cast because of sponge's runtime "mixins"
+                            .addElement(PotionEffect.builder().potionType(PotionEffectTypes.REGENERATION).amplifier(1).build()) // Regen 1
+                            .addElement(PotionEffect.builder().potionType(PotionEffectTypes.STRENGTH).amplifier(1).build()) // Strength 1
+                            .addElement(PotionEffect.builder().potionType(PotionEffectTypes.RESISTANCE).amplifier(1).build()); //Resistance 1
+                    p.offer(peData); //Give the player potion effects.
+                }
+            }
+        }
+
+        @Override
+        public int getContentVersion() {
+            return 0;
+        }
+
+        @Override
+        public DataContainer toContainer() {
+            return null;
+        }
+    }
+
+    public static class ExpandingAgony extends AbstractRune {
+
+        private static final ExpandingAgony instance = new ExpandingAgony();
+        private Collection<UUID> registered = new HashSet<>();
+
+        private ExpandingAgony() {
+        }
+
+        public static ExpandingAgony getInstance() {
+            return instance;
+        }
+
+        @Override
+        public void applyTo(Player player) {
+            clearFrom(player);
+            this.registered.add(player.getUniqueId());
+        }
+
+        @Override
+        public void clearFrom(Player player) {
+            registered.remove(player.getUniqueId());
+        }
+
+        @Override
+        public String getName() {
+            return "Expanding Agony";
+        }
+
+        @Override
+        public void tick() {
+            for (UUID uuid : registered) {
+                CircletOfTheAccused.CircletData data = CircletOfTheAccused.instance.registeredMap.get(uuid);
+                if (data == null) {
+                    continue;
+                }
+                Optional<Team> optionalTeam = SimplePlayerMatchManager.INSTANCE.getTeamOf(uuid);
+                if (!optionalTeam.isPresent()) {
+                    return;
+                }
+                Team team = optionalTeam.get();
+                Collection<Player> players = Common.getEntities(Player.class, CoupDEclat.instance.getExtentViewFor(data), (Player p) -> {
+                    Optional<Team> optional = SimplePlayerMatchManager.INSTANCE.getTeamOf(p.getUniqueId());
+                    return optional.isPresent() && optional.get() != team && data.generateCircleTest().test(p.getLocation());
+                });
+                int size = players.size();
+                players.forEach((Player player) -> {
+                    if (size >= 2) { //If 2 enemies are in the circle
+                        PotionEffectData peData = player.get(PotionEffectData.class).orElseThrow(() -> new IllegalStateException("Unable to get potion effect data for " + player.getName()));
+                        peData.addElement((PotionEffect) new BuffEffectSilence(1, 1)); //Silence 1 | Safe cast as per sponge "mixins".
+                        player.offer(peData); //Update the player.
+                    }
+                    player.offer(Keys.FIRE_TICKS, 1); //Give them 1 tick of fire.
+                });
+            }
+        }
+
+        @Listener
+        public void onProc(CircletOfTheAccused.ProcEvent event) {
+            if (registered.contains(event.getInvoker().getUniqueId())) {
+                event.setCircletRadius(6); //Change circle radius to 6.
+            }
+        }
+
+        @Override
+        public int getContentVersion() {
+            return 0;
+        }
+
+        @Override
+        public DataContainer toContainer() {
+            return null;
         }
     }
 }

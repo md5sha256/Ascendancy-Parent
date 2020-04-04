@@ -1,6 +1,10 @@
 package com.gmail.andrewandy.ascendency.serverplugin.api.challenger;
 
 import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
+import org.spongepowered.api.effect.potion.PotionEffect;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 import java.util.Map;
 import java.util.UUID;
@@ -38,5 +42,23 @@ public class ChallengerUtils {
             }
             return false;
         }; //Clear if greater than the number of ticks in x seconds.
+    }
+
+    public static void teleportPlayer(Player player, double distance) {
+        double yaw = player.getTransform().getYaw();
+        double theta = yaw > 360 ? yaw % 360 : yaw;
+        double x, z;
+        Location<World> location = player.getLocation();
+        x = distance * Math.cos(theta);
+        z = distance * Math.sin(theta);
+        player.setLocationSafely(new Location<>(location.getExtent(), x + location.getX(), location.getY(), z + location.getZ()));
+    }
+
+    /**
+     * @param potionEffect
+     * @return
+     */
+    public static boolean isEffectNegative(PotionEffect potionEffect) {
+        return false;
     }
 }

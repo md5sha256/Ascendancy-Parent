@@ -407,13 +407,13 @@ public class MockPlayer implements Player {
     }
 
     @Override
-    public Optional<UUID> getNotifier() {
-        return Optional.empty();
+    public void setCreator(@Nullable UUID uuid) {
+
     }
 
     @Override
-    public void setCreator(@Nullable UUID uuid) {
-
+    public Optional<UUID> getNotifier() {
+        return Optional.empty();
     }
 
     @Override
