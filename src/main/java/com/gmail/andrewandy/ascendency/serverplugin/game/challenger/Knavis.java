@@ -219,7 +219,6 @@ public class Knavis extends AbstractChallenger implements Challenger {
 
         }
 
-        //TODO add listeners
 
         @Listener
         public void onHotbarChange(ChangeInventoryEvent.Held event) {

@@ -254,7 +254,9 @@ public class Astricion extends AbstractChallenger {
 
             PotionEffectData data = optional.get();
             PotionEffect[] effects = new PotionEffect[]{PotionEffect.builder()
-                    //Strength scaling on current health
+                    //Strength scaling on current health //TODO Change this to be done per tick - yes its more CPU intensive
+                    //TODO but this would allow it to be less picky (no need to remove effects on game leave - just
+                    //TODO Remove them from active so they don't get ticked.
                     .potionType(PotionEffectTypes.STRENGTH)
                     .duration(999999).amplifier((int) Math.round((astricionHealth - 10) / 10D)).build()};
             for (PotionEffect effect : effects) {
@@ -276,7 +278,9 @@ public class Astricion extends AbstractChallenger {
 
             PotionEffectData data = optional.get();
             PotionEffect[] effects = new PotionEffect[]{PotionEffect.builder()
-                    //Strength scaling on current health
+                    //Strength scaling on current health //TODO Change this to be done per tick - yes its more CPU intensive
+                    //TODO but this would allow it to be less picky (no need to remove effects on game leave - just
+                    //TODO Remove them from active so they don't get ticked.
                     .potionType(PotionEffectTypes.STRENGTH)
                     .duration(999999).amplifier((int) Math.round((astricionHealth - 10) / 10D)).build()};
             for (PotionEffect effect : effects) {
