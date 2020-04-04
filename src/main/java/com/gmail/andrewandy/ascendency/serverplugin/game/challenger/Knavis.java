@@ -482,8 +482,8 @@ public class Knavis extends AbstractChallenger implements Challenger {
          */
         @Override
         public void tick() {
-            cooldownMap.entrySet().removeIf(ChallengerUtils.mapTickPredicate(4L, TimeUnit.SECONDS, null));
-            currentActive.entrySet().removeIf(ChallengerUtils.mapTickPredicate(5L, TimeUnit.SECONDS, (UUID uuid) -> {
+            cooldownMap.entrySet().removeIf(ChallengerUtils.mapTickPredicate(5L, TimeUnit.SECONDS, null));
+            currentActive.entrySet().removeIf(ChallengerUtils.mapTickPredicate(4L, TimeUnit.SECONDS, (UUID uuid) -> {
                 cooldownMap.put(uuid, 0L);
                 registered.compute(uuid, (unused, unused1) -> new PotionEffect[0]); //If player is no longer active, remove his effects
             }));
