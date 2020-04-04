@@ -56,7 +56,7 @@ public enum ActiveKeyHandler implements KeyBindHandler {
             objective.getOrCreateScore(Text.of(scoreName)).setScore(1);
             pressed.add(player.getUniqueId());
         }
-        new ActiveKeyPressedEvent(player);
+        new ActiveKeyPressedEvent(player).callEvent();
     }
 
     @Override
@@ -64,6 +64,6 @@ public enum ActiveKeyHandler implements KeyBindHandler {
         player.getScoreboard().addObjective(objective);
         objective.getOrCreateScore(Text.of(scoreName)).setScore(0);
         pressed.remove(player.getUniqueId());
-        new ActiveKeyReleasedEvent(player);
+        new ActiveKeyReleasedEvent(player).callEvent();
     }
 }
