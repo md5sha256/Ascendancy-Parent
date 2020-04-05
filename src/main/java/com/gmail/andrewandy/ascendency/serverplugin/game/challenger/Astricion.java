@@ -12,8 +12,10 @@ import com.gmail.andrewandy.ascendency.serverplugin.api.rune.PlayerSpecificRune;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.ManagedMatch;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.SimplePlayerMatchManager;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.engine.GamePlayer;
+import com.gmail.andrewandy.ascendency.serverplugin.util.game.Tickable;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyPressedEvent;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyReleasedEvent;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
 import org.spongepowered.api.effect.potion.PotionEffect;
@@ -22,7 +24,6 @@ import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
-import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -223,8 +224,9 @@ public class Astricion extends AbstractChallenger {
         }
     }
 
-    private static class DemonicCapacity extends AbstractAbility {
+    private static class DemonicCapacity extends AbstractAbility implements Tickable {
         private static final DemonicCapacity instance = new DemonicCapacity();
+        private final UUID uniqueID = UUID.randomUUID();
         private Collection<UUID> active = new HashSet<>();
 
         private DemonicCapacity() {
@@ -240,53 +242,26 @@ public class Astricion extends AbstractChallenger {
             active.add(player);
         }
 
-        @Listener
-        public void onEntityDamage(DamageEntityEvent event) {
-            Entity entity = event.getTargetEntity();
-            if ((!active.contains(entity.getUniqueId())) || (!(entity instanceof Player))) {
-                return;
-            }
-            int astricionHealth = (int) Math.round(((Player) entity).getHealthData().health().get());
-            Optional<PotionEffectData> optional = entity.getOrCreate(PotionEffectData.class);
-            if (!optional.isPresent()) {
-                throw new IllegalStateException("Potion effect data could not be gathered for " + entity.getUniqueId().toString());
-            }
-
-            PotionEffectData data = optional.get();
-            PotionEffect[] effects = new PotionEffect[]{PotionEffect.builder()
-                    //Strength scaling on current health //TODO Change this to be done per tick - yes its more CPU intensive
-                    //TODO but this would allow it to be less picky (no need to remove effects on game leave - just
-                    //TODO Remove them from active so they don't get ticked.
-                    .potionType(PotionEffectTypes.STRENGTH)
-                    .duration(999999).amplifier((int) Math.round((astricionHealth - 10) / 10D)).build()};
-            for (PotionEffect effect : effects) {
-                data.addElement(effect);
-            }
+        @Override
+        public UUID getUniqueID() {
+            return uniqueID;
         }
 
-        @Listener
-        public void onPlayerRespawn(RespawnPlayerEvent event) {
-            Player player = event.getTargetEntity();
-            if (!active.contains(player.getUniqueId())) {
-                return;
-            }
-            int astricionHealth = (int) Math.round(player.getHealthData().maxHealth().get());
-            Optional<PotionEffectData> optional = player.getOrCreate(PotionEffectData.class);
-            if (!optional.isPresent()) {
-                throw new IllegalStateException("Potion effect data could not be gathered for " + player.getUniqueId().toString());
-            }
-
-            PotionEffectData data = optional.get();
-            PotionEffect[] effects = new PotionEffect[]{PotionEffect.builder()
-                    //Strength scaling on current health //TODO Change this to be done per tick - yes its more CPU intensive
-                    //TODO but this would allow it to be less picky (no need to remove effects on game leave - just
-                    //TODO Remove them from active so they don't get ticked.
-                    .potionType(PotionEffectTypes.STRENGTH)
-                    .duration(999999).amplifier((int) Math.round((astricionHealth - 10) / 10D)).build()};
-            for (PotionEffect effect : effects) {
-                data.addElement(effect);
+        @Override
+        public void tick() {
+            for (UUID uuid : active) {
+                Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(uuid);
+                if (!optionalPlayer.isPresent()) {
+                    return;
+                }
+                Player player = optionalPlayer.get();
+                double health = player.health().get();
+                PotionEffectData peData = player.get(PotionEffectData.class).orElseThrow(() -> new IllegalStateException("Unable to get potion effect data for " + player.getName()));
+                peData.addElement(PotionEffect.builder()
+                        .potionType(PotionEffectTypes.STRENGTH)
+                        .duration(1).amplifier((int) Math.round((health - 10) / 10D)).build());
+                player.offer(peData);
             }
         }
-
     }
 }

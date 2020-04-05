@@ -15,6 +15,8 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.extent.Extent;
 
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -129,6 +131,16 @@ public class Common {
             stream = stream.filter(predicate);
         }
         return stream.collect(Collectors.toSet());
+    }
+
+    public static <T extends Entity> List<T> getSortedEntities(Class<T> type, Extent location, Predicate<T> predicate, Comparator<T> sorter) {
+        Objects.requireNonNull(type);
+        Objects.requireNonNull(location);
+        Stream<T> stream = location.getEntities().stream().filter(type::isInstance).map(type::cast);
+        if (predicate != null) {
+            stream = stream.filter(predicate);
+        }
+        return stream.collect(Collectors.toList());
     }
 
 

@@ -50,6 +50,7 @@ import java.util.function.BiFunction;
 
 /**
  * Represents the Knavis challenger. All abiliities and runes for Knavis can be found here.
+ * //TODO test in game!
  */
 public class Knavis extends AbstractChallenger implements Challenger {
 
@@ -270,6 +271,37 @@ public class Knavis extends AbstractChallenger implements Challenger {
                 }
                 //TODO call a mark given event so that runes can alter which slot the rune should go to.
             });
+        }
+
+        public static class LocationMarkedEvent extends AscendencyServerEvent {
+
+            private final Player player;
+            private int markSlot;
+
+            public LocationMarkedEvent(Player marker, int markSlot) {
+                this.player = marker;
+                setMarkedSlot(markSlot);
+            }
+
+            public int getMarkedSlot() {
+                return markSlot;
+            }
+
+            public void setMarkedSlot(int markSlot) {
+                if (markSlot < 0 || markSlot > 9) {
+                    throw new IllegalArgumentException("Invalid Mark Slot!");
+                }
+                this.markSlot = markSlot;
+            }
+
+            public Player getPlayer() {
+                return player;
+            }
+
+            @Override
+            public Cause getCause() {
+                return null;
+            }
         }
 
         private static class MarkTeleportationEvent extends AscendencyServerEvent implements Cancellable {

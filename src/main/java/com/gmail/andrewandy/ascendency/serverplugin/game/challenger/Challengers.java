@@ -19,14 +19,13 @@ import java.util.stream.Collectors;
 public enum Challengers {
 
     KNAVIS(Knavis.getInstance()),
-    ASTSRICTION(Astricion.getInstance()),
+    ASTSRICION(Astricion.getInstance()),
     SOLACE(Solace.getInstance()),
     VENGLIS(null),
     BREEZY(null),
     BELLA(Bella.getInstance());
 
     public static final String LOAD = null; //Invoke to force classloader to load this class
-    private final int version = 0;
     private final Challenger challengerObject;
 
     Challengers(Challenger challengerObject) {

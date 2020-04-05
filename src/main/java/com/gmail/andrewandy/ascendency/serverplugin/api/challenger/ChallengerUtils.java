@@ -45,6 +45,7 @@ public class ChallengerUtils {
     }
 
     public static void teleportPlayer(Player player, double distance) {
+        //player.setLocationSafely(new Location<>(player.getWorld(), player.getTransform().getRotation().mul(distance);));
         double yaw = player.getTransform().getYaw();
         double theta = yaw > 360 ? yaw % 360 : yaw;
         double x, z;

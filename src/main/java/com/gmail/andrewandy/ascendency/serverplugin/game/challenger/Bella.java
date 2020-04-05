@@ -201,6 +201,7 @@ public class Bella extends AbstractChallenger {
                         if (optionalTeam.get() == team) { //If allied, skip
                             return;
                         }
+                        //TODO Set scoreboard so cmd-block impl knows they are in circle.
                         //Means they are an enemy.
                         PotionEffectData peData = player.get(PotionEffectData.class)
                                 .orElseThrow(() -> new IllegalArgumentException("Unable to get PotionEffect data for " + player.getName()));
@@ -227,7 +228,7 @@ public class Bella extends AbstractChallenger {
                     return;
                 }
                 Player target = procEvent.getTarget();
-                activateAs(procEvent.getInvoker().getUniqueId(), target.getUniqueId(), procEvent.circletRadius, true);
+                activateAs(procEvent.getInvoker().getUniqueId(), procEvent.getTarget().getUniqueId(), procEvent.circletRadius, true);
             }
         }
 
@@ -248,7 +249,7 @@ public class Bella extends AbstractChallenger {
                 Cause cause = Cause.builder().named("Source", circletData.caster).build();
                 lastDamageEvent = SpongeEventFactory.createDamageEntityEvent(cause, event.getOriginalFunctions(), entity, event.getOriginalDamage());
                 Sponge.getEventManager().post(lastDamageEvent);
-                entity.damage(event.getFinalDamage(), DamageSource.builder().from(DamageSources.MAGIC).build());
+                entity.damage(event.getFinalDamage(), DamageSource.builder().from(DamageSources.GENERIC).build());
             }));
         }
 
