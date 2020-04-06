@@ -27,6 +27,10 @@ public class ClientPacketHandler extends AscendencyPacketHandler {
         }
     }
 
+    public void sendMessage(AscendencyPacket message) {
+        wrapper.sendToServer(message);
+    }
+
     /**
      * Handles any incoming message.
      *
