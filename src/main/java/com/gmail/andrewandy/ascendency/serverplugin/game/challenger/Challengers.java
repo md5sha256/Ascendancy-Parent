@@ -60,8 +60,10 @@ public enum Challengers {
     public static List<String> getLoreOf(String name) {
         ConfigurationNode node = AscendencyServerPlugin.getInstance().getSettings();
         node = node.getNode("Champions");
-        List<? extends ConfigurationNode> nodes = node.getNode(name).getNode("lore").getChildrenList();
-        return nodes.parallelStream().map(ConfigurationNode::getString).collect(Collectors.toList());
+        List<? extends ConfigurationNode> nodes =
+            node.getNode(name).getNode("lore").getChildrenList();
+        return nodes.parallelStream().map(ConfigurationNode::getString)
+            .collect(Collectors.toList());
     }
 
     public Challenger asChallenger() {

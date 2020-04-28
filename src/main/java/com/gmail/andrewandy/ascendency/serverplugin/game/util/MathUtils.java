@@ -54,9 +54,14 @@ public class MathUtils {
             int lastJ = Integer.MAX_VALUE;
             double zCoord = Math.pow(radius, 2) - Math.pow(z, 2);
             for (int j = y; lastJ != y; j++) {
-                double yCoord = radius - (zCoord - z); //Basically taking the radius minus diff between centre and outer ring.
-                Location<World> location = new Location<>(centre.getExtent(), Math.round(xCoord), Math.round(yCoord), Math.round(zCoord));
-                locations.add(new Location<>(centre.getExtent(), location.getBlockX(), location.getBlockY(), location.getBlockZ()));
+                double yCoord = radius - (zCoord
+                    - z); //Basically taking the radius minus diff between centre and outer ring.
+                Location<World> location =
+                    new Location<>(centre.getExtent(), Math.round(xCoord), Math.round(yCoord),
+                        Math.round(zCoord));
+                locations.add(
+                    new Location<>(centre.getExtent(), location.getBlockX(), location.getBlockY(),
+                        location.getBlockZ()));
                 lastJ = j;
             }
             lastX = xCoord;
@@ -68,17 +73,19 @@ public class MathUtils {
         return (Location<World> location) -> calculateDistance(centre, location) < radius;
     }
 
-    public static double calculateDistance(double x1, double y1, double z1, double x2, double y2, double z2) {
-        return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(z1 - z2, 2) + Math.pow(y1 - y2, 2)); //Find  3D distance
+    public static double calculateDistance(double x1, double y1, double z1, double x2, double y2,
+        double z2) {
+        return Math.sqrt(
+            Math.pow(x1 - x2, 2) + Math.pow(z1 - z2, 2) + Math.pow(y1 - y2, 2)); //Find  3D distance
     }
 
     public static double calculateDistance(Location<World> primary, Location<World> secondary) {
         if (primary.getExtent() != secondary.getExtent()) {
-            throw new UnsupportedOperationException("Cannot calculate distances for different worlds!");
+            throw new UnsupportedOperationException(
+                "Cannot calculate distances for different worlds!");
         }
-        double x1 = primary.getX(), x2 = secondary.getX(),
-                y1 = primary.getY(), y2 = secondary.getY(),
-                z1 = primary.getZ(), z2 = secondary.getZ();
+        double x1 = primary.getX(), x2 = secondary.getX(), y1 = primary.getY(), y2 =
+            secondary.getY(), z1 = primary.getZ(), z2 = secondary.getZ();
         return calculateDistance(x1, y1, z1, x2, y2, z2);
     }
 

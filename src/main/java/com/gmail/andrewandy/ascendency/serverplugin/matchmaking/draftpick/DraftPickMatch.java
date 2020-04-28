@@ -2,8 +2,8 @@ package com.gmail.andrewandy.ascendency.serverplugin.matchmaking.draftpick;
 
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.PlayerSpecificRune;
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.Rune;
+import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.AscendancyMatch;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.Team;
-import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.ManagedMatch;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.PlayerMatchManager;
 import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
 import org.spongepowered.api.Sponge;
@@ -11,58 +11,29 @@ import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.*;
 
-public class DraftPickMatch implements ManagedMatch {
+public class DraftPickMatch implements AscendancyMatch {
 
     private final UUID matchID;
     private Collection<Team> teams = new HashSet<>();
     private RuneManager runeManager = new RuneManager();
     private MatchState matchState = MatchState.LOBBY;
     private DraftPickMatchEngine engine = new DraftPickMatchEngine(this);
-    private int maxPlayersPerTeam;
-    private int minPlayersPerTeam = 1;
 
     private DraftPickMatch(UUID matchID) {
-        this.matchID = Objects.requireNonNull(matchID);
+        this.matchID = matchID;
     }
 
-    public DraftPickMatch(int maxPlayersPerTeam) {
-        this.maxPlayersPerTeam = maxPlayersPerTeam;
+    public DraftPickMatch(Collection<Team> teams) {
         this.matchID = UUID.randomUUID();
-    }
-
-    public DraftPickMatch(int maxPlayersPerTeam, Collection<Team> teams) {
-        this.matchID = UUID.randomUUID();
-        if (maxPlayersPerTeam < minPlayersPerTeam) {
-            throw new IllegalArgumentException("Max players is invalid!");
-        }
         for (Team team : teams) {
             Team cloned = team.clone();
-            if (cloned.getPlayerCount() > maxPlayersPerTeam) {
-                throw new IllegalArgumentException("Teams passed exceed max player count!");
-            }
             teams.add(cloned);
         }
     }
 
-    public DraftPickMatch setMaxPlayersPerTeam(int maxPlayersPerTeam) {
-        if (maxPlayersPerTeam > minPlayersPerTeam) {
-            throw new IllegalArgumentException("Max players is invalid!");
-        }
-        this.maxPlayersPerTeam = maxPlayersPerTeam;
-        return this;
-    }
-
-    public DraftPickMatch setMinPlayersPerTeam(int minPlayersPerTeam) {
-        if (maxPlayersPerTeam > minPlayersPerTeam) {
-            throw new IllegalArgumentException("Min players is invalid!");
-        }
-        this.minPlayersPerTeam = minPlayersPerTeam;
-        return this;
-    }
-
-    @Override
-    public Optional<Team> getTeamByName(String name) {
-        return teams.stream().filter((Team team) -> team.getName().equalsIgnoreCase(name)).findAny();
+    @Override public Optional<Team> getTeamByName(String name) {
+        return teams.stream().filter((Team team) -> team.getName().equalsIgnoreCase(name))
+            .findAny();
     }
 
     public RuneManager getRuneManager() {
@@ -77,13 +48,11 @@ public class DraftPickMatch implements ManagedMatch {
         return runeManager.removeRuneFrom(rune, player);
     }
 
-    @Override
-    public DraftPickMatchEngine getGameEngine() {
+    @Override public DraftPickMatchEngine getGameEngine() {
         return engine;
     }
 
-    @Override
-    public boolean addPlayer(Team team, UUID player) {
+    @Override public boolean addPlayer(Team team, UUID player) {
         if (!teams.contains(team)) {
             throw new IllegalArgumentException("Team specified is not registered.");
         }
@@ -95,8 +64,7 @@ public class DraftPickMatch implements ManagedMatch {
         return true;
     }
 
-    @Override
-    public boolean removePlayer(UUID player) {
+    @Override public boolean removePlayer(UUID player) {
         Team current = getTeamOf(player);
         if (current != null) {
             current.removePlayers(player);
@@ -104,8 +72,8 @@ public class DraftPickMatch implements ManagedMatch {
         return true;
     }
 
-    @Override
-    public void setTeamOfPlayer(UUID player, Team newTeam) throws IllegalArgumentException {
+    @Override public void setTeamOfPlayer(UUID player, Team newTeam)
+        throws IllegalArgumentException {
         if (!teams.contains(newTeam)) {
             throw new IllegalArgumentException("Team specified is not registered.");
         }
@@ -113,8 +81,7 @@ public class DraftPickMatch implements ManagedMatch {
         newTeam.addPlayers(player);
     }
 
-    @Override
-    public Team getTeamOf(UUID player) throws IllegalArgumentException {
+    @Override public Team getTeamOf(UUID player) throws IllegalArgumentException {
         for (Team team : teams) {
             if (team.containsPlayer(player)) {
                 return team;
@@ -123,8 +90,7 @@ public class DraftPickMatch implements ManagedMatch {
         return null;
     }
 
-    @Override
-    public void pause(String pauseMessage) {
+    @Override public void pause(String pauseMessage) {
         //TODO Implement pause code here.
         if (pauseMessage != null) {
             teams.forEach(team -> team.getPlayers().forEach((UUID player) -> {
@@ -134,29 +100,21 @@ public class DraftPickMatch implements ManagedMatch {
         }
     }
 
-    @Override
-    public void stop(String endMessage) {
+    @Override public void stop(String endMessage) {
         engine.end();
         //TODO Implement stop code here.
     }
 
-    @Override
-    public void resume(String resumeMessage) {
+    @Override public void resume(String resumeMessage) {
         engine.resume();
         //Todo Implement resumption code here.
     }
 
-    @Override
-    public boolean canStart() {
-        int playerCount = 0;
-        for (Team team : teams) {
-            playerCount += team.getPlayerCount();
-        }
-        return playerCount < minPlayersPerTeam * teams.size() || !isLobby();
+    @Override public boolean canStart() {
+        return !isLobby();
     }
 
-    @Override
-    public boolean start(PlayerMatchManager manager) {
+    @Override public boolean start(PlayerMatchManager manager) {
         if (!manager.verifyMatch(this)) {
             return false;
         }
@@ -164,8 +122,7 @@ public class DraftPickMatch implements ManagedMatch {
         return true;
     }
 
-    @Override
-    public Collection<Team> getTeams() {
+    @Override public Collection<Team> getTeams() {
         Collection<Team> ret = new HashSet<>();
         for (Team team : teams) {
             ret.add(team.clone());
@@ -173,8 +130,7 @@ public class DraftPickMatch implements ManagedMatch {
         return ret;
     }
 
-    @Override
-    public void rejoinPlayer(UUID player) throws IllegalArgumentException {
+    @Override public void rejoinPlayer(UUID player) throws IllegalArgumentException {
         engine.rejoin(player);
     }
 
@@ -186,40 +142,24 @@ public class DraftPickMatch implements ManagedMatch {
         engine.end();
     }
 
-    @Override
-    public void addAndAssignPlayersTeams(Collection<UUID> players) {
+
+    @Override public void addAndAssignPlayersTeams(Collection<UUID> players) {
         Iterator<UUID> iterator = players.iterator();
-        int playerCount = 0;
-        //FIll the minimum requirement.
+        //FIll the minimum requirements;
+        int playersPerTeam = players.size() / teams.size();
         for (Team team : teams) {
             if (!iterator.hasNext()) {
                 break;
             }
             int index = 0;
-            while (index < minPlayersPerTeam) {
+            while (index < playersPerTeam) {
                 team.addPlayers(iterator.next());
                 index++;
-                playerCount++;
-            }
-        }
-        //Fill the teams if there is still space.
-        if (playerCount < maxPlayersPerTeam * teams.size()) {
-            for (Team team : teams) {
-                if (!iterator.hasNext()) {
-                    break;
-                }
-                int index = team.getPlayerCount();
-                while (index < maxPlayersPerTeam) {
-                    team.addPlayers(iterator.next());
-                    index++;
-                    playerCount++;
-                }
             }
         }
     }
 
-    @Override
-    public Collection<UUID> getPlayers() {
+    @Override public Collection<UUID> getPlayers() {
         Collection<UUID> collection = new HashSet<>();
         for (Team team : teams) {
             collection.addAll(team.getPlayers());
@@ -227,31 +167,26 @@ public class DraftPickMatch implements ManagedMatch {
         return collection;
     }
 
-    @Override
-    public MatchState getState() {
+    @Override public MatchState getState() {
         return matchState;
     }
 
-    @Override
-    public UUID getMatchID() {
+    @Override public UUID getMatchID() {
         return matchID;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    @Override public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         DraftPickMatch that = (DraftPickMatch) o;
-        return maxPlayersPerTeam == that.maxPlayersPerTeam &&
-                minPlayersPerTeam == that.minPlayersPerTeam &&
-                Objects.equals(matchID, that.matchID) &&
-                Objects.equals(teams, that.teams) &&
-                matchState == that.matchState;
+        return Objects.equals(matchID, that.matchID) && Objects.equals(teams, that.teams)
+            && matchState == that.matchState;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(matchID, teams, matchState, maxPlayersPerTeam, minPlayersPerTeam);
+    @Override public int hashCode() {
+        return Objects.hash(matchID, teams, matchState);
     }
 
     /**
@@ -303,19 +238,15 @@ public class DraftPickMatch implements ManagedMatch {
             assert ascendencyPlayer.isPresent();
             AscendencyPlayer actual = ascendencyPlayer.get();
             Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(player);
-            optionalPlayer.ifPresent(
-                    (playerObj) -> {
-                        for (Rune rune : actual.getChallenger().getRunes()) {
-                            rune.clearFrom(playerObj);
-                        }
-                    }
-            );
+            optionalPlayer.ifPresent((playerObj) -> {
+                for (Rune rune : actual.getChallenger().getRunes()) {
+                    rune.clearFrom(playerObj);
+                }
+            });
         }
 
         public void clearRunesFromAll() {
-            for (UUID uuid : getPlayers()) {
-                clearRunes(uuid);
-            }
+            getPlayers().forEach(this::clearRunes);
         }
     }
 }

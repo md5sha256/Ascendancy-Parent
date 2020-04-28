@@ -12,30 +12,27 @@ public abstract class AbstractChallenger implements Challenger {
     private final List<String> lore;
     private Ability[] abilities;
 
-    public AbstractChallenger(String name, Ability[] abilities, PlayerSpecificRune[] runes, List<String> lore) {
+    public AbstractChallenger(String name, Ability[] abilities, PlayerSpecificRune[] runes,
+        List<String> lore) {
         this.name = name;
         this.runes = runes;
         this.abilities = abilities;
         this.lore = lore;
     }
 
-    @Override
-    public Ability[] getAbilities() {
+    @Override public Ability[] getAbilities() {
         return abilities;
     }
 
-    @Override
-    public String getName() {
+    @Override public String getName() {
         return name;
     }
 
-    @Override
-    public PlayerSpecificRune[] getRunes() {
+    @Override public PlayerSpecificRune[] getRunes() {
         return runes;
     }
 
-    @Override
-    public List<String> getLore() {
+    @Override public List<String> getLore() {
         return lore;
     }
 

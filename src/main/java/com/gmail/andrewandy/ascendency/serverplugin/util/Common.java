@@ -31,7 +31,8 @@ public class Common {
     private static ExecutorService executorService;
 
     public static void setup() {
-        executorService = Sponge.getScheduler().createSyncExecutor(AscendencyServerPlugin.getInstance());
+        executorService =
+            Sponge.getScheduler().createSyncExecutor(AscendencyServerPlugin.getInstance());
     }
 
     public static void setPrefix(String prefix) {
@@ -123,7 +124,8 @@ public class Common {
      * @param location  The extent which to loop through
      * @param predicate The predicate to test, can be null.
      */
-    public static <T extends Entity> Collection<T> getEntities(Class<T> type, Extent location, Predicate<T> predicate) {
+    public static <T extends Entity> Collection<T> getEntities(Class<T> type, Extent location,
+        Predicate<T> predicate) {
         Objects.requireNonNull(type);
         Objects.requireNonNull(location);
         Stream<T> stream = location.getEntities().stream().filter(type::isInstance).map(type::cast);
@@ -133,7 +135,8 @@ public class Common {
         return stream.collect(Collectors.toSet());
     }
 
-    public static <T extends Entity> List<T> getSortedEntities(Class<T> type, Extent location, Predicate<T> predicate, Comparator<T> sorter) {
+    public static <T extends Entity> List<T> getSortedEntities(Class<T> type, Extent location,
+        Predicate<T> predicate, Comparator<T> sorter) {
         Objects.requireNonNull(type);
         Objects.requireNonNull(location);
         Stream<T> stream = location.getEntities().stream().filter(type::isInstance).map(type::cast);

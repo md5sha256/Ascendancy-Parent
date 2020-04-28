@@ -12,7 +12,8 @@ public class TickHandler {
     private Collection<TickData> toTick = new HashSet<>();
 
     private TickHandler() {
-        Sponge.getScheduler().createTaskBuilder().execute(this::run).intervalTicks(1).submit(AscendencyServerPlugin.getInstance());
+        Sponge.getScheduler().createTaskBuilder().execute(this::run).intervalTicks(1)
+            .submit(AscendencyServerPlugin.getInstance());
     }
 
     public static TickHandler getInstance() {

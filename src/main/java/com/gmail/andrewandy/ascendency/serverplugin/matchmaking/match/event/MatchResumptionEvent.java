@@ -15,13 +15,11 @@ public class MatchResumptionEvent extends MatchEvent implements Cancellable {
         super(match, name, cause);
     }
 
-    @Override
-    public boolean isCancelled() {
+    @Override public boolean isCancelled() {
         return cancel;
     }
 
-    @Override
-    public void setCancelled(boolean cancel) {
+    @Override public void setCancelled(boolean cancel) {
         this.cancel = cancel;
     }
 }

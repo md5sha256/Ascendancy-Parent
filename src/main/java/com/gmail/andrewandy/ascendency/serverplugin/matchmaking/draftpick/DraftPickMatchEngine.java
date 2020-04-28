@@ -61,8 +61,7 @@ public class DraftPickMatchEngine implements GameEngine {
      * @param player The UUID of the player.
      * @return Returns a populated optional or an empty optional if the player is not in this match.
      */
-    @Override
-    public Optional<AscendencyPlayer> getGamePlayerOf(UUID player) {
+    @Override public Optional<AscendencyPlayer> getGamePlayerOf(UUID player) {
         for (AscendencyPlayer ap : ascendencyPlayers) {
             if (ap.uuidMatches(player)) {
                 return Optional.of(ap);
@@ -121,7 +120,8 @@ public class DraftPickMatchEngine implements GameEngine {
         optionalPlayer.ifPresent((playerObj) -> {
             Team team = match.getTeamOf(playerUID);
             assert team != null;
-            relativeIDObjective.getOrCreateScore(playerObj.getTeamRepresentation()).setScore(ascendencyPlayer.relativeID); //Set the relative ID
+            relativeIDObjective.getOrCreateScore(playerObj.getTeamRepresentation())
+                .setScore(ascendencyPlayer.relativeID); //Set the relative ID
             Optional<Scoreboard> serverBoard = Sponge.getServer().getServerScoreboard();
             assert serverBoard.isPresent();
             Scoreboard scoreboard = serverBoard.get();
@@ -131,7 +131,8 @@ public class DraftPickMatchEngine implements GameEngine {
     }
 
     public void rejoin(UUID player) throws IllegalArgumentException {
-        AscendencyPlayer ascendencyPlayer = getGamePlayerOf(player).orElseThrow(() -> new IllegalArgumentException("Player is not in this match!"));
+        AscendencyPlayer ascendencyPlayer = getGamePlayerOf(player)
+            .orElseThrow(() -> new IllegalArgumentException("Player is not in this match!"));
         preInitPlayer(ascendencyPlayer);
     }
 
@@ -152,10 +153,12 @@ public class DraftPickMatchEngine implements GameEngine {
         rawDamager = node.getNode("ScoreboardDamager").getString();
         rawVictim = node.getNode("ScoreboardVictim").getString();
         String relativeIDName = rawName;
-        relativeIDObjective = Objective.builder().name(relativeIDName).criterion(Criteria.DUMMY).build();
+        relativeIDObjective =
+            Objective.builder().name(relativeIDName).criterion(Criteria.DUMMY).build();
         damagerObjective = Objective.builder().name(rawDamager).criterion(Criteria.DUMMY).build();
         victimObjective = Objective.builder().name(rawVictim).criterion(Criteria.DUMMY).build();
-        scoreboard = Sponge.getServer().getServerScoreboard().orElseThrow(() -> new IllegalStateException("Server scoreboard not ready!"));
+        scoreboard = Sponge.getServer().getServerScoreboard()
+            .orElseThrow(() -> new IllegalStateException("Server scoreboard not ready!"));
         scoreboard.addObjective(damagerObjective);
         scoreboard.addObjective(victimObjective);
         scoreboard.addObjective(relativeIDObjective);
@@ -168,8 +171,7 @@ public class DraftPickMatchEngine implements GameEngine {
      * Scoreboard updater for the command-block implementation
      * of this game engine.
      */
-    @Listener(order = Order.LAST)
-    public void onDamage(DamageEntityEvent event) {
+    @Listener(order = Order.LAST) public void onDamage(DamageEntityEvent event) {
         DraftPickMatch match = matchReference.get();
         if (matchReference.isEnqueued() || match == null) {
             disable();
@@ -190,7 +192,8 @@ public class DraftPickMatchEngine implements GameEngine {
             if (player == victim) {
                 return;
             }
-            Optional<AscendencyPlayer> optional = getGamePlayerOf(player.getUniqueId()); //Player object
+            Optional<AscendencyPlayer> optional =
+                getGamePlayerOf(player.getUniqueId()); //Player object
             if (!optional.isPresent()) {
                 continue;
             }
@@ -206,7 +209,9 @@ public class DraftPickMatchEngine implements GameEngine {
         }
         Text victimText = ((Player) victim).getTeamRepresentation();
         Text damagerText = actual.getTeamRepresentation();
-        victimObjective.getOrCreateScore(damagerText).setScore(relativeIDObjective.getOrCreateScore(victimText).getScore());
-        damagerObjective.getOrCreateScore(victimText).setScore(relativeIDObjective.getOrCreateScore(damagerText).getScore());
+        victimObjective.getOrCreateScore(damagerText)
+            .setScore(relativeIDObjective.getOrCreateScore(victimText).getScore());
+        damagerObjective.getOrCreateScore(victimText)
+            .setScore(relativeIDObjective.getOrCreateScore(damagerText).getScore());
     }
 }

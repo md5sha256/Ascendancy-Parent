@@ -27,7 +27,8 @@ public class ForceLoadChunks {
     public static ForceLoadChunks getInstance() {
         if (!init && Sponge.getGame().isServerAvailable()) {
             Sponge.getEventManager().unregisterListeners(instance);
-            Sponge.getEventManager().registerListeners(AscendencyServerPlugin.getInstance(), instance);
+            Sponge.getEventManager()
+                .registerListeners(AscendencyServerPlugin.getInstance(), instance);
             init = true;
         }
         return instance;
@@ -57,8 +58,7 @@ public class ForceLoadChunks {
     }
 
     //Handles memory leakages.
-    @Listener(order = Order.LAST)
-    public void onWorldUnload(UnloadWorldEvent event) {
+    @Listener(order = Order.LAST) public void onWorldUnload(UnloadWorldEvent event) {
         if (ticketMap.containsKey(event.getTargetWorld())) {
             ticketMap.get(event.getTargetWorld()).release();
         }
@@ -79,13 +79,15 @@ public class ForceLoadChunks {
      */
     public void addForceLoadLocation(Location<? extends World> location) {
         for (Location<? extends World> loc : locations) {
-            if (loc.getExtent() == location.getExtent()) { //If they are the same chunks then return.
+            if (loc.getExtent() == location
+                .getExtent()) { //If they are the same chunks then return.
                 return;
             }
         }
         if (!ticketMap.containsKey(location.getExtent())) {
             Optional<ChunkTicketManager.LoadingTicket> ticket;
-            ticket = Sponge.getServer().getChunkTicketManager().createTicket(AscendencyServerPlugin.getInstance(), location.getExtent());
+            ticket = Sponge.getServer().getChunkTicketManager()
+                .createTicket(AscendencyServerPlugin.getInstance(), location.getExtent());
             if (!ticket.isPresent()) {
                 return;
             }
@@ -120,9 +122,11 @@ public class ForceLoadChunks {
         //Update active;
         Collection<World> worlds = new HashSet<>();
         for (Location<? extends World> location : locations) {
-            ChunkTicketManager.LoadingTicket ticket = ticketMap.computeIfAbsent(location.getExtent(),
-                    (world) -> Sponge.getServer().getChunkTicketManager().createTicket(AscendencyServerPlugin.getInstance(), world)
-                            .orElseThrow(() -> new IllegalStateException("Unable to create chunk ticket!")));
+            ChunkTicketManager.LoadingTicket ticket = ticketMap
+                .computeIfAbsent(location.getExtent(),
+                    (world) -> Sponge.getServer().getChunkTicketManager()
+                        .createTicket(AscendencyServerPlugin.getInstance(), world).orElseThrow(
+                            () -> new IllegalStateException("Unable to create chunk ticket!")));
             if (!ticket.getChunkList().contains(location.getChunkPosition())) {
                 ticket.forceChunk(location.getChunkPosition());
             }

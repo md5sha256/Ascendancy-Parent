@@ -20,13 +20,11 @@ public class PlayerJoinMatchEvent extends MatchEvent implements Cancellable {
         return player;
     }
 
-    @Override
-    public boolean isCancelled() {
+    @Override public boolean isCancelled() {
         return cancel;
     }
 
-    @Override
-    public void setCancelled(boolean cancel) {
+    @Override public void setCancelled(boolean cancel) {
         this.cancel = cancel;
     }
 }

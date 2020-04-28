@@ -29,24 +29,20 @@ public class AscendencyPlayer implements GamePlayer {
         this.relativeID = relativeID;
     }
 
-    @Override
-    public Collection<Rune> getRunes() {
+    @Override public Collection<Rune> getRunes() {
         return runes;
     }
 
-    @Override
-    public Collection<PotionEffect> getStatusEffects() {
+    @Override public Collection<PotionEffect> getStatusEffects() {
         return statusEffects;
     }
 
-    @Override
-    public void addStatusEffect(PotionEffect effect) {
+    @Override public void addStatusEffect(PotionEffect effect) {
         removeStatusEffect(effect);
         statusEffects.add(effect);
     }
 
-    @Override
-    public void removeStatusEffect(PotionEffect effect) {
+    @Override public void removeStatusEffect(PotionEffect effect) {
         statusEffects.remove(effect);
     }
 
@@ -59,8 +55,7 @@ public class AscendencyPlayer implements GamePlayer {
         return challenger;
     }
 
-    @Override
-    public UUID getPlayerUUID() {
+    @Override public UUID getPlayerUUID() {
         return player;
     }
 
@@ -68,21 +63,24 @@ public class AscendencyPlayer implements GamePlayer {
         return other.equals(player);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    @Override public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         AscendencyPlayer that = (AscendencyPlayer) o;
 
-        if (relativeID != that.relativeID) return false;
-        if (!Objects.equals(runes, that.runes)) return false;
-        if (!Objects.equals(challenger, that.challenger)) return false;
+        if (relativeID != that.relativeID)
+            return false;
+        if (!Objects.equals(runes, that.runes))
+            return false;
+        if (!Objects.equals(challenger, that.challenger))
+            return false;
         return Objects.equals(player, that.player);
     }
 
-    @Override
-    public int hashCode() {
+    @Override public int hashCode() {
         int result = relativeID;
         result = 31 * result + (runes != null ? runes.hashCode() : 0);
         result = 31 * result + (challenger != null ? challenger.hashCode() : 0);

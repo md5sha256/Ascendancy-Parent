@@ -1,11 +1,17 @@
 package com.gmail.andrewandy.ascendency.serverplugin.game.challenger;
 
+import am2.api.event.SpellCastEvent;
+import am2.api.spell.SpellComponent;
 import am2.buffs.BuffEffectAstralDistortion;
 import am2.buffs.BuffEffectManaRegen;
 import am2.buffs.BuffEffectSilence;
+import am2.items.SpellBase;
+import am2.spell.component.Heal;
+import am2.utils.SpellUtils;
 import com.flowpowered.math.vector.Vector3i;
 import com.gmail.andrewandy.ascendency.lib.game.data.IChallengerData;
 import com.gmail.andrewandy.ascendency.lib.game.data.game.ChallengerDataImpl;
+import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerEvent;
 import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.Ability;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractAbility;
@@ -14,7 +20,6 @@ import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.ChallengerUti
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.AbstractRune;
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.PlayerSpecificRune;
 import com.gmail.andrewandy.ascendency.serverplugin.game.util.MathUtils;
-import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.AscendencyServerEvent;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.Team;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.ManagedMatch;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.SimplePlayerMatchManager;
@@ -23,6 +28,9 @@ import com.gmail.andrewandy.ascendency.serverplugin.util.game.Tickable;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyHandler;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyPressedEvent;
 import javafx.util.Pair;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.DataContainer;
@@ -58,10 +66,9 @@ public class Bella extends AbstractChallenger {
     private static final Bella instance = new Bella();
 
     private Bella() {
-        super("Bella",
-                new Ability[]{CircletOfTheAccused.instance, ReleasedRebellion.instance},
-                new PlayerSpecificRune[]{CoupDEclat.instance, DivineCrown.instance, ExpandingAgony.instance},
-                Challengers.getLoreOf("Bella"));
+        super("Bella", new Ability[] {CircletOfTheAccused.instance, ReleasedRebellion.instance},
+            new PlayerSpecificRune[] {CoupDEclat.instance, DivineCrown.instance,
+                ExpandingAgony.instance}, Challengers.getLoreOf("Bella"));
     }
 
     public static Bella getInstance() {
@@ -75,15 +82,16 @@ public class Bella extends AbstractChallenger {
      * @param radius The radius.
      * @return Returns a Collection of Blocks which were placed.
      */
-    public static Collection<Location<World>> generateCircleBlocks(Location<World> centre, int radius) {
+    public static Collection<Location<World>> generateCircleBlocks(Location<World> centre,
+        int radius) {
         Collection<Location<World>> rawCircle = MathUtils.createCircle(centre, radius);
-        final Cause cause = Cause.builder().named("Bella", AscendencyServerPlugin.getInstance()).build();
+        final Cause cause =
+            Cause.builder().named("Bella", AscendencyServerPlugin.getInstance()).build();
         rawCircle.forEach((location -> location.setBlockType(BlockTypes.AIR, cause)));
         return rawCircle;
     }
 
-    @Override
-    public IChallengerData toData() {
+    @Override public IChallengerData toData() {
         try {
             return new ChallengerDataImpl(getName(), new File("Path to icon"), getLore());
         } catch (IOException ex) {
@@ -107,8 +115,7 @@ public class Bella extends AbstractChallenger {
             return instance;
         }
 
-        @Override
-        public UUID getUniqueID() {
+        @Override public UUID getUniqueID() {
             return uniqueID;
         }
 
@@ -124,13 +131,16 @@ public class Bella extends AbstractChallenger {
             if (!optionalPlayer.isPresent()) {
                 throw new IllegalArgumentException("Player does not exist!");
             }
-            if (respectCooldowns && cooldownMap.containsKey(caster) || registeredMap.containsKey(caster)) {
+            if (respectCooldowns && cooldownMap.containsKey(caster) || registeredMap
+                .containsKey(caster)) {
                 return;
             }
             cooldownMap.remove(caster);
             cooldownMap.put(caster, 0L); //Update cooldowns
             Player player = optionalPlayer.get();
-            Collection<Entity> nearby = player.getNearbyEntities((entity) -> MathUtils.calculateDistance(entity.getLocation(), player.getLocation()) <= 10D);
+            Collection<Entity> nearby = player.getNearbyEntities(
+                (entity) -> MathUtils.calculateDistance(entity.getLocation(), player.getLocation())
+                    <= 10D);
             Player target = null;
             double leastDistance = Double.MAX_VALUE;
             Location<World> location = player.getLocation();
@@ -149,7 +159,8 @@ public class Bella extends AbstractChallenger {
             }
             registeredMap.compute(target.getUniqueId(), (playerUID, circletData) -> {
                 if (circletData == null) {
-                    circletData = new CircletData(caster, radius); //Caster is the playerUID, default radius = 4
+                    circletData = new CircletData(caster,
+                        radius); //Caster is the playerUID, default radius = 4
                 }
                 circletData.reset();
                 circletData.setRingBlocks(generateCircleBlocks(location, radius));
@@ -173,28 +184,33 @@ public class Bella extends AbstractChallenger {
             return true;
         }
 
-        @Override
-        public void tick() {
+        @Override public void tick() {
             registeredMap.forEach((key, data) -> {
                 data.incrementTick();
                 if (data.getTickCount() >= timeout) {
                     data.reset(); //Clear the ring
                     cooldownMap.put(key, 0L);
                 }
-                cooldownMap.entrySet().removeIf(ChallengerUtils.mapTickPredicate(9, TimeUnit.SECONDS, (uuid) -> {
-                    Sponge.getServer().getPlayer(uuid).ifPresent(this::clearCirclet);
-                }));
+                cooldownMap.entrySet()
+                    .removeIf(ChallengerUtils.mapTickPredicate(9, TimeUnit.SECONDS, (uuid) -> {
+                        Sponge.getServer().getPlayer(uuid).ifPresent(this::clearCirclet);
+                    }));
 
 
                 Optional<ManagedMatch> match = SimplePlayerMatchManager.INSTANCE.getMatchOf(key);
                 match.ifPresent(managedMatch -> {
                     Team team = managedMatch.getTeamOf(key);
-                    Collection<Player> players = Common.getEntities(Player.class, CoupDEclat.getInstance().getExtentViewFor(data), (Player player) -> {
-                        Optional<Team> optional = SimplePlayerMatchManager.INSTANCE.getTeamOf(player.getUniqueId());
-                        return optional.isPresent() && optional.get() != team && data.generateCircleTest().test(player.getLocation());
-                    });
+                    Collection<Player> players = Common
+                        .getEntities(Player.class, CoupDEclat.getInstance().getExtentViewFor(data),
+                            (Player player) -> {
+                                Optional<Team> optional = SimplePlayerMatchManager.INSTANCE
+                                    .getTeamOf(player.getUniqueId());
+                                return optional.isPresent() && optional.get() != team && data
+                                    .generateCircleTest().test(player.getLocation());
+                            });
                     players.forEach((Player player) -> {
-                        Optional<Team> optionalTeam = SimplePlayerMatchManager.INSTANCE.getTeamOf(key);
+                        Optional<Team> optionalTeam =
+                            SimplePlayerMatchManager.INSTANCE.getTeamOf(key);
                         if (!optionalTeam.isPresent()) {
                             return;
                         }
@@ -203,12 +219,15 @@ public class Bella extends AbstractChallenger {
                         }
                         //TODO Set scoreboard so cmd-block impl knows they are in circle.
                         //Means they are an enemy.
-                        PotionEffectData peData = player.get(PotionEffectData.class)
-                                .orElseThrow(() -> new IllegalArgumentException("Unable to get PotionEffect data for " + player.getName()));
+                        PotionEffectData peData = player.get(PotionEffectData.class).orElseThrow(
+                            () -> new IllegalArgumentException(
+                                "Unable to get PotionEffect data for " + player.getName()));
 
                         peData.addElement(
-                                PotionEffect.builder().potionType(PotionEffectTypes.WITHER).duration(1).amplifier(1).build()) //Wither
-                                .addElement((PotionEffect) new BuffEffectAstralDistortion(1, 1)); //Astral Distorton == Astral Nullifcation
+                            PotionEffect.builder().potionType(PotionEffectTypes.WITHER).duration(1)
+                                .amplifier(1).build()) //Wither
+                            .addElement((PotionEffect) new BuffEffectAstralDistortion(1,
+                                1)); //Astral Distorton == Astral Nullifcation
                         player.offer(peData);
                     });
                 });
@@ -216,24 +235,47 @@ public class Bella extends AbstractChallenger {
         }
 
 
-        @Listener
-        public void onActiveKeyPress(ActiveKeyPressedEvent event) {
-            if (ActiveKeyHandler.INSTANCE.isKeyPressed(event.getPlayer())) { //If player was holding the key then skip.
+        @Listener public void onActiveKeyPress(ActiveKeyPressedEvent event) {
+            if (ActiveKeyHandler.INSTANCE
+                .isKeyPressed(event.getPlayer())) { //If player was holding the key then skip.
                 return;
             }
             ProcEvent procEvent = new ProcEvent(event.getPlayer(), event.getPlayer(), 4);
             if (procEvent.callEvent()) { //If not cancelled
-                Optional<ManagedMatch> match = SimplePlayerMatchManager.INSTANCE.getMatchOf(uniqueID);
+                Optional<ManagedMatch> match =
+                    SimplePlayerMatchManager.INSTANCE.getMatchOf(uniqueID);
                 if (!match.isPresent()) {
                     return;
                 }
                 Player target = procEvent.getTarget();
-                activateAs(procEvent.getInvoker().getUniqueId(), procEvent.getTarget().getUniqueId(), procEvent.circletRadius, true);
+                activateAs(procEvent.getInvoker().getUniqueId(),
+                    procEvent.getTarget().getUniqueId(), procEvent.circletRadius, true);
             }
         }
 
-        @Listener
-        public void onFatalDamage(DamageEntityEvent event) {
+        @SubscribeEvent public void onSpellCast(SpellCastEvent.Post event) {
+            ItemStack spell = event.spell;
+            int id = SpellBase.getIdFromItem(spell.getItem());
+            Item spellBase = SpellBase.REGISTRY.getObjectById(id);
+            if (!(spellBase instanceof SpellBase)) {
+                return;
+            }
+            System.out.println(spellBase.getClass().toString());
+            List<SpellComponent> component = SpellUtils.getComponentsForStage(spell, 1);
+            boolean contains = false;
+            for (SpellComponent c : component) {
+                if (c instanceof Heal) {
+                    contains = true;
+                    break;
+                }
+            }
+            if (!contains) {
+                return;
+            }
+
+        }
+
+        @Listener public void onFatalDamage(DamageEntityEvent event) {
             if (event == lastDamageEvent) {
                 return;
             }
@@ -242,14 +284,17 @@ public class Bella extends AbstractChallenger {
                 return;
             }
             registeredMap.values().stream()
-                    .filter(circletData -> circletData.generateCircleTest().test(entity.getLocation()))
-                    .findAny().ifPresent((circletData -> {
+                .filter(circletData -> circletData.generateCircleTest().test(entity.getLocation()))
+                .findAny().ifPresent((circletData -> {
 
                 event.setCancelled(true);
                 Cause cause = Cause.builder().named("Source", circletData.caster).build();
-                lastDamageEvent = SpongeEventFactory.createDamageEntityEvent(cause, event.getOriginalFunctions(), entity, event.getOriginalDamage());
+                lastDamageEvent = SpongeEventFactory
+                    .createDamageEntityEvent(cause, event.getOriginalFunctions(), entity,
+                        event.getOriginalDamage());
                 Sponge.getEventManager().post(lastDamageEvent);
-                entity.damage(event.getFinalDamage(), DamageSource.builder().from(DamageSources.GENERIC).build());
+                entity.damage(event.getFinalDamage(),
+                    DamageSource.builder().from(DamageSources.GENERIC).build());
             }));
         }
 
@@ -274,13 +319,11 @@ public class Bella extends AbstractChallenger {
                 this.circletRadius = circletRadius;
             }
 
-            @Override
-            public boolean isCancelled() {
+            @Override public boolean isCancelled() {
                 return cancel;
             }
 
-            @Override
-            public void setCancelled(boolean cancel) {
+            @Override public void setCancelled(boolean cancel) {
                 this.cancel = cancel;
             }
 
@@ -291,8 +334,7 @@ public class Bella extends AbstractChallenger {
                 this.circletRadius = radius;
             }
 
-            @Override
-            public Cause getCause() {
+            @Override public Cause getCause() {
                 return cause;
             }
 
@@ -308,6 +350,7 @@ public class Bella extends AbstractChallenger {
                 return invoker;
             }
         }
+
 
         /**
          * Class used to represent data regarding a circlet being cast.
@@ -374,12 +417,14 @@ public class Bella extends AbstractChallenger {
             public void reset() {
                 this.tickCount = 0L;
                 this.ringCenter = null;
-                Cause cause = Cause.builder().named("Bella", AscendencyServerPlugin.getInstance()).build();
+                Cause cause =
+                    Cause.builder().named("Bella", AscendencyServerPlugin.getInstance()).build();
                 ringBlocks.forEach(location -> location.setBlockType(BlockTypes.AIR, cause));
                 this.ringBlocks = null;
             }
         }
     }
+
 
     public static class ReleasedRebellion extends AbstractAbility implements Tickable {
 
@@ -406,26 +451,25 @@ public class Bella extends AbstractChallenger {
             active.add(player);
         }
 
-        @Listener
-        public void onPlayerAttack(DamageEntityEvent event) {
+        @Listener public void onPlayerAttack(DamageEntityEvent event) {
             Entity target = event.getTargetEntity();
             Player player;
-            Optional<Optional<Player>> optionalPlayer = event.getCause().allOf(UUID.class).stream().map((uuid) -> Sponge.getServer().getPlayer(uuid)).findAny();
+            Optional<Optional<Player>> optionalPlayer = event.getCause().allOf(UUID.class).stream()
+                .map((uuid) -> Sponge.getServer().getPlayer(uuid)).findAny();
             player = optionalPlayer.orElse(Optional.empty()).orElse(null);
             if (player == null || !active.contains(player.getUniqueId())) {
                 return;
             }
-            tickMap.compute(player.getUniqueId(), ((uuid, pair) -> new Pair<>(target.getUniqueId(), 0L)));
+            tickMap.compute(player.getUniqueId(),
+                ((uuid, pair) -> new Pair<>(target.getUniqueId(), 0L)));
         }
 
 
-        @Override
-        public UUID getUniqueID() {
+        @Override public UUID getUniqueID() {
             return uuid;
         }
 
-        @Override
-        public void tick() {
+        @Override public void tick() {
             long ticks = Common.toTicks(3, TimeUnit.SECONDS);
             tickMap.entrySet().removeIf(entry -> {
                 Pair<UUID, Long> pair = entry.getValue();
@@ -435,16 +479,17 @@ public class Bella extends AbstractChallenger {
             });
         }
 
-        @Listener
-        public void onProc(CircletOfTheAccused.ProcEvent event) { //Handles the proc event
+        @Listener public void onProc(CircletOfTheAccused.ProcEvent event) { //Handles the proc event
             Player invoker = event.getInvoker();
             if (!tickMap.containsKey(invoker.getUniqueId())) {
                 return;
             }
-            Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(tickMap.get(invoker.getUniqueId()).getKey());
+            Optional<Player> optionalPlayer =
+                Sponge.getServer().getPlayer(tickMap.get(invoker.getUniqueId()).getKey());
             optionalPlayer.ifPresent(event::setTarget);
         }
     }
+
 
     public static class CoupDEclat extends AbstractRune {
 
@@ -456,19 +501,16 @@ public class Bella extends AbstractChallenger {
             return instance;
         }
 
-        @Override
-        public void applyTo(Player player) {
+        @Override public void applyTo(Player player) {
             clearFrom(player);
             active.add(player.getUniqueId());
         }
 
-        @Override
-        public void clearFrom(Player player) {
+        @Override public void clearFrom(Player player) {
             active.remove(player.getUniqueId());
         }
 
-        @Override
-        public String getName() {
+        @Override public String getName() {
             return "Coup D'eclat";
         }
 
@@ -484,26 +526,32 @@ public class Bella extends AbstractChallenger {
         public Extent getExtentViewFor(CircletOfTheAccused.CircletData circletData) {
             final Location<World> location = circletData.getRingCenter();
             final double radius = circletData.getRadius();
-            final Vector3i bottom = new Vector3i(location.getX() + radius, location.getY() - radius, location.getZ() - radius), top;
-            top = new Vector3i(location.getX() - radius, location.getY() + radius, location.getZ() + radius);
+            final Vector3i bottom = new Vector3i(location.getX() + radius, location.getY() - radius,
+                location.getZ() - radius), top;
+            top = new Vector3i(location.getX() - radius, location.getY() + radius,
+                location.getZ() + radius);
             return location.getExtent().getExtentView(top, bottom);
         }
 
-        @Override
-        public void tick() {
+        @Override public void tick() {
             Map<UUID, Long> map = CircletOfTheAccused.getInstance().cooldownMap;
             //Loop through all known circlets to update effects.
-            for (CircletOfTheAccused.CircletData data : CircletOfTheAccused.getInstance().registeredMap.values()) {
-                Optional<Team> optional = SimplePlayerMatchManager.INSTANCE.getTeamOf(data.getCaster());
+            for (CircletOfTheAccused.CircletData data : CircletOfTheAccused
+                .getInstance().registeredMap.values()) {
+                Optional<Team> optional =
+                    SimplePlayerMatchManager.INSTANCE.getTeamOf(data.getCaster());
                 if (!optional.isPresent()) {
                     return;
                 }
                 final Team team = optional.get();
-                Collection<Player> players = Common.getEntities(Player.class, getExtentViewFor(data), (player -> data.generateCircleTest().test(player.getLocation())));
+                Collection<Player> players = Common
+                    .getEntities(Player.class, getExtentViewFor(data),
+                        (player -> data.generateCircleTest().test(player.getLocation())));
                 int stacks = 0;
                 for (Player player : players) { //Loop through all nearby entities.
                     optional = SimplePlayerMatchManager.INSTANCE.getTeamOf(player.getUniqueId());
-                    if (!optional.isPresent() || team == optional.get()) { //Continue if no team or allied.
+                    if (!optional.isPresent() || team == optional
+                        .get()) { //Continue if no team or allied.
                         continue;
                     }
                     StackData stackData = stackCount.get(data.getCaster());
@@ -527,12 +575,16 @@ public class Bella extends AbstractChallenger {
                 }
                 Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(data.getCaster());
                 //Give players absorption
-                optionalPlayer.ifPresent((Player player) -> Sponge.getScheduler().createTaskBuilder()
-                        .execute(() -> {
-                            PotionEffectData peData = player.get(PotionEffectData.class).orElseThrow(() -> new IllegalStateException("Unable to get potiond data for " + player.getName()));
-                            peData.addElement(PotionEffect.builder().potionType(PotionEffectTypes.ABSORPTION).amplifier(1).build());
-                            player.offer(peData);
-                        }).submit(AscendencyServerPlugin.getInstance()));
+                optionalPlayer.ifPresent(
+                    (Player player) -> Sponge.getScheduler().createTaskBuilder().execute(() -> {
+                        PotionEffectData peData = player.get(PotionEffectData.class).orElseThrow(
+                            () -> new IllegalStateException(
+                                "Unable to get potiond data for " + player.getName()));
+                        peData.addElement(
+                            PotionEffect.builder().potionType(PotionEffectTypes.ABSORPTION)
+                                .amplifier(1).build());
+                        player.offer(peData);
+                    }).submit(AscendencyServerPlugin.getInstance()));
             }
         }
 
@@ -540,8 +592,7 @@ public class Bella extends AbstractChallenger {
          * Handles bella teleporting in and out of the circle.
          * We don't need to check for the proc event because each entity in the circle will be "ticked".
          */
-        @Listener
-        public void onMove(MoveEntityEvent event) {
+        @Listener public void onMove(MoveEntityEvent event) {
             Entity entity = event.getTargetEntity();
             if (!(entity instanceof Player)) {
                 return;
@@ -561,27 +612,28 @@ public class Bella extends AbstractChallenger {
                 if (entity.getUniqueId().equals(caster)) { //If the player is bella.
                     Location<World> current = entity.getLocation();
 
-                    double distanceToRadius = MathUtils.calculateDistance(current, circletData.getRingCenter());
+                    double distanceToRadius =
+                        MathUtils.calculateDistance(current, circletData.getRingCenter());
                     if (Math.abs(distanceToRadius - circletData.radius) <= 1) { //If on border edge
                         ChallengerUtils.teleportPlayer(player, 1); //Teleport 1 block forward bella.
                     }
                     return;
                 }
                 if (!inCircle) {
-                    stackData.removePlayer(entity.getUniqueId()); //Remove if player is no longer in the circle.
+                    stackData.removePlayer(
+                        entity.getUniqueId()); //Remove if player is no longer in the circle.
                     return;
                 }
-                stackData.addPlayer(entity.getUniqueId()); //Add to stack data, will be ticked on next tick?
+                stackData.addPlayer(
+                    entity.getUniqueId()); //Add to stack data, will be ticked on next tick?
             });
         }
 
-        @Override
-        public int getContentVersion() {
+        @Override public int getContentVersion() {
             return 0;
         }
 
-        @Override
-        public DataContainer toContainer() {
+        @Override public DataContainer toContainer() {
             return null;
         }
 
@@ -627,6 +679,7 @@ public class Bella extends AbstractChallenger {
         }
     }
 
+
     public static class DivineCrown extends AbstractRune {
 
         private static final DivineCrown instance = new DivineCrown();
@@ -639,26 +692,23 @@ public class Bella extends AbstractChallenger {
             return instance;
         }
 
-        @Override
-        public void applyTo(Player player) {
+        @Override public void applyTo(Player player) {
             clearFrom(player);
             casters.add(player.getUniqueId());
         }
 
-        @Override
-        public void clearFrom(Player player) {
+        @Override public void clearFrom(Player player) {
             casters.remove(player.getUniqueId());
         }
 
-        @Override
-        public String getName() {
+        @Override public String getName() {
             return "Divine Crown";
         }
 
-        @Override
-        public void tick() {
+        @Override public void tick() {
             for (UUID uuid : casters) {
-                CircletOfTheAccused.CircletData data = CircletOfTheAccused.instance.registeredMap.get(uuid);
+                CircletOfTheAccused.CircletData data =
+                    CircletOfTheAccused.instance.registeredMap.get(uuid);
                 if (data == null) {
                     continue;
                 }
@@ -667,38 +717,53 @@ public class Bella extends AbstractChallenger {
                     continue;
                 }
                 Player player = optionalPlayer.get();
-                Optional<Team> optionalTeam = SimplePlayerMatchManager.INSTANCE.getTeamOf(player.getUniqueId());
+                Optional<Team> optionalTeam =
+                    SimplePlayerMatchManager.INSTANCE.getTeamOf(player.getUniqueId());
                 if (!optionalTeam.isPresent()) {
                     return;
                 }
                 Team team = optionalTeam.get();
-                Collection<Player> players = Common.getEntities(Player.class, CoupDEclat.instance.getExtentViewFor(data), (Player p) -> {
-                    Optional<Team> optional = SimplePlayerMatchManager.INSTANCE.getTeamOf(p.getUniqueId());
-                    return optional.isPresent() && optional.get() == team && data.generateCircleTest().test(p.getLocation()); //If in circle and ifallied
-                }); //Get players in circle
+                Collection<Player> players = Common
+                    .getEntities(Player.class, CoupDEclat.instance.getExtentViewFor(data),
+                        (Player p) -> {
+                            Optional<Team> optional =
+                                SimplePlayerMatchManager.INSTANCE.getTeamOf(p.getUniqueId());
+                            return optional.isPresent() && optional.get() == team && data
+                                .generateCircleTest()
+                                .test(p.getLocation()); //If in circle and ifallied
+                        }); //Get players in circle
                 for (Player p : players) {
-                    PotionEffectData peData = p.get(PotionEffectData.class).orElseThrow(() -> new IllegalStateException("Unable to get potion effect data for " + p.getName()));
-                    peData.asList().removeIf(ChallengerUtils::isEffectNegative); //Remove all negative effects as per ChallengerUtils implementation.
-                    peData.addElement(PotionEffect.builder().potionType(PotionEffectTypes.SPEED).duration(1).amplifier(2).build()) //Speed 2
-                            .addElement((PotionEffect) new BuffEffectManaRegen(1, 2)) // Mana Regen 2 | Safe cast because of sponge's runtime "mixins"
-                            .addElement(PotionEffect.builder().potionType(PotionEffectTypes.REGENERATION).amplifier(1).build()) // Regen 1
-                            .addElement(PotionEffect.builder().potionType(PotionEffectTypes.STRENGTH).amplifier(1).build()) // Strength 1
-                            .addElement(PotionEffect.builder().potionType(PotionEffectTypes.RESISTANCE).amplifier(1).build()); //Resistance 1
+                    PotionEffectData peData = p.get(PotionEffectData.class).orElseThrow(
+                        () -> new IllegalStateException(
+                            "Unable to get potion effect data for " + p.getName()));
+                    peData.asList().removeIf(
+                        ChallengerUtils::isEffectNegative); //Remove all negative effects as per ChallengerUtils implementation.
+                    peData.addElement(
+                        PotionEffect.builder().potionType(PotionEffectTypes.SPEED).duration(1)
+                            .amplifier(2).build()) //Speed 2
+                        .addElement((PotionEffect) new BuffEffectManaRegen(1,
+                            2)) // Mana Regen 2 | Safe cast because of sponge's runtime "mixins"
+                        .addElement(
+                            PotionEffect.builder().potionType(PotionEffectTypes.REGENERATION)
+                                .amplifier(1).build()) // Regen 1
+                        .addElement(PotionEffect.builder().potionType(PotionEffectTypes.STRENGTH)
+                            .amplifier(1).build()) // Strength 1
+                        .addElement(PotionEffect.builder().potionType(PotionEffectTypes.RESISTANCE)
+                            .amplifier(1).build()); //Resistance 1
                     p.offer(peData); //Give the player potion effects.
                 }
             }
         }
 
-        @Override
-        public int getContentVersion() {
+        @Override public int getContentVersion() {
             return 0;
         }
 
-        @Override
-        public DataContainer toContainer() {
+        @Override public DataContainer toContainer() {
             return null;
         }
     }
+
 
     public static class ExpandingAgony extends AbstractRune {
 
@@ -712,26 +777,23 @@ public class Bella extends AbstractChallenger {
             return instance;
         }
 
-        @Override
-        public void applyTo(Player player) {
+        @Override public void applyTo(Player player) {
             clearFrom(player);
             this.registered.add(player.getUniqueId());
         }
 
-        @Override
-        public void clearFrom(Player player) {
+        @Override public void clearFrom(Player player) {
             registered.remove(player.getUniqueId());
         }
 
-        @Override
-        public String getName() {
+        @Override public String getName() {
             return "Expanding Agony";
         }
 
-        @Override
-        public void tick() {
+        @Override public void tick() {
             for (UUID uuid : registered) {
-                CircletOfTheAccused.CircletData data = CircletOfTheAccused.instance.registeredMap.get(uuid);
+                CircletOfTheAccused.CircletData data =
+                    CircletOfTheAccused.instance.registeredMap.get(uuid);
                 if (data == null) {
                     continue;
                 }
@@ -740,15 +802,22 @@ public class Bella extends AbstractChallenger {
                     return;
                 }
                 Team team = optionalTeam.get();
-                Collection<Player> players = Common.getEntities(Player.class, CoupDEclat.instance.getExtentViewFor(data), (Player p) -> {
-                    Optional<Team> optional = SimplePlayerMatchManager.INSTANCE.getTeamOf(p.getUniqueId());
-                    return optional.isPresent() && optional.get() != team && data.generateCircleTest().test(p.getLocation());
-                });
+                Collection<Player> players = Common
+                    .getEntities(Player.class, CoupDEclat.instance.getExtentViewFor(data),
+                        (Player p) -> {
+                            Optional<Team> optional =
+                                SimplePlayerMatchManager.INSTANCE.getTeamOf(p.getUniqueId());
+                            return optional.isPresent() && optional.get() != team && data
+                                .generateCircleTest().test(p.getLocation());
+                        });
                 int size = players.size();
                 players.forEach((Player player) -> {
                     if (size >= 2) { //If 2 enemies are in the circle
-                        PotionEffectData peData = player.get(PotionEffectData.class).orElseThrow(() -> new IllegalStateException("Unable to get potion effect data for " + player.getName()));
-                        peData.addElement((PotionEffect) new BuffEffectSilence(1, 1)); //Silence 1 | Safe cast as per sponge "mixins".
+                        PotionEffectData peData = player.get(PotionEffectData.class).orElseThrow(
+                            () -> new IllegalStateException(
+                                "Unable to get potion effect data for " + player.getName()));
+                        peData.addElement((PotionEffect) new BuffEffectSilence(1,
+                            1)); //Silence 1 | Safe cast as per sponge "mixins".
                         player.offer(peData); //Update the player.
                     }
                     player.offer(Keys.FIRE_TICKS, 1); //Give them 1 tick of fire.
@@ -756,20 +825,17 @@ public class Bella extends AbstractChallenger {
             }
         }
 
-        @Listener
-        public void onProc(CircletOfTheAccused.ProcEvent event) {
+        @Listener public void onProc(CircletOfTheAccused.ProcEvent event) {
             if (registered.contains(event.getInvoker().getUniqueId())) {
                 event.setCircletRadius(6); //Change circle radius to 6.
             }
         }
 
-        @Override
-        public int getContentVersion() {
+        @Override public int getContentVersion() {
             return 0;
         }
 
-        @Override
-        public DataContainer toContainer() {
+        @Override public DataContainer toContainer() {
             return null;
         }
     }

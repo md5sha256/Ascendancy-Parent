@@ -27,9 +27,11 @@ public class YamlLoader {
         File folder = AscendencyServerPlugin.getInstance().getDataFolder();
         File file = new File(folder.getAbsolutePath(), fileName);
         OutputStream os;
-        try (InputStream inputStream = YamlLoader.class.getClassLoader().getResourceAsStream(fileName)) {
+        try (InputStream inputStream = YamlLoader.class.getClassLoader()
+            .getResourceAsStream(fileName)) {
             if (inputStream == null) {
-                throw new IllegalArgumentException("Null InputStream - No file found in the jar with name " + fileName);
+                throw new IllegalArgumentException(
+                    "Null InputStream - No file found in the jar with name " + fileName);
             }
             if (!file.isFile()) {
                 file.createNewFile();

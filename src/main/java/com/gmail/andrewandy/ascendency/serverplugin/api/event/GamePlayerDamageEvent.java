@@ -10,7 +10,8 @@ public class GamePlayerDamageEvent extends GameEvent {
     private final Entity victim;
     private double damage;
 
-    public GamePlayerDamageEvent(Player target, Team targetTeam, Entity victim, Team victimTeam, double damage) {
+    public GamePlayerDamageEvent(Player target, Team targetTeam, Entity victim, Team victimTeam,
+        double damage) {
         super(target, targetTeam);
         this.victim = victim;
         this.victimTeam = victimTeam;

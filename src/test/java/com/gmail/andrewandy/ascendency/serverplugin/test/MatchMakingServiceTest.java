@@ -1,8 +1,9 @@
 package com.gmail.andrewandy.ascendency.serverplugin.test;
 
-import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.MatchMakingService;
+import com.gmail.andrewandy.ascendency.serverplugin.configuration.YamlConfig;
+import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.DefaultMatchService;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.Team;
-import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.draftpick.DraftPickMatch;
+import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.draftpick.DraftMatchFactory;
 import com.gmail.andrewandy.ascendency.serverplugin.test.util.MockPlayer;
 
 import java.util.Collection;
@@ -14,7 +15,9 @@ public class MatchMakingServiceTest {
     private static final int minPlayers = 3;
 
     private static Collection<Team> teams = new HashSet<>();
-    private static final MatchMakingService<DraftPickMatch> service = new MatchMakingService<>(minPlayers, maxPlayers, () -> new DraftPickMatch(maxPlayers, teams));
+    private static final DefaultMatchService service =
+        new DefaultMatchService(new DraftMatchFactory(new YamlConfig()), new YamlConfig());
+        //TODO Fix
     private static Collection<MockPlayer> players = new HashSet<>();
 
     static {

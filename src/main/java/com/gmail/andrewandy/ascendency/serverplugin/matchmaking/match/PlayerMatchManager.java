@@ -83,14 +83,16 @@ public interface PlayerMatchManager {
      * @param removeIfFailed Whether to remove the player if the operation fails.
      * @return Returns whether the operation was successful.
      */
-    default boolean movePlayerToMatch(UUID player, Team team, ManagedMatch managedMatch, boolean removeIfFailed) throws IllegalStateException {
+    default boolean movePlayerToMatch(UUID player, Team team, ManagedMatch managedMatch,
+        boolean removeIfFailed) throws IllegalStateException {
         Objects.requireNonNull(managedMatch);
         Optional<ManagedMatch> previous = getMatchOf(player);
         if (previous.isPresent()) {
             if (!canMovePlayerTo(player, managedMatch)) {
                 if (removeIfFailed) {
                     if (!removePlayerFromMatch(player)) {
-                        throw new IllegalStateException("Unable to remove the player from the match!");
+                        throw new IllegalStateException(
+                            "Unable to remove the player from the match!");
                     }
                 }
                 return false;
@@ -117,7 +119,8 @@ public interface PlayerMatchManager {
             //Return false since the player is not "waiting"
             return false;
         }
-        return canPlayerBeAddedToMatch(player, managedMatch) && addPlayerToMatch(player, team, managedMatch);
+        return canPlayerBeAddedToMatch(player, managedMatch) && addPlayerToMatch(player, team,
+            managedMatch);
     }
 
     /**
@@ -130,7 +133,8 @@ public interface PlayerMatchManager {
      * @return Returns the result of the operation. Returns false if the match was already started.
      * @throws IllegalArgumentException Thrown by: {@link ManagedMatch#setTeamOfPlayer(UUID, Team)}
      */
-    boolean addPlayerToMatch(UUID player, Team team, ManagedMatch match) throws IllegalArgumentException;
+    boolean addPlayerToMatch(UUID player, Team team, ManagedMatch match)
+        throws IllegalArgumentException;
 
     /**
      * Removes a player from the match they are in.

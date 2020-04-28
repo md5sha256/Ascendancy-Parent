@@ -1,6 +1,6 @@
 package com.gmail.andrewandy.ascendency.serverplugin.util.keybind;
 
-import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.AscendencyServerEvent;
+import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerEvent;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.cause.Cause;
@@ -22,18 +22,15 @@ public class ActiveKeyPressedEvent extends AscendencyServerEvent implements Canc
         return player;
     }
 
-    @Override
-    public boolean isCancelled() {
+    @Override public boolean isCancelled() {
         return cancel;
     }
 
-    @Override
-    public void setCancelled(boolean cancel) {
+    @Override public void setCancelled(boolean cancel) {
         this.cancel = cancel;
     }
 
-    @Override
-    public Cause getCause() {
+    @Override public Cause getCause() {
         return cause;
     }
 }

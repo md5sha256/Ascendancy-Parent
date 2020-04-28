@@ -1,6 +1,6 @@
 package com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.event;
 
-import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.AscendencyServerEvent;
+import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerEvent;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.Match;
 import org.spongepowered.api.event.cause.Cause;
 
@@ -28,8 +28,7 @@ public abstract class MatchEvent extends AscendencyServerEvent {
         return match;
     }
 
-    @Override
-    public Cause getCause() {
+    @Override public Cause getCause() {
         return cause;
     }
 }

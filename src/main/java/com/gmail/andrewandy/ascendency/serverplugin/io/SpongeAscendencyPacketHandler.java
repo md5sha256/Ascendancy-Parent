@@ -3,6 +3,7 @@ package com.gmail.andrewandy.ascendency.serverplugin.io;
 import com.gmail.andrewandy.ascendency.lib.AscendencyPacket;
 import com.gmail.andrewandy.ascendency.lib.AscendencyPacketHandler;
 import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
+import com.google.inject.Singleton;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -18,22 +19,19 @@ import java.util.UUID;
  * Server Side ONLY! DO not shade into the client.
  * This handles the raw client packets on the sponge server.
  */
-public class SpongeAscendencyPacketHandler extends AscendencyPacketHandler implements RawDataListener {
+@Singleton public class SpongeAscendencyPacketHandler extends AscendencyPacketHandler
+    implements RawDataListener {
 
 
-    private static final SpongeAscendencyPacketHandler instance = new SpongeAscendencyPacketHandler();
     private static final String CHANNEL_NAME = "ASCENDENCY_SPONGE";
     private ChannelBinding.RawDataChannel dataChannel;
 
-    private SpongeAscendencyPacketHandler() {
-    }
-
-    public static SpongeAscendencyPacketHandler getInstance() {
-        return instance;
+    public SpongeAscendencyPacketHandler() {
     }
 
     public void initSponge() {
-        dataChannel = Sponge.getChannelRegistrar().getOrCreateRaw(AscendencyServerPlugin.getInstance(), CHANNEL_NAME);
+        dataChannel = Sponge.getChannelRegistrar()
+            .getOrCreateRaw(AscendencyServerPlugin.getInstance(), CHANNEL_NAME);
     }
 
     public void disable() {
@@ -43,7 +41,8 @@ public class SpongeAscendencyPacketHandler extends AscendencyPacketHandler imple
     }
 
     public void sendMessageTo(Player player, AscendencyPacket packet) {
-        dataChannel.sendTo(player, (channelBuf) -> channelBuf.writeBytes(packet.getFormattedData()));
+        dataChannel
+            .sendTo(player, (channelBuf) -> channelBuf.writeBytes(packet.getFormattedData()));
     }
 
     @Override
@@ -66,8 +65,9 @@ public class SpongeAscendencyPacketHandler extends AscendencyPacketHandler imple
 
             UUID uuid = response.getTargetPlayer();
             Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(uuid);
-            optionalPlayer.ifPresent(
-                    (Player player) -> dataChannel.sendTo(player, (ChannelBuf channel) -> channel.writeBytes(response.getFormattedData()))); //Send data to player.
+            optionalPlayer.ifPresent((Player player) -> dataChannel.sendTo(player,
+                (ChannelBuf channel) -> channel
+                    .writeBytes(response.getFormattedData()))); //Send data to player.
         } catch (ReflectiveOperationException e) {
             throw new IllegalStateException("Unable to interact with packet!", e);
         }

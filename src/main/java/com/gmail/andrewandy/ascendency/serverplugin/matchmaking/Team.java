@@ -9,11 +9,10 @@ public class Team implements Cloneable {
     private Map<UUID, Integer> relativeIDs = new HashMap<>();
     private List<UUID> players;
     private String name;
-    private int minID;
-    private int maxID;
+    private int minID, maxID;
 
-    public Team(String name, int startSize) {
-        this(name, new ArrayList<>(startSize));
+    public Team(String name) {
+        this(name, Collections.emptySet());
     }
 
     public Team(String name, Collection<UUID> players) {
@@ -29,16 +28,18 @@ public class Team implements Cloneable {
 
 
     public void addPlayers(UUID... players) {
-        for (UUID uuid : players) {
-            this.players.remove(uuid);
-            this.players.add(uuid);
-        }
+        removePlayers(players);
+        this.players.addAll(Arrays.asList(players));
     }
 
     public void removePlayers(UUID... players) {
         for (UUID uuid : players) {
             this.players.remove(uuid);
         }
+    }
+
+    public void removePlayers(Iterable<UUID> players) {
+        players.forEach(this.players::remove);
     }
 
     public void setIDs(int maxID, int minID) {
@@ -112,9 +113,8 @@ public class Team implements Cloneable {
         if (!containsPlayer(player)) {
             throw new IllegalArgumentException("Specified player is not in this team!");
         }
-        Map.Entry<?, Integer> ret = relativeIDs.entrySet()
-                .stream()
-                .filter((entry) -> entry.getKey().equals(player))
+        Map.Entry<?, Integer> ret =
+            relativeIDs.entrySet().stream().filter((entry) -> entry.getKey().equals(player))
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("Relative ID not assigned!"));
         return ret.getValue();
@@ -136,15 +136,13 @@ public class Team implements Cloneable {
         assert relativeIDs.size() == maxID - minID;
     }
 
-    @Override
-    public Team clone() {
+    @Override public Team clone() {
         try {
             super.clone();
         } catch (CloneNotSupportedException ex) {
             ex.printStackTrace();
         }
-        Team team = new Team(name, startingPlayerCount);
-        team.players.addAll(this.players);
+        Team team = new Team(name, players);
         team.relativeIDs = new HashMap<>(this.relativeIDs);
         return team;
     }

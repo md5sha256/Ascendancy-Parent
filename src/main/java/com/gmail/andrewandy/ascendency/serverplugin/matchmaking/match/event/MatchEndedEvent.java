@@ -12,8 +12,7 @@ public class MatchEndedEvent extends MatchEvent {
         super(match, name, cause);
     }
 
-    @Override
-    public Cause getCause() {
+    @Override public Cause getCause() {
         return null;
     }
 }

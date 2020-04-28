@@ -6,8 +6,7 @@ public abstract class AbstractRune implements PlayerSpecificRune {
 
     private UUID uuid = UUID.randomUUID();
 
-    @Override
-    public UUID getUniqueID() {
+    @Override public UUID getUniqueID() {
         return uuid;
     }
 }

@@ -39,18 +39,15 @@ public enum ActiveKeyHandler implements KeyBindHandler {
 
     }
 
-    @Override
-    public AscendencyKey getTargetKey() {
+    @Override public AscendencyKey getTargetKey() {
         return AscendencyKey.ACTIVE_KEY;
     }
 
-    @Override
-    public boolean isKeyPressed(Player player) {
+    @Override public boolean isKeyPressed(Player player) {
         return pressed.contains(player.getUniqueId());
     }
 
-    @Override
-    public void onKeyPress(Player player) {
+    @Override public void onKeyPress(Player player) {
         if (new ActiveKeyPressedEvent(player).callEvent()) {
             player.getScoreboard().addObjective(objective);
             objective.getOrCreateScore(Text.of(scoreName)).setScore(1);
@@ -59,8 +56,7 @@ public enum ActiveKeyHandler implements KeyBindHandler {
         new ActiveKeyPressedEvent(player).callEvent();
     }
 
-    @Override
-    public void onKeyRelease(Player player) {
+    @Override public void onKeyRelease(Player player) {
         player.getScoreboard().addObjective(objective);
         objective.getOrCreateScore(Text.of(scoreName)).setScore(0);
         pressed.remove(player.getUniqueId());

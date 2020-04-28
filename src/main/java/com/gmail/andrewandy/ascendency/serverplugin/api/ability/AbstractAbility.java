@@ -10,18 +10,15 @@ public abstract class AbstractAbility implements Ability {
         this.isActive = isActive;
     }
 
-    @Override
-    public boolean isPassive() {
+    @Override public boolean isPassive() {
         return !isActive;
     }
 
-    @Override
-    public boolean isActive() {
+    @Override public boolean isActive() {
         return isActive;
     }
 
-    @Override
-    public String getName() {
+    @Override public String getName() {
         return name;
     }
 }

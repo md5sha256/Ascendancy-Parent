@@ -7,6 +7,7 @@ import com.gmail.andrewandy.ascendency.lib.game.data.game.ChallengerDataPacket;
 import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.Challenger;
 import com.gmail.andrewandy.ascendency.serverplugin.io.SpongeAscendencyPacketHandler;
+import com.google.inject.Inject;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -27,6 +28,7 @@ public enum GameRegistry {
 
     private Map<UUID, Task> syncGuard = new HashMap<>();
     private Collection<UUID> notUpdated = ConcurrentHashMap.newKeySet();
+    @Inject private SpongeAscendencyPacketHandler handler;
 
     private Map<AscendencyChampions, Challenger> championRegistry = new HashMap<>();
 
@@ -34,19 +36,19 @@ public enum GameRegistry {
         championRegistry.remove(champion);
         championRegistry.put(champion, object);
         if (invalidate) {
-            notUpdated.addAll(Sponge.getServer().getOnlinePlayers().stream().map(Player::getUniqueId).collect(Collectors.toSet()));
+            notUpdated.addAll(
+                Sponge.getServer().getOnlinePlayers().stream().map(Player::getUniqueId)
+                    .collect(Collectors.toSet()));
         }
     }
 
-    @Listener
-    public void onPlayerJoin(ClientConnectionEvent.Join event) {
+    @Listener public void onPlayerJoin(ClientConnectionEvent.Join event) {
         Player player = event.getTargetEntity();
         notUpdated.add(player.getUniqueId());
         queueResync(player.getUniqueId());
     }
 
-    @Listener
-    public void onPlayerLeave(ClientConnectionEvent.Disconnect event) {
+    @Listener public void onPlayerLeave(ClientConnectionEvent.Disconnect event) {
         Player player = event.getTargetEntity();
         syncGuard.remove(player.getUniqueId());
         notUpdated.remove(player.getUniqueId());
@@ -92,12 +94,15 @@ public enum GameRegistry {
         syncGuard.put(uuid, null);
         ChallengerDataMarkerPacket packet = new ChallengerDataMarkerPacket(championRegistry.size());
         Queue<AscendencyPacket> packets = new ArrayDeque<>(championRegistry.size() + 1);
-        championRegistry.values().forEach((challenger -> packets.add(new ChallengerDataPacket(challenger.toData()))));
+        championRegistry.values()
+            .forEach((challenger -> packets.add(new ChallengerDataPacket(challenger.toData()))));
         packets.add(packet);
         Optional<Player> optional;
         if (async) {
-            Future<Optional<Player>> future = Common.getSyncExecutor().submit(() -> Sponge.getServer().getPlayer(uuid));
-            while (!future.isDone()) ;
+            Future<Optional<Player>> future =
+                Common.getSyncExecutor().submit(() -> Sponge.getServer().getPlayer(uuid));
+            while (!future.isDone())
+                ;
             try {
                 optional = future.get();
             } catch (ExecutionException | InterruptedException ex) {
@@ -107,7 +112,7 @@ public enum GameRegistry {
             optional = Sponge.getServer().getPlayer(uuid);
         }
         optional.ifPresent(player -> {
-            SpongeAscendencyPacketHandler handler = SpongeAscendencyPacketHandler.getInstance();
+
             while (packets.size() != 0) {
                 handler.sendMessageTo(player, packets.remove());
             }
@@ -140,7 +145,8 @@ public enum GameRegistry {
      * Force a resync for all online players.
      */
     public void forceResyncAll() {
-        forceResync((UUID[]) Sponge.getServer().getOnlinePlayers().stream().map(Player::getUniqueId).toArray());
+        forceResync((UUID[]) Sponge.getServer().getOnlinePlayers().stream().map(Player::getUniqueId)
+            .toArray());
     }
 
     /**
@@ -170,7 +176,9 @@ public enum GameRegistry {
      * Queues a resync of all online players.
      */
     public Task queueResyncAll() {
-        return queueResync((UUID[]) Sponge.getServer().getOnlinePlayers().stream().map(Player::getUniqueId).toArray());
+        return queueResync(
+            (UUID[]) Sponge.getServer().getOnlinePlayers().stream().map(Player::getUniqueId)
+                .toArray());
     }
 
 }
