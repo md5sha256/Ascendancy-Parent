@@ -9,9 +9,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import ninja.leaping.configurate.ConfigurationNode;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 @Singleton public class DraftMatchFactory implements AscendancyMatchFactory {
 
     private final Config config;

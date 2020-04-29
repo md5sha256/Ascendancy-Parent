@@ -6,6 +6,7 @@ import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.Challenger;
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.Rune;
 import com.gmail.andrewandy.ascendency.serverplugin.util.game.TickHandler;
 import com.gmail.andrewandy.ascendency.serverplugin.util.game.Tickable;
+import net.minecraftforge.common.MinecraftForge;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.EventManager;
@@ -43,6 +44,8 @@ public enum Challengers {
             for (Ability ability : challenger.getAbilities()) {
                 manager.unregisterListeners(ability);
                 manager.registerListeners(plugin, ability);
+                MinecraftForge.EVENT_BUS.unregister(ability);
+                MinecraftForge.EVENT_BUS.register(ability);
                 if (ability instanceof Tickable) {
                     TickHandler.getInstance().removeTickable((Tickable) ability);
                     TickHandler.getInstance().submitTickable((Tickable) ability);
@@ -51,6 +54,8 @@ public enum Challengers {
             for (Rune rune : challenger.getRunes()) {
                 manager.unregisterListeners(rune);
                 manager.registerListeners(plugin, rune);
+                MinecraftForge.EVENT_BUS.unregister(rune);
+                MinecraftForge.EVENT_BUS.register(rune);
                 TickHandler.getInstance().removeTickable(rune);
                 TickHandler.getInstance().submitTickable(rune);
             }

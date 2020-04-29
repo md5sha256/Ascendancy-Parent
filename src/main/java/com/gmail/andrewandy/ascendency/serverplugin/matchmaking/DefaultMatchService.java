@@ -25,13 +25,12 @@ import java.util.function.Consumer;
  */
 public class DefaultMatchService implements AscendancyMatchService {
 
-    private Queue<Player> playerQueue = new LinkedList<>();
+    private LinkedList<Player> playerQueue = new LinkedList<>();
 
     private MatchMakingMode mode = MatchMakingMode.BALANCED; //The way server matches players.
 
     private MatchFactory<AscendancyMatch> matchFactory;
     private final Config config;
-    private Consumer<ManagedMatch> onMatchStart; //TODO --> Add a match start handler!
 
     /**
      * Create a new match making service.
@@ -43,6 +42,7 @@ public class DefaultMatchService implements AscendancyMatchService {
     @Inject public DefaultMatchService(AscendancyMatchFactory matchMakingFactory, Config config) {
         this.matchFactory = matchMakingFactory;
         this.config = Objects.requireNonNull(config);
+        registerListeners();
         reloadConfiguration();
     }
 
@@ -162,7 +162,7 @@ public class DefaultMatchService implements AscendancyMatchService {
     }
 
     @SuppressWarnings("unchecked") @Override public int getQueuePosition(Player player) {
-        return ((List<Player>) playerQueue).indexOf(player);
+        return playerQueue.indexOf(player);
     }
 
     @Override public boolean addToQueue(Player player) {
