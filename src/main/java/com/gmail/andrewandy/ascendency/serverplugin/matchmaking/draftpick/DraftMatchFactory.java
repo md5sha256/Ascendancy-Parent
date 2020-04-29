@@ -3,7 +3,6 @@ package com.gmail.andrewandy.ascendency.serverplugin.matchmaking.draftpick;
 import com.gmail.andrewandy.ascendency.serverplugin.configuration.Config;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.AscendancyMatch;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.AscendancyMatchFactory;
-import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.Team;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.Teams;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
