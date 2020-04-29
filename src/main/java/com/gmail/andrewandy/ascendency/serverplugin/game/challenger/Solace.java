@@ -48,9 +48,9 @@ public class Solace extends AbstractChallenger {
         public static final CallbackOfTheAfterlife instance = new CallbackOfTheAfterlife();
         private static final long tickCount = Common.toTicks(5, TimeUnit.SECONDS);
         private final UUID uuid = UUID.randomUUID();
-        private Map<UUID, Long> registered = new HashMap<>(); //Whoever has the souls
-        private Map<UUID, Long> cooldownMap = new HashMap<>();
-        private Map<UUID, UUID> soulMap = new HashMap<>(); //Maps Solace to its target.
+        private final Map<UUID, Long> registered = new HashMap<>(); //Whoever has the souls
+        private final Map<UUID, Long> cooldownMap = new HashMap<>();
+        private final Map<UUID, UUID> soulMap = new HashMap<>(); //Maps Solace to its target.
 
         private CallbackOfTheAfterlife() {
             super("CallBackOfTheAfterlife", true);
@@ -64,7 +64,7 @@ public class Solace extends AbstractChallenger {
             return uuid;
         }
 
-        @Listener public void onActiveKeyPress(ActiveKeyPressedEvent event) {
+        @Listener public void onActiveKeyPress(final ActiveKeyPressedEvent event) {
             if (ActiveKeyHandler.INSTANCE
                 .isKeyPressed(event.getPlayer())) { //If active key was already pressed, skip.
                 return;
@@ -72,16 +72,16 @@ public class Solace extends AbstractChallenger {
             if (cooldownMap.containsKey(event.getPlayer().getUniqueId())) { //If on cooldown, skip
                 return;
             }
-            Optional<Player> lowestHealth = event.getPlayer().getNearbyEntities(10).stream()
+            final Optional<Player> lowestHealth = event.getPlayer().getNearbyEntities(10).stream()
                 .filter(entity -> entity instanceof Player).map(entity -> (Player) entity)
                 .min((Player player1, Player player2) -> {
-                    double h1 = player1.health().get(), h2 = player2.health().get();
+                    final double h1 = player1.health().get(), h2 = player2.health().get();
                     return Double.compare(h1, h2);
                 });
             if (!lowestHealth.isPresent()) {
                 return;
             }
-            Player lowest = lowestHealth.get();
+            final Player lowest = lowestHealth.get();
             soulMap.put(event.getPlayer().getUniqueId(),
                 lowest.getUniqueId()); //Map the invoker (solace) to the person with the soul.
             registered
@@ -89,11 +89,11 @@ public class Solace extends AbstractChallenger {
         }
 
 
-        @Listener(order = Order.LATE) public void onFatalDeath(DamageEntityEvent event) {
-            Entity target = event.getTargetEntity();
-            Optional<HealthData> data = target.get(HealthData.class);
+        @Listener(order = Order.LATE) public void onFatalDeath(final DamageEntityEvent event) {
+            final Entity target = event.getTargetEntity();
+            final Optional<HealthData> data = target.get(HealthData.class);
             assert data.isPresent();
-            HealthData healthData = data.get();
+            final HealthData healthData = data.get();
             if (!event.willCauseDeath()) {
                 return;
             }
@@ -106,7 +106,7 @@ public class Solace extends AbstractChallenger {
             target.offer(healthData);
             soulMap.entrySet().removeIf(
                 (Map.Entry<UUID, UUID> entry) -> { //Key = Solace, Value = Player with soul.
-                    boolean ret = entry.getValue().equals(event.getTargetEntity().getUniqueId());
+                    final boolean ret = entry.getValue().equals(event.getTargetEntity().getUniqueId());
                     if (ret) {
                         cooldownMap.put(entry.getKey(), 0L); //Add Solace to cooldown.
                     }
@@ -127,8 +127,8 @@ public class Solace extends AbstractChallenger {
 
         private static final UndiminishedSoul instance = new UndiminishedSoul();
         private final UUID uniqueID = UUID.randomUUID();
-        private Collection<UUID> active = new HashSet<>();
-        private Map<UUID, Long> dispelCooldown = new HashMap<>();
+        private final Collection<UUID> active = new HashSet<>();
+        private final Map<UUID, Long> dispelCooldown = new HashMap<>();
 
 
         private UndiminishedSoul() {
@@ -139,26 +139,26 @@ public class Solace extends AbstractChallenger {
             return instance;
         }
 
-        public void register(UUID uuid) {
+        public void register(final UUID uuid) {
             deregister(uuid);
             active.add(uuid);
         }
 
-        public void deregister(UUID uuid) {
+        public void deregister(final UUID uuid) {
             active.remove(uuid);
             dispelCooldown.remove(uuid);
         }
 
-        @Listener public void onPotionAdded(ChangeEntityPotionEffectEvent.Gain event) {
+        @Listener public void onPotionAdded(final ChangeEntityPotionEffectEvent.Gain event) {
             if (!active.contains(event.getTargetEntity().getUniqueId())) {
                 return;
             }
-            Entity entity = event.getTargetEntity();
+            final Entity entity = event.getTargetEntity();
             if (!(entity instanceof Player)) {
                 return;
             }
-            Player player = (Player) entity;
-            PotionEffect effect = event.getPotionEffect();
+            final Player player = (Player) entity;
+            final PotionEffect effect = event.getPotionEffect();
             if (effect instanceof BuffEffectSilence) { //If silence then remove.
                 event.setCancelled(true);
                 dispelCooldown.put(player.getUniqueId(), 0L);
@@ -176,10 +176,10 @@ public class Solace extends AbstractChallenger {
         }
 
         @Override public void tick() {
-            for (UUID uuid : active) {
-                Optional<Player> optional = Sponge.getServer().getPlayer(uuid);
+            for (final UUID uuid : active) {
+                final Optional<Player> optional = Sponge.getServer().getPlayer(uuid);
                 optional.ifPresent((Player player) -> {
-                    PotionEffectData peData = player.get(PotionEffectData.class).orElseThrow(
+                    final PotionEffectData peData = player.get(PotionEffectData.class).orElseThrow(
                         () -> new IllegalStateException("Unable to get potion effect data!"));
                     peData.addElement((PotionEffect) new BuffEffectManaRegen(1,
                         2)); //Mana regen 2 | Safe cast as per sponge mixins.

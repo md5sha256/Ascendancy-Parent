@@ -11,9 +11,9 @@ public class ActiveKeyPressedEvent extends AscendencyServerEvent implements Canc
 
     private final Player player;
     private boolean cancel;
-    private Cause cause;
+    private final Cause cause;
 
-    ActiveKeyPressedEvent(Player player) {
+    ActiveKeyPressedEvent(final Player player) {
         this.player = Objects.requireNonNull(player);
         this.cause = Cause.builder().named("Player", player).build();
     }
@@ -26,7 +26,7 @@ public class ActiveKeyPressedEvent extends AscendencyServerEvent implements Canc
         return cancel;
     }
 
-    @Override public void setCancelled(boolean cancel) {
+    @Override public void setCancelled(final boolean cancel) {
         this.cancel = cancel;
     }
 

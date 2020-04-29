@@ -12,7 +12,7 @@ public class Mechanics {
         DamageType() {
         }
 
-        double calculateDamage(Challenger challenger, double damage) {
+        double calculateDamage(final Challenger challenger, final double damage) {
             //return challenger.getDamageType() == this ? damage : damage * modifier;
             throw new UnsupportedOperationException("Unimplemented");
         }

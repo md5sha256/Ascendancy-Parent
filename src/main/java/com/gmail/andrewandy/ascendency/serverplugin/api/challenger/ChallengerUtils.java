@@ -22,8 +22,8 @@ public class ChallengerUtils {
      * @param onRemove    An action to be done when an element is removed, can be null.
      * @return Returns a predicate to be used in {@link java.util.Collection#removeIf(Predicate)}
      */
-    public static Predicate<Map.Entry<UUID, Long>> mapTickPredicate(long removeAfter, TimeUnit unit,
-        Consumer<UUID> onRemove) {
+    public static Predicate<Map.Entry<UUID, Long>> mapTickPredicate(final long removeAfter, final TimeUnit unit,
+        final Consumer<UUID> onRemove) {
         return mapTickPredicate(Common.toTicks(removeAfter, unit), onRemove);
     }
 
@@ -34,8 +34,8 @@ public class ChallengerUtils {
      * @param onRemove    An action to be done when an element is removed, can be null/
      * @return Returns a predicate to be used in {@link java.util.Collection#removeIf(Predicate)}
      */
-    public static Predicate<Map.Entry<UUID, Long>> mapTickPredicate(long removeAfter,
-        Consumer<UUID> onRemove) {
+    public static Predicate<Map.Entry<UUID, Long>> mapTickPredicate(final long removeAfter,
+        final Consumer<UUID> onRemove) {
         return (Map.Entry<UUID, Long> entry) -> {
             entry.setValue(entry.getValue() + 1); //Increment tick count
             if (entry.getValue() >= removeAfter) {
@@ -47,12 +47,12 @@ public class ChallengerUtils {
         }; //Clear if greater than the number of ticks in x seconds.
     }
 
-    public static void teleportPlayer(Player player, double distance) {
+    public static void teleportPlayer(final Player player, final double distance) {
         //player.setLocationSafely(new Location<>(player.getWorld(), player.getTransform().getRotation().mul(distance);));
-        double yaw = player.getTransform().getYaw();
-        double theta = yaw > 360 ? yaw % 360 : yaw;
-        double x, z;
-        Location<World> location = player.getLocation();
+        final double yaw = player.getTransform().getYaw();
+        final double theta = yaw > 360 ? yaw % 360 : yaw;
+        final double x, z;
+        final Location<World> location = player.getLocation();
         x = distance * Math.cos(theta);
         z = distance * Math.sin(theta);
         player.setLocationSafely(
@@ -64,7 +64,7 @@ public class ChallengerUtils {
      * @param potionEffect
      * @return
      */
-    public static boolean isEffectNegative(PotionEffect potionEffect) {
+    public static boolean isEffectNegative(final PotionEffect potionEffect) {
         return false;
     }
 }

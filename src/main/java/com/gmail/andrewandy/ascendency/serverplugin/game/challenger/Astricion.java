@@ -49,7 +49,7 @@ public class Astricion extends AbstractChallenger {
     @Override public IChallengerData toData() {
         try {
             return new ChallengerDataImpl(getName(), new File("Path to data"), getLore());
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new IllegalStateException(e);
         }
     }
@@ -57,11 +57,11 @@ public class Astricion extends AbstractChallenger {
     public static class ReleasedLimit extends AbstractRune {
         private static final ReleasedLimit instance = new ReleasedLimit();
 
-        @Override public void applyTo(Player player) {
+        @Override public void applyTo(final Player player) {
 
         }
 
-        @Override public void clearFrom(Player player) {
+        @Override public void clearFrom(final Player player) {
 
         }
 
@@ -86,11 +86,11 @@ public class Astricion extends AbstractChallenger {
     public static class DiabolicResistance extends AbstractRune {
         public static final DiabolicResistance instance = new DiabolicResistance();
 
-        @Override public void applyTo(Player player) {
+        @Override public void applyTo(final Player player) {
 
         }
 
-        @Override public void clearFrom(Player player) {
+        @Override public void clearFrom(final Player player) {
 
         }
 
@@ -115,11 +115,11 @@ public class Astricion extends AbstractChallenger {
     public static class EmpoweringRage extends AbstractRune {
         public static final EmpoweringRage instance = new EmpoweringRage();
 
-        @Override public void applyTo(Player player) {
+        @Override public void applyTo(final Player player) {
 
         }
 
-        @Override public void clearFrom(Player player) {
+        @Override public void clearFrom(final Player player) {
 
         }
 
@@ -144,7 +144,7 @@ public class Astricion extends AbstractChallenger {
     private static class Suppression extends AbstractAbility {
 
         private static final Suppression instance = new Suppression();
-        private Collection<UUID> active = new HashSet<>();
+        private final Collection<UUID> active = new HashSet<>();
 
         private Suppression() {
             super("Suppression", true);
@@ -154,39 +154,39 @@ public class Astricion extends AbstractChallenger {
             return instance;
         }
 
-        public void activateAs(UUID player) {
+        public void activateAs(final UUID player) {
             active.remove(player);
             active.add(player);
         }
 
-        @Listener public void onEntityDamage(DamageEntityEvent event) {
-            Entity entity = event.getTargetEntity();
+        @Listener public void onEntityDamage(final DamageEntityEvent event) {
+            final Entity entity = event.getTargetEntity();
             if (!(entity instanceof Player) || !active.contains(entity.getUniqueId())) {
                 return;
             }
-            PotionEffect entanglement = (PotionEffect) new BuffEffectEntangled(4,
+            final PotionEffect entanglement = (PotionEffect) new BuffEffectEntangled(4,
                 1); //Safe cast as per forge's runtime changes
-            PotionEffect resistance =
+            final PotionEffect resistance =
                 PotionEffect.builder().potionType(PotionEffectTypes.RESISTANCE).duration(4)
                     .amplifier(2).build();
-            PotionEffectData data = entity.get(PotionEffectData.class).orElseThrow(
+            final PotionEffectData data = entity.get(PotionEffectData.class).orElseThrow(
                 () -> new IllegalStateException(
                     "Unable to get potion data for " + entity.getUniqueId().toString()));
             data.addElement(entanglement).addElement(resistance);
             entity.offer(data);
         }
 
-        @Listener public void onActiveKeyPress(ActiveKeyPressedEvent event) {
-            Optional<ManagedMatch> match =
+        @Listener public void onActiveKeyPress(final ActiveKeyPressedEvent event) {
+            final Optional<ManagedMatch> match =
                 SimplePlayerMatchManager.INSTANCE.getMatchOf(event.getPlayer().getUniqueId());
             match.ifPresent((managedMatch -> {
-                Optional<? extends GamePlayer> optionalGamePlayer =
+                final Optional<? extends GamePlayer> optionalGamePlayer =
                     managedMatch.getGamePlayerOf(event.getPlayer().getUniqueId());
                 if (!optionalGamePlayer.isPresent()) {
                     return;
                 }
-                GamePlayer gamePlayer = optionalGamePlayer.get();
-                Challenger challenger = gamePlayer.getChallenger();
+                final GamePlayer gamePlayer = optionalGamePlayer.get();
+                final Challenger challenger = gamePlayer.getChallenger();
                 if (challenger != Astricion.instance) {
                     return;
                 }
@@ -194,17 +194,17 @@ public class Astricion extends AbstractChallenger {
             }));
         }
 
-        @Listener public void onActiveKeyRelease(ActiveKeyReleasedEvent event) {
-            Optional<ManagedMatch> match =
+        @Listener public void onActiveKeyRelease(final ActiveKeyReleasedEvent event) {
+            final Optional<ManagedMatch> match =
                 SimplePlayerMatchManager.INSTANCE.getMatchOf(event.getPlayer().getUniqueId());
             match.ifPresent((managedMatch -> {
-                Optional<? extends GamePlayer> optionalGamePlayer =
+                final Optional<? extends GamePlayer> optionalGamePlayer =
                     managedMatch.getGamePlayerOf(event.getPlayer().getUniqueId());
                 if (!optionalGamePlayer.isPresent()) {
                     return;
                 }
-                GamePlayer gamePlayer = optionalGamePlayer.get();
-                Challenger challenger = gamePlayer.getChallenger();
+                final GamePlayer gamePlayer = optionalGamePlayer.get();
+                final Challenger challenger = gamePlayer.getChallenger();
                 if (challenger != Astricion.instance) {
                     return;
                 }
@@ -217,7 +217,7 @@ public class Astricion extends AbstractChallenger {
     private static class DemonicCapacity extends AbstractAbility implements Tickable {
         private static final DemonicCapacity instance = new DemonicCapacity();
         private final UUID uniqueID = UUID.randomUUID();
-        private Collection<UUID> active = new HashSet<>();
+        private final Collection<UUID> active = new HashSet<>();
 
         private DemonicCapacity() {
             super("Demonic Capacity", false);
@@ -227,7 +227,7 @@ public class Astricion extends AbstractChallenger {
             return instance;
         }
 
-        public void activateAs(UUID player) {
+        public void activateAs(final UUID player) {
             active.remove(player);
             active.add(player);
         }
@@ -237,14 +237,14 @@ public class Astricion extends AbstractChallenger {
         }
 
         @Override public void tick() {
-            for (UUID uuid : active) {
-                Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(uuid);
+            for (final UUID uuid : active) {
+                final Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(uuid);
                 if (!optionalPlayer.isPresent()) {
                     return;
                 }
-                Player player = optionalPlayer.get();
-                double health = player.health().get();
-                PotionEffectData peData = player.get(PotionEffectData.class).orElseThrow(
+                final Player player = optionalPlayer.get();
+                final double health = player.health().get();
+                final PotionEffectData peData = player.get(PotionEffectData.class).orElseThrow(
                     () -> new IllegalStateException(
                         "Unable to get potion effect data for " + player.getName()));
                 peData.addElement(

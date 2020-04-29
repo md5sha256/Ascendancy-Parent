@@ -52,7 +52,7 @@ public interface Challenger {
      * @param baseDamage The magnitude of the incoming damage.
      * @return The modified damage based on abilities etc.
      */
-    default double calculateDamage(double baseDamage) {
+    default double calculateDamage(final double baseDamage) {
         return baseDamage;
     }
 }

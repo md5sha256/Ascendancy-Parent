@@ -8,14 +8,14 @@ public class Team implements Cloneable {
     private final transient org.spongepowered.api.scoreboard.Team team;
     private Map<UUID, Integer> relativeIDs = new HashMap<>();
     private List<UUID> players;
-    private String name;
+    private final String name;
     private int minID, maxID;
 
-    public Team(String name) {
+    public Team(final String name) {
         this(name, Collections.emptySet());
     }
 
-    public Team(String name, Collection<UUID> players) {
+    public Team(final String name, final Collection<UUID> players) {
         this.name = Objects.requireNonNull(name);
         this.players = new ArrayList<>(players);
         this.startingPlayerCount = players.size();
@@ -27,22 +27,22 @@ public class Team implements Cloneable {
     }
 
 
-    public void addPlayers(UUID... players) {
+    public void addPlayers(final UUID... players) {
         removePlayers(players);
         this.players.addAll(Arrays.asList(players));
     }
 
-    public void removePlayers(UUID... players) {
-        for (UUID uuid : players) {
+    public void removePlayers(final UUID... players) {
+        for (final UUID uuid : players) {
             this.players.remove(uuid);
         }
     }
 
-    public void removePlayers(Iterable<UUID> players) {
+    public void removePlayers(final Iterable<UUID> players) {
         players.forEach(this.players::remove);
     }
 
-    public void setIDs(int maxID, int minID) {
+    public void setIDs(final int maxID, final int minID) {
         this.maxID = Math.min(maxID, minID);
         this.minID = Math.max(maxID, minID);
     }
@@ -67,7 +67,7 @@ public class Team implements Cloneable {
      * @param player The player to check.
      * @return Returns true if the player is registered in this team, false otherwise.
      */
-    public boolean containsPlayer(UUID player) {
+    public boolean containsPlayer(final UUID player) {
         return players.contains(player);
     }
 
@@ -109,11 +109,11 @@ public class Team implements Cloneable {
      * @return Returns the relative ID of the player.
      * @throws IllegalArgumentException Thrown if {@link #containsPlayer(UUID)} returns false.
      */
-    public int getRelativeID(UUID player) {
+    public int getRelativeID(final UUID player) {
         if (!containsPlayer(player)) {
             throw new IllegalArgumentException("Specified player is not in this team!");
         }
-        Map.Entry<?, Integer> ret =
+        final Map.Entry<?, Integer> ret =
             relativeIDs.entrySet().stream().filter((entry) -> entry.getKey().equals(player))
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("Relative ID not assigned!"));
@@ -130,7 +130,7 @@ public class Team implements Cloneable {
         if (players.size() > maxID - minID) {
             throw new IllegalArgumentException("Players size overflow!");
         }
-        for (UUID player : players) {
+        for (final UUID player : players) {
             relativeIDs.put(player, currentID++);
         }
         assert relativeIDs.size() == maxID - minID;
@@ -139,10 +139,10 @@ public class Team implements Cloneable {
     @Override public Team clone() {
         try {
             super.clone();
-        } catch (CloneNotSupportedException ex) {
+        } catch (final CloneNotSupportedException ex) {
             ex.printStackTrace();
         }
-        Team team = new Team(name, players);
+        final Team team = new Team(name, players);
         team.relativeIDs = new HashMap<>(this.relativeIDs);
         return team;
     }

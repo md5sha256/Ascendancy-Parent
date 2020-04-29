@@ -22,9 +22,9 @@ public class AscendencyPlayer implements GamePlayer {
     Collection<Rune> runes = new HashSet<>();
     Collection<PotionEffect> statusEffects = new HashSet<>();
     Challenger challenger;
-    private UUID player;
+    private final UUID player;
 
-    AscendencyPlayer(UUID player, int relativeID) {
+    AscendencyPlayer(final UUID player, final int relativeID) {
         this.player = player;
         this.relativeID = relativeID;
     }
@@ -37,12 +37,12 @@ public class AscendencyPlayer implements GamePlayer {
         return statusEffects;
     }
 
-    @Override public void addStatusEffect(PotionEffect effect) {
+    @Override public void addStatusEffect(final PotionEffect effect) {
         removeStatusEffect(effect);
         statusEffects.add(effect);
     }
 
-    @Override public void removeStatusEffect(PotionEffect effect) {
+    @Override public void removeStatusEffect(final PotionEffect effect) {
         statusEffects.remove(effect);
     }
 
@@ -59,17 +59,17 @@ public class AscendencyPlayer implements GamePlayer {
         return player;
     }
 
-    public boolean uuidMatches(UUID other) {
+    public boolean uuidMatches(final UUID other) {
         return other.equals(player);
     }
 
-    @Override public boolean equals(Object o) {
+    @Override public boolean equals(final Object o) {
         if (this == o)
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
 
-        AscendencyPlayer that = (AscendencyPlayer) o;
+        final AscendencyPlayer that = (AscendencyPlayer) o;
 
         if (relativeID != that.relativeID)
             return false;

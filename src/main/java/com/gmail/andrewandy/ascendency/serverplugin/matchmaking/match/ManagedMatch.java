@@ -14,8 +14,8 @@ public interface ManagedMatch extends Match {
 
     boolean addPlayer(Team team, UUID player);
 
-    default boolean addPlayer(String teamName, UUID player) {
-        Optional<Team> team = getTeamByName(teamName);
+    default boolean addPlayer(final String teamName, final UUID player) {
+        final Optional<Team> team = getTeamByName(teamName);
         return team.filter(value -> addPlayer(value, player)).isPresent();
     }
 
@@ -41,7 +41,7 @@ public interface ManagedMatch extends Match {
 
     GameEngine getGameEngine();
 
-    default Optional<? extends GamePlayer> getGamePlayerOf(UUID player) {
+    default Optional<? extends GamePlayer> getGamePlayerOf(final UUID player) {
         return getGameEngine().getGamePlayerOf(player);
     }
 

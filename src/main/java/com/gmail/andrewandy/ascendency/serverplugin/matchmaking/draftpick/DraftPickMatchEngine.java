@@ -35,12 +35,12 @@ public class DraftPickMatchEngine implements GameEngine {
     private final Collection<AscendencyPlayer> ascendencyPlayers;
 
 
-    DraftPickMatchEngine(DraftPickMatch match) {
+    DraftPickMatchEngine(final DraftPickMatch match) {
         this.matchReference = new WeakReference<>(match);
         int index = 0;
-        Collection<UUID> collection = match.getPlayers();
+        final Collection<UUID> collection = match.getPlayers();
         this.ascendencyPlayers = new HashSet<>(collection.size());
-        for (UUID uuid : collection) {
+        for (final UUID uuid : collection) {
             this.ascendencyPlayers.add(new AscendencyPlayer(uuid, index++));
         }
     }
@@ -60,8 +60,8 @@ public class DraftPickMatchEngine implements GameEngine {
      * @param player The UUID of the player.
      * @return Returns a populated optional or an empty optional if the player is not in this match.
      */
-    @Override public Optional<AscendencyPlayer> getGamePlayerOf(UUID player) {
-        for (AscendencyPlayer ap : ascendencyPlayers) {
+    @Override public Optional<AscendencyPlayer> getGamePlayerOf(final UUID player) {
+        for (final AscendencyPlayer ap : ascendencyPlayers) {
             if (ap.uuidMatches(player)) {
                 return Optional.of(ap);
             }
@@ -98,7 +98,7 @@ public class DraftPickMatchEngine implements GameEngine {
         initScoreBoard();
         Sponge.getEventManager().registerListeners(AscendencyServerPlugin.getInstance(), this);
         ascendencyPlayers.forEach(this::preInitPlayer);
-        DraftPickMatch match = matchReference.get();
+        final DraftPickMatch match = matchReference.get();
         assert match != null;
         match.getTeams().forEach(Team::calculateIDs); //Calculate the relative ids for the players.
     }
@@ -107,7 +107,7 @@ public class DraftPickMatchEngine implements GameEngine {
         ascendencyPlayers.forEach(this::postInitPlayer);
     }
 
-    private void preInitPlayer(AscendencyPlayer player) {
+    private void preInitPlayer(final AscendencyPlayer player) {
         //Does nothing
     }
 
@@ -129,7 +129,7 @@ public class DraftPickMatchEngine implements GameEngine {
         });
     }
 
-    public void rejoin(UUID player) throws IllegalArgumentException {
+    public void rejoin(final UUID player) throws IllegalArgumentException {
         final AscendencyPlayer ascendencyPlayer = getGamePlayerOf(player)
             .orElseThrow(() -> new IllegalArgumentException("Player is not in this match!"));
         preInitPlayer(ascendencyPlayer);
@@ -170,7 +170,7 @@ public class DraftPickMatchEngine implements GameEngine {
      * Scoreboard updater for the command-block implementation
      * of this game engine.
      */
-    @Listener(order = Order.LAST) public void onDamage(DamageEntityEvent event) {
+    @Listener(order = Order.LAST) public void onDamage(final DamageEntityEvent event) {
         final DraftPickMatch match = matchReference.get();
         if (matchReference.isEnqueued() || match == null) {
             disable();
@@ -180,18 +180,21 @@ public class DraftPickMatchEngine implements GameEngine {
         if (!(victim instanceof Player)) {
             return;
         }
-        Optional<AscendencyPlayer> optionalVictimObject = getGamePlayerOf(victim.getUniqueId());
+        final Optional<AscendencyPlayer> optionalVictimObject = getGamePlayerOf(victim.getUniqueId());
         if (!optionalVictimObject.isPresent()) {
             return;
         }
-        Optional<Player> optionalPlayer =
+        final Optional<Player> optionalPlayer =
             event.getCause().get(DamageEntityEvent.CREATOR, UUID.class)
                 .flatMap(Sponge.getServer()::getPlayer);
         if (!optionalPlayer.isPresent()) {
             return;
         }
-        Player player = optionalPlayer.get();
-        Optional<AscendencyPlayer> optional = getGamePlayerOf(player.getUniqueId()); //Player object
+        final Player player = optionalPlayer.get();
+        final Optional<AscendencyPlayer> optional = getGamePlayerOf(player.getUniqueId()); //Player object
+        if (!optional.isPresent()) {
+            return;
+        }
         if (!match.isEngaged()) { //Cancels this event if the match is not engaged.
             event.setCancelled(true);
             return;

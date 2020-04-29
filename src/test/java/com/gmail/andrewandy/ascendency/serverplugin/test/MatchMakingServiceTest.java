@@ -13,11 +13,10 @@ public class MatchMakingServiceTest {
 
     private static final int maxPlayers = 5;
     private static final int minPlayers = 3;
-
-    private static Collection<Team> teams = new HashSet<>();
     private static final DefaultMatchService service =
         new DefaultMatchService(new DraftMatchFactory(new YamlConfig()), new YamlConfig());
-        //TODO Fix
+    private static Collection<Team> teams = new HashSet<>();
+    //TODO Fix
     private static Collection<MockPlayer> players = new HashSet<>();
 
     static {
@@ -31,7 +30,7 @@ public class MatchMakingServiceTest {
 
     public static void populatePlayers() {
         for (int index = 0; index < minPlayers * maxPlayers; index++) {
-            MockPlayer mockPlayer = new MockPlayer();
+            final MockPlayer mockPlayer = new MockPlayer();
             players.add(mockPlayer);
         }
     }

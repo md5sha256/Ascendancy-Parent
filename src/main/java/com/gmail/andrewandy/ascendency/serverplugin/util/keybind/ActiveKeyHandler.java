@@ -20,7 +20,7 @@ public enum ActiveKeyHandler implements KeyBindHandler {
 
     private String scoreName;
     private Objective objective;
-    private Collection<UUID> pressed = new HashSet<>();
+    private final Collection<UUID> pressed = new HashSet<>();
 
     ActiveKeyHandler() {
     }
@@ -32,7 +32,7 @@ public enum ActiveKeyHandler implements KeyBindHandler {
             Common.log(Level.INFO, "&b[Key Binds] Unable to find settings for ActiveKeyHandler.");
             return;
         }
-        String objectiveName = node.getNode("ScoreboardObjective").getString();
+        final String objectiveName = node.getNode("ScoreboardObjective").getString();
         scoreName = node.getNode("ScoreboardScore").getString();
         this.objective = Objective.builder().name(objectiveName).criterion(Criteria.DUMMY).build();
         this.objective.getOrCreateScore(Text.of(scoreName));
@@ -43,11 +43,11 @@ public enum ActiveKeyHandler implements KeyBindHandler {
         return AscendencyKey.ACTIVE_KEY;
     }
 
-    @Override public boolean isKeyPressed(Player player) {
+    @Override public boolean isKeyPressed(final Player player) {
         return pressed.contains(player.getUniqueId());
     }
 
-    @Override public void onKeyPress(Player player) {
+    @Override public void onKeyPress(final Player player) {
         if (new ActiveKeyPressedEvent(player).callEvent()) {
             player.getScoreboard().addObjective(objective);
             objective.getOrCreateScore(Text.of(scoreName)).setScore(1);
@@ -56,7 +56,7 @@ public enum ActiveKeyHandler implements KeyBindHandler {
         new ActiveKeyPressedEvent(player).callEvent();
     }
 
-    @Override public void onKeyRelease(Player player) {
+    @Override public void onKeyRelease(final Player player) {
         player.getScoreboard().addObjective(objective);
         objective.getOrCreateScore(Text.of(scoreName)).setScore(0);
         pressed.remove(player.getUniqueId());

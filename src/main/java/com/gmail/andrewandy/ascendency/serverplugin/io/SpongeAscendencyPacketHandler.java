@@ -40,35 +40,35 @@ import java.util.UUID;
         }
     }
 
-    public void sendMessageTo(Player player, AscendencyPacket packet) {
+    public void sendMessageTo(final Player player, final AscendencyPacket packet) {
         dataChannel
             .sendTo(player, (channelBuf) -> channelBuf.writeBytes(packet.getFormattedData()));
     }
 
     @Override
-    public void handlePayload(ChannelBuf data, RemoteConnection connection, Platform.Type side) {
+    public void handlePayload(final ChannelBuf data, final RemoteConnection connection, final Platform.Type side) {
         if (dataChannel == null) {
             throw new IllegalStateException("Data channel has not be initialised!");
         }
         try {
-            int len = data.readInteger();
-            String rawClazz = new String(data.readBytes(data.readerIndex(), len));
-            Class<?> clazz = Class.forName(rawClazz);
+            final int len = data.readInteger();
+            final String rawClazz = new String(data.readBytes(data.readerIndex(), len));
+            final Class<?> clazz = Class.forName(rawClazz);
             if (!AscendencyPacket.class.isAssignableFrom(clazz)) {
                 return;
             }
-            Class<? extends AscendencyPacket> casted = clazz.asSubclass(AscendencyPacket.class);
-            AscendencyPacket packet;
+            final Class<? extends AscendencyPacket> casted = clazz.asSubclass(AscendencyPacket.class);
+            final AscendencyPacket packet;
             packet = casted.getDeclaredConstructor().newInstance();
             packet.fromBytes(data.readByteArray());
-            AscendencyPacket response = super.onMessage(packet);
+            final AscendencyPacket response = super.onMessage(packet);
 
-            UUID uuid = response.getTargetPlayer();
-            Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(uuid);
+            final UUID uuid = response.getTargetPlayer();
+            final Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(uuid);
             optionalPlayer.ifPresent((Player player) -> dataChannel.sendTo(player,
                 (ChannelBuf channel) -> channel
                     .writeBytes(response.getFormattedData()))); //Send data to player.
-        } catch (ReflectiveOperationException e) {
+        } catch (final ReflectiveOperationException e) {
             throw new IllegalStateException("Unable to interact with packet!", e);
         }
     }

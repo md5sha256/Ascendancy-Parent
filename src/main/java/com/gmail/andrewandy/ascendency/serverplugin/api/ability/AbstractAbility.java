@@ -2,10 +2,10 @@ package com.gmail.andrewandy.ascendency.serverplugin.api.ability;
 
 public abstract class AbstractAbility implements Ability {
 
-    private String name;
-    private boolean isActive;
+    private final String name;
+    private final boolean isActive;
 
-    public AbstractAbility(String name, boolean isActive) {
+    public AbstractAbility(final String name, final boolean isActive) {
         this.name = name;
         this.isActive = isActive;
     }

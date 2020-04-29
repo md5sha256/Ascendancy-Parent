@@ -16,7 +16,7 @@ public interface GamePlayer {
 
     Collection<PotionEffect> getStatusEffects();
 
-    default Optional<PotionEffect> getStatusEffect(String effectID) {
+    default Optional<PotionEffect> getStatusEffect(final String effectID) {
         return getStatusEffects().stream()
             .filter(((PotionEffect pe) -> pe.getType().getName().equalsIgnoreCase(effectID)))
             .findAny();
@@ -24,7 +24,7 @@ public interface GamePlayer {
 
     void addStatusEffect(PotionEffect effect);
 
-    default void removeStatusEffect(String effectID) {
+    default void removeStatusEffect(final String effectID) {
         getStatusEffect(effectID).ifPresent(this::removeStatusEffect);
     }
 

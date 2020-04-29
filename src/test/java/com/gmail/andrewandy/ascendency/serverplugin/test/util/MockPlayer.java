@@ -54,7 +54,7 @@ import java.util.*;
 
 public class MockPlayer implements Player {
 
-    private UUID uniqueID = UUID.randomUUID();
+    private final UUID uniqueID = UUID.randomUUID();
 
     @Override public UUID getUniqueId() {
         return uniqueID;
@@ -64,12 +64,12 @@ public class MockPlayer implements Player {
         return Optional.empty();
     }
 
-    @Override public Optional<Container> openInventory(Inventory inventory, Cause cause)
+    @Override public Optional<Container> openInventory(final Inventory inventory, final Cause cause)
         throws IllegalArgumentException {
         return Optional.empty();
     }
 
-    @Override public boolean closeInventory(Cause cause) throws IllegalArgumentException {
+    @Override public boolean closeInventory(final Cause cause) throws IllegalArgumentException {
         return false;
     }
 
@@ -85,7 +85,7 @@ public class MockPlayer implements Player {
         return false;
     }
 
-    @Override public MessageChannelEvent.Chat simulateChat(Text message, Cause cause) {
+    @Override public MessageChannelEvent.Chat simulateChat(final Text message, final Cause cause) {
         return null;
     }
 
@@ -97,7 +97,7 @@ public class MockPlayer implements Player {
         return null;
     }
 
-    @Override public void sendResourcePack(ResourcePack pack) {
+    @Override public void sendResourcePack(final ResourcePack pack) {
 
     }
 

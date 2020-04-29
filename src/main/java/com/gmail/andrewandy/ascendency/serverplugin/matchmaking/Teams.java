@@ -11,12 +11,20 @@ public enum Teams {
 
     ARCTIC(AscendencyTeam.ARCTIC, 1, 5), BLAZIC(AscendencyTeam.BLAZIC, 6, 10);
 
-    private AscendencyTeam ascendencyTeam;
-    private Team team = new Team(CommonUtils.capitalise(name().toLowerCase()), new ArrayList<>(3));
+    private final AscendencyTeam ascendencyTeam;
+    private final Team team = new Team(CommonUtils.capitalise(name().toLowerCase()), new ArrayList<>(3));
 
-    Teams(AscendencyTeam ascendencyTeam, int min, int max) {
+    Teams(final AscendencyTeam ascendencyTeam, final int min, final int max) {
         this.ascendencyTeam = ascendencyTeam;
         team.setIDs(min, max);
+    }
+
+    public static Collection<Team> createTeamList() {
+        List<Team> teams = new ArrayList<>(values().length);
+        for (final Teams team : values()) {
+            teams.add(team.asTeamObject());
+        }
+        return teams;
     }
 
     public AscendencyTeam asAscendencyTeam() {
@@ -25,13 +33,5 @@ public enum Teams {
 
     public Team asTeamObject() {
         return team.clone();
-    }
-
-    public static Collection<Team> createTeamList() {
-        List<Team> teams = new ArrayList<>(values().length);
-        for (Teams team : values()) {
-            teams.add(team.asTeamObject());
-        }
-        return teams;
     }
 }

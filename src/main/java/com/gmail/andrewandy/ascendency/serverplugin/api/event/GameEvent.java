@@ -12,7 +12,7 @@ public abstract class GameEvent extends AscendencyServerEvent {
     private final Cause cause;
 
 
-    public GameEvent(Player player, Team team) {
+    public GameEvent(final Player player, final Team team) {
         this.player = player;
         this.playerTeam = team;
         this.cause = Cause.builder().named("Player", player).build();

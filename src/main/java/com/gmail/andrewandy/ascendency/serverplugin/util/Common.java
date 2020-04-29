@@ -35,7 +35,7 @@ public class Common {
             Sponge.getScheduler().createSyncExecutor(AscendencyServerPlugin.getInstance());
     }
 
-    public static void setPrefix(String prefix) {
+    public static void setPrefix(final String prefix) {
         Common.prefix = prefix;
     }
 
@@ -43,12 +43,12 @@ public class Common {
         return executorService;
     }
 
-    public static void tell(MessageReceiver receiver, String... messages) {
+    public static void tell(final MessageReceiver receiver, final String... messages) {
         Objects.requireNonNull(receiver).sendMessage(Text.of((Object[]) messages));
     }
 
-    public static void log(Level level, String... messages) {
-        Logger logger = AscendencyServerPlugin.getInstance().getLogger();
+    public static void log(final Level level, final String... messages) {
+        final Logger logger = AscendencyServerPlugin.getInstance().getLogger();
         for (String message : messages) {
             message = colorise(message.concat(prefix + " " + message));
             if (level == Level.INFO) {
@@ -63,16 +63,16 @@ public class Common {
         }
     }
 
-    public static long toTicks(long time, TimeUnit timeUnit) {
+    public static long toTicks(final long time, final TimeUnit timeUnit) {
         return TimeUnit.MILLISECONDS.convert(time, timeUnit) * 5; //one tick = 5ms
     }
 
-    public static void addHealth(Player player, double health) {
+    public static void addHealth(final Player player, final double health) {
         addHealth(player, health, false);
     }
 
-    public static void addHealth(Player player, double health, boolean overheal) {
-        HealthData data = player.getHealthData();
+    public static void addHealth(final Player player, final double health, final boolean overheal) {
+        final HealthData data = player.getHealthData();
         data.set(data.health().transform((val) -> {
             double ret = health + val;
             if (val + health > data.maxHealth().get()) {
@@ -83,36 +83,36 @@ public class Common {
         player.offer(data);
     }
 
-    public static String colorise(String string) {
+    public static String colorise(final String string) {
         return colorise(Text.of(string));
     }
 
-    public static String colorise(Text text) {
+    public static String colorise(final Text text) {
         return TextSerializers.formattingCode('&').serialize(text);
     }
 
-    public static String stripColor(String str) {
+    public static String stripColor(final String str) {
         return TextSerializers.formattingCode('&').stripCodes(str);
     }
 
-    public static String stripColor(Text text) {
+    public static String stripColor(final Text text) {
         return stripColor(Objects.requireNonNull(text).toString());
     }
 
-    public static IEntityExtension getExtensionFor(Player player) {
+    public static IEntityExtension getExtensionFor(final Player player) {
         return EntityExtension.For((EntityLivingBase) player);
     }
 
-    public static float getMana(Player player) {
+    public static float getMana(final Player player) {
         return getExtensionFor(player).getCurrentMana();
     }
 
-    public static void addMana(Player player, float mana) {
-        IEntityExtension extension = getExtensionFor(player);
+    public static void addMana(final Player player, final float mana) {
+        final IEntityExtension extension = getExtensionFor(player);
         extension.setCurrentMana(extension.getCurrentMana() + mana);
     }
 
-    public static void removeMana(Player player, float mana) {
+    public static void removeMana(final Player player, final float mana) {
         getExtensionFor(player).deductMana(mana);
     }
 
@@ -124,8 +124,8 @@ public class Common {
      * @param location  The extent which to loop through
      * @param predicate The predicate to test, can be null.
      */
-    public static <T extends Entity> Collection<T> getEntities(Class<T> type, Extent location,
-        Predicate<T> predicate) {
+    public static <T extends Entity> Collection<T> getEntities(final Class<T> type, final Extent location,
+        final Predicate<T> predicate) {
         Objects.requireNonNull(type);
         Objects.requireNonNull(location);
         Stream<T> stream = location.getEntities().stream().filter(type::isInstance).map(type::cast);
@@ -135,13 +135,16 @@ public class Common {
         return stream.collect(Collectors.toSet());
     }
 
-    public static <T extends Entity> List<T> getSortedEntities(Class<T> type, Extent location,
-        Predicate<T> predicate, Comparator<T> sorter) {
+    public static <T extends Entity> List<T> getSortedEntities(final Class<T> type, final Extent location,
+        final Predicate<T> predicate, final Comparator<T> sorter) {
         Objects.requireNonNull(type);
         Objects.requireNonNull(location);
         Stream<T> stream = location.getEntities().stream().filter(type::isInstance).map(type::cast);
         if (predicate != null) {
             stream = stream.filter(predicate);
+        }
+        if (sorter != null) {
+            stream = stream.sorted(sorter);
         }
         return stream.collect(Collectors.toList());
     }

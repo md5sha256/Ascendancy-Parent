@@ -5,9 +5,9 @@ import com.gmail.andrewandy.ascendency.serverplugin.configuration.YamlConfig;
 import com.gmail.andrewandy.ascendency.serverplugin.io.SpongeAscendencyPacketHandler;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.AscendancyMatch;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.AscendancyMatchService;
+import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.DefaultMatchService;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.MatchFactory;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.draftpick.DraftMatchFactory;
-import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.DefaultMatchService;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
@@ -26,7 +26,8 @@ import com.google.inject.TypeLiteral;
         final Config config = new YamlConfig();
         bind(Config.class).toInstance(config);
         matchFactory = new DraftMatchFactory(config);
-        bind(new TypeLiteral<MatchFactory<AscendancyMatch>>(){}).toInstance(matchFactory);
+        bind(new TypeLiteral<MatchFactory<AscendancyMatch>>() {
+        }).toInstance(matchFactory);
         bind(AscendancyMatchService.class).to(DefaultMatchService.class);
     }
 }

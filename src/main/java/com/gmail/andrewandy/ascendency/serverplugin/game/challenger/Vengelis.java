@@ -37,69 +37,87 @@ import java.util.function.Predicate;
 
 public class Vengelis extends AbstractChallenger {
 
+    private static final Vengelis instance = new Vengelis();
+
     @Inject private static PlayerMatchManager matchManager;
 
     private Vengelis() {
-        super("Vengelis", new Ability[0], new PlayerSpecificRune[0],
+        super("Vengelis", new Ability[] {Gyration.instance}, new PlayerSpecificRune[0],
             Challengers.getLoreOf("Vengelis"));
     }
 
+    public static Vengelis getInstance() {
+        return instance;
+    }
+
+    @Override public IChallengerData toData() {
+        try {
+            return new ChallengerDataImpl(getName(), new File("Some path"), getLore());
+        } catch (final IOException ex) {
+            throw new IllegalStateException(ex);
+        }
+    }
+
+
     public static class Gyration extends AbstractAbility implements Tickable {
 
-        private Map<UUID, Long> cooldownMap = new HashMap<>();
-        private Collection<UUID> registered = new HashSet<>(), active = new HashSet<>();
+        public static final Gyration instance = new Gyration();
+
+        private final UUID uuid = UUID.randomUUID();
+        private final Map<UUID, Long> cooldownMap = new HashMap<>();
+        private final Collection<UUID> registered = new HashSet<>(), active = new HashSet<>();
 
         private Gyration() {
             super("Gyration", true);
         }
 
-        @Listener(order = Order.LATE) public void onActivePressed(ActiveKeyPressedEvent event) {
-            Player player = event.getPlayer();
+        @Listener(order = Order.LATE) public void onActivePressed(final ActiveKeyPressedEvent event) {
+            final Player player = event.getPlayer();
             if (!isActiveOnPlayer(player.getUniqueId()) && registered
                 .contains(player.getUniqueId())) {
                 active.add(player.getUniqueId());
             }
         }
 
-        @SubscribeEvent public void onSpellCast(SpellCastEvent event) {
-            EntityLivingBase entityLivingBase = event.entityLiving;
-            if (!canExecuteRoot(entityLivingBase.getPersistentID())) {
+        @SubscribeEvent public void onSpellCast(final SpellCastEvent event) {
+            final EntityLivingBase caster = event.entityLiving;
+            if (!canExecuteRoot(caster.getPersistentID())) {
                 return;
             }
-            Sponge.getServer().getPlayer(entityLivingBase.getPersistentID())
-                .ifPresent(this::executeAsPlayer);
+            Sponge.getServer().getPlayer(caster.getPersistentID()).ifPresent(this::executeAsPlayer);
         }
 
-        @Listener public void onAttack(DamageEntityEvent event) {
-            Optional<Player> source = event.getCause().get(DamageEntityEvent.SOURCE, Player.class);
+        @Listener public void onAttack(final DamageEntityEvent event) {
+            final Optional<Player> source = event.getCause().get(DamageEntityEvent.CREATOR, UUID.class)
+                .flatMap(Sponge.getServer()::getPlayer);
             if (!source.isPresent()) {
                 return;
             }
-            Player player = source.get();
+            final Player player = source.get();
             if (canExecuteRoot(player.getUniqueId())) {
                 executeAsPlayer(player);
             }
         }
 
-        private boolean canExecuteRoot(UUID player) {
+        private boolean canExecuteRoot(final UUID player) {
             return !cooldownMap.containsKey(player) && isActiveOnPlayer(player);
         }
 
-        private boolean isActiveOnPlayer(UUID player) {
+        private boolean isActiveOnPlayer(final UUID player) {
             return active.contains(player);
         }
 
-        public void registerPlayer(UUID player) {
+        public void registerPlayer(final UUID player) {
             unregisterPlayer(player);
             registered.add(player);
         }
 
-        public void unregisterPlayer(UUID player) {
+        public void unregisterPlayer(final UUID player) {
             registered.remove(player);
         }
 
 
-        private void executeAsPlayer(Player player) {
+        private void executeAsPlayer(final Player player) {
             active.remove(player.getUniqueId());
             final PotionEffectData playerPEData = player.get(PotionEffectData.class)
                 .orElseThrow(() -> new IllegalStateException("Unable to get potion data!"));
@@ -125,18 +143,13 @@ public class Vengelis extends AbstractChallenger {
             cooldownMap.put(player.getUniqueId(), 0L);
         }
 
+        @Override public UUID getUniqueID() {
+            return uuid;
+        }
+
         @Override public void tick() {
             cooldownMap.entrySet()
                 .removeIf(ChallengerUtils.mapTickPredicate(10, TimeUnit.SECONDS, null));
-        }
-    }
-
-
-    @Override public IChallengerData toData() {
-        try {
-            return new ChallengerDataImpl(getName(), new File("Some path"), getLore());
-        } catch (IOException ex) {
-            throw new IllegalStateException(ex);
         }
     }
 }

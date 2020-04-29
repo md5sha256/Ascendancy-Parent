@@ -7,19 +7,19 @@ import java.util.UUID;
 
 public class PlayerLeftMatchEvent extends MatchEvent {
 
-    private UUID player;
+    private final UUID player;
 
-    public PlayerLeftMatchEvent(UUID player, Match match) {
+    public PlayerLeftMatchEvent(final UUID player, final Match match) {
         super(match);
         this.player = Objects.requireNonNull(player);
     }
 
-    public PlayerLeftMatchEvent(Match match, UUID player) {
+    public PlayerLeftMatchEvent(final Match match, final UUID player) {
         super(match);
         this.player = player;
     }
 
-    public PlayerLeftMatchEvent(Match match, UUID player, String name, Object cause) {
+    public PlayerLeftMatchEvent(final Match match, final UUID player, final String name, final Object cause) {
         super(match, name, cause);
         this.player = player;
     }

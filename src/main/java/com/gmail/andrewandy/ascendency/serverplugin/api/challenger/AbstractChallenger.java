@@ -10,10 +10,10 @@ public abstract class AbstractChallenger implements Challenger {
     private final String name;
     private final PlayerSpecificRune[] runes;
     private final List<String> lore;
-    private Ability[] abilities;
+    private final Ability[] abilities;
 
-    public AbstractChallenger(String name, Ability[] abilities, PlayerSpecificRune[] runes,
-        List<String> lore) {
+    public AbstractChallenger(final String name, final Ability[] abilities, final PlayerSpecificRune[] runes,
+        final List<String> lore) {
         this.name = name;
         this.runes = runes;
         this.abilities = abilities;

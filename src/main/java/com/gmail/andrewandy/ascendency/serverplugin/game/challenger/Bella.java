@@ -82,9 +82,9 @@ public class Bella extends AbstractChallenger {
      * @param radius The radius.
      * @return Returns a Collection of Blocks which were placed.
      */
-    public static Collection<Location<World>> generateCircleBlocks(Location<World> centre,
-        int radius) {
-        Collection<Location<World>> rawCircle = MathUtils.createCircle(centre, radius);
+    public static Collection<Location<World>> generateCircleBlocks(final Location<World> centre,
+        final int radius) {
+        final Collection<Location<World>> rawCircle = MathUtils.createCircle(centre, radius);
         final Cause cause =
             Cause.builder().named("Bella", AscendencyServerPlugin.getInstance()).build();
         rawCircle.forEach((location -> location.setBlockType(BlockTypes.AIR, cause)));
@@ -94,7 +94,7 @@ public class Bella extends AbstractChallenger {
     @Override public IChallengerData toData() {
         try {
             return new ChallengerDataImpl(getName(), new File("Path to icon"), getLore());
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             throw new IllegalStateException(ex);
         }
     }
@@ -102,9 +102,9 @@ public class Bella extends AbstractChallenger {
     public static class CircletOfTheAccused extends AbstractAbility implements Tickable {
         private static final CircletOfTheAccused instance = new CircletOfTheAccused();
         private static final long timeout = Common.toTicks(5, TimeUnit.SECONDS);
-        private UUID uniqueID = UUID.randomUUID();
-        private Map<UUID, CircletData> registeredMap = new HashMap<>();
-        private Map<UUID, Long> cooldownMap = new HashMap<>();
+        private final UUID uniqueID = UUID.randomUUID();
+        private final Map<UUID, CircletData> registeredMap = new HashMap<>();
+        private final Map<UUID, Long> cooldownMap = new HashMap<>();
         private DamageEntityEvent lastDamageEvent;
 
         private CircletOfTheAccused() {
@@ -126,8 +126,8 @@ public class Bella extends AbstractChallenger {
          * @param radius           The radius of the circle.
          * @param respectCooldowns Whether we should respect cooldowns.
          */
-        public void activateAs(UUID caster, UUID targetUID, int radius, boolean respectCooldowns) {
-            Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(targetUID);
+        public void activateAs(final UUID caster, final UUID targetUID, final int radius, final boolean respectCooldowns) {
+            final Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(targetUID);
             if (!optionalPlayer.isPresent()) {
                 throw new IllegalArgumentException("Player does not exist!");
             }
@@ -137,18 +137,18 @@ public class Bella extends AbstractChallenger {
             }
             cooldownMap.remove(caster);
             cooldownMap.put(caster, 0L); //Update cooldowns
-            Player player = optionalPlayer.get();
-            Collection<Entity> nearby = player.getNearbyEntities(
+            final Player player = optionalPlayer.get();
+            final Collection<Entity> nearby = player.getNearbyEntities(
                 (entity) -> MathUtils.calculateDistance(entity.getLocation(), player.getLocation())
                     <= 10D);
             Player target = null;
             double leastDistance = Double.MAX_VALUE;
-            Location<World> location = player.getLocation();
-            for (Entity entity : nearby) {
+            final Location<World> location = player.getLocation();
+            for (final Entity entity : nearby) {
                 if (!(entity instanceof Player)) {
                     continue;
                 }
-                double distance = MathUtils.calculateDistance(location, entity.getLocation());
+                final double distance = MathUtils.calculateDistance(location, entity.getLocation());
                 if (distance < leastDistance) {
                     target = (Player) entity;
                     leastDistance = distance;
@@ -175,7 +175,7 @@ public class Bella extends AbstractChallenger {
          * @param player The player object to clear from.
          * @return Returns if the operation was successful.
          */
-        public boolean clearCirclet(Player player) {
+        public boolean clearCirclet(final Player player) {
             if (!registeredMap.containsKey(player.getUniqueId())) {
                 return false;
             }
@@ -197,19 +197,19 @@ public class Bella extends AbstractChallenger {
                     }));
 
 
-                Optional<ManagedMatch> match = SimplePlayerMatchManager.INSTANCE.getMatchOf(key);
+                final Optional<ManagedMatch> match = SimplePlayerMatchManager.INSTANCE.getMatchOf(key);
                 match.ifPresent(managedMatch -> {
-                    Team team = managedMatch.getTeamOf(key);
-                    Collection<Player> players = Common
+                    final Team team = managedMatch.getTeamOf(key);
+                    final Collection<Player> players = Common
                         .getEntities(Player.class, CoupDEclat.getInstance().getExtentViewFor(data),
                             (Player player) -> {
-                                Optional<Team> optional = SimplePlayerMatchManager.INSTANCE
+                                final Optional<Team> optional = SimplePlayerMatchManager.INSTANCE
                                     .getTeamOf(player.getUniqueId());
                                 return optional.isPresent() && optional.get() != team && data
                                     .generateCircleTest().test(player.getLocation());
                             });
                     players.forEach((Player player) -> {
-                        Optional<Team> optionalTeam =
+                        final Optional<Team> optionalTeam =
                             SimplePlayerMatchManager.INSTANCE.getTeamOf(key);
                         if (!optionalTeam.isPresent()) {
                             return;
@@ -219,7 +219,7 @@ public class Bella extends AbstractChallenger {
                         }
                         //TODO Set scoreboard so cmd-block impl knows they are in circle.
                         //Means they are an enemy.
-                        PotionEffectData peData = player.get(PotionEffectData.class).orElseThrow(
+                        final PotionEffectData peData = player.get(PotionEffectData.class).orElseThrow(
                             () -> new IllegalArgumentException(
                                 "Unable to get PotionEffect data for " + player.getName()));
 
@@ -235,35 +235,35 @@ public class Bella extends AbstractChallenger {
         }
 
 
-        @Listener public void onActiveKeyPress(ActiveKeyPressedEvent event) {
+        @Listener public void onActiveKeyPress(final ActiveKeyPressedEvent event) {
             if (ActiveKeyHandler.INSTANCE
                 .isKeyPressed(event.getPlayer())) { //If player was holding the key then skip.
                 return;
             }
-            ProcEvent procEvent = new ProcEvent(event.getPlayer(), event.getPlayer(), 4);
+            final ProcEvent procEvent = new ProcEvent(event.getPlayer(), event.getPlayer(), 4);
             if (procEvent.callEvent()) { //If not cancelled
-                Optional<ManagedMatch> match =
+                final Optional<ManagedMatch> match =
                     SimplePlayerMatchManager.INSTANCE.getMatchOf(uniqueID);
                 if (!match.isPresent()) {
                     return;
                 }
-                Player target = procEvent.getTarget();
+                final Player target = procEvent.getTarget();
                 activateAs(procEvent.getInvoker().getUniqueId(),
                     procEvent.getTarget().getUniqueId(), procEvent.circletRadius, true);
             }
         }
 
-        @SubscribeEvent public void onSpellCast(SpellCastEvent.Post event) {
-            ItemStack spell = event.spell;
-            int id = SpellBase.getIdFromItem(spell.getItem());
-            Item spellBase = SpellBase.REGISTRY.getObjectById(id);
+        @SubscribeEvent public void onSpellCast(final SpellCastEvent.Post event) {
+            final ItemStack spell = event.spell;
+            final int id = SpellBase.getIdFromItem(spell.getItem());
+            final Item spellBase = SpellBase.REGISTRY.getObjectById(id);
             if (!(spellBase instanceof SpellBase)) {
                 return;
             }
             System.out.println(spellBase.getClass().toString());
-            List<SpellComponent> component = SpellUtils.getComponentsForStage(spell, 1);
+            final List<SpellComponent> component = SpellUtils.getComponentsForStage(spell, 1);
             boolean contains = false;
-            for (SpellComponent c : component) {
+            for (final SpellComponent c : component) {
                 if (c instanceof Heal) {
                     contains = true;
                     break;
@@ -275,11 +275,11 @@ public class Bella extends AbstractChallenger {
 
         }
 
-        @Listener public void onFatalDamage(DamageEntityEvent event) {
+        @Listener public void onFatalDamage(final DamageEntityEvent event) {
             if (event == lastDamageEvent) {
                 return;
             }
-            Entity entity = event.getTargetEntity();
+            final Entity entity = event.getTargetEntity();
             if (!event.willCauseDeath()) {
                 return;
             }
@@ -288,7 +288,7 @@ public class Bella extends AbstractChallenger {
                 .findAny().ifPresent((circletData -> {
 
                 event.setCancelled(true);
-                Cause cause = Cause.builder().named("Source", circletData.caster).build();
+                final Cause cause = Cause.builder().named("Source", circletData.caster).build();
                 lastDamageEvent = SpongeEventFactory
                     .createDamageEntityEvent(cause, event.getOriginalFunctions(), entity,
                         event.getOriginalDamage());
@@ -309,7 +309,7 @@ public class Bella extends AbstractChallenger {
             private int circletRadius;
             private Player target;
 
-            ProcEvent(Player invoker, Player target, int circletRadius) {
+            ProcEvent(final Player invoker, final Player target, final int circletRadius) {
                 this.cause = Cause.builder().named("Bella", invoker).build();
                 this.invoker = invoker;
                 this.target = target;
@@ -323,11 +323,11 @@ public class Bella extends AbstractChallenger {
                 return cancel;
             }
 
-            @Override public void setCancelled(boolean cancel) {
+            @Override public void setCancelled(final boolean cancel) {
                 this.cancel = cancel;
             }
 
-            public void setCircletRadius(int radius) {
+            public void setCircletRadius(final int radius) {
                 if (circletRadius < 1) {
                     throw new IllegalArgumentException("Circle radius must be greater than 0");
                 }
@@ -342,7 +342,7 @@ public class Bella extends AbstractChallenger {
                 return target;
             }
 
-            public void setTarget(Player target) {
+            public void setTarget(final Player target) {
                 this.target = target;
             }
 
@@ -358,12 +358,12 @@ public class Bella extends AbstractChallenger {
         private static class CircletData {
 
             private UUID caster;
-            private int radius;
+            private final int radius;
             private long tickCount = 0;
             private Location<World> ringCenter;
             private Collection<Location<World>> ringBlocks;
 
-            public CircletData(UUID caster, int radius) {
+            public CircletData(final UUID caster, final int radius) {
                 this.caster = caster;
                 if (radius < 1) {
                     throw new IllegalArgumentException("Radius must be greater than 1");
@@ -379,7 +379,7 @@ public class Bella extends AbstractChallenger {
                 return caster;
             }
 
-            public void setCaster(UUID caster) {
+            public void setCaster(final UUID caster) {
                 this.caster = caster;
             }
 
@@ -391,7 +391,7 @@ public class Bella extends AbstractChallenger {
                 return ringBlocks == null ? new HashSet<>() : new HashSet<>(ringBlocks);
             }
 
-            public void setRingBlocks(Collection<Location<World>> ringBlocks) {
+            public void setRingBlocks(final Collection<Location<World>> ringBlocks) {
                 this.ringBlocks = ringBlocks;
             }
 
@@ -399,7 +399,7 @@ public class Bella extends AbstractChallenger {
                 return ringCenter;
             }
 
-            public void setRingCenter(Location<World> ringCenter) {
+            public void setRingCenter(final Location<World> ringCenter) {
                 this.ringCenter = ringCenter;
             }
 
@@ -417,7 +417,7 @@ public class Bella extends AbstractChallenger {
             public void reset() {
                 this.tickCount = 0L;
                 this.ringCenter = null;
-                Cause cause =
+                final Cause cause =
                     Cause.builder().named("Bella", AscendencyServerPlugin.getInstance()).build();
                 ringBlocks.forEach(location -> location.setBlockType(BlockTypes.AIR, cause));
                 this.ringBlocks = null;
@@ -429,9 +429,9 @@ public class Bella extends AbstractChallenger {
     public static class ReleasedRebellion extends AbstractAbility implements Tickable {
 
         private static final ReleasedRebellion instance = new ReleasedRebellion();
-        private UUID uuid = UUID.randomUUID();
-        private Collection<UUID> active = new HashSet<>();
-        private Map<UUID, Pair<UUID, Long>> tickMap = new HashMap<>();
+        private final UUID uuid = UUID.randomUUID();
+        private final Collection<UUID> active = new HashSet<>();
+        private final Map<UUID, Pair<UUID, Long>> tickMap = new HashMap<>();
 
         private ReleasedRebellion() {
             super("Released Rebellion", false);
@@ -441,23 +441,26 @@ public class Bella extends AbstractChallenger {
             return instance;
         }
 
-        public void register(UUID player) {
+        public void register(final UUID player) {
             active.remove(player);
             active.add(player);
         }
 
-        public void unregister(UUID player) {
+        public void unregister(final UUID player) {
             active.remove(player);
             active.add(player);
         }
 
-        @Listener public void onPlayerAttack(DamageEntityEvent event) {
-            Entity target = event.getTargetEntity();
-            Player player;
-            Optional<Optional<Player>> optionalPlayer = event.getCause().allOf(UUID.class).stream()
-                .map((uuid) -> Sponge.getServer().getPlayer(uuid)).findAny();
-            player = optionalPlayer.orElse(Optional.empty()).orElse(null);
-            if (player == null || !active.contains(player.getUniqueId())) {
+        @Listener public void onPlayerAttack(final DamageEntityEvent event) {
+            final Entity target = event.getTargetEntity();
+            final Optional<Player> optionalPlayer =
+                event.getCause().get(DamageEntityEvent.CREATOR, UUID.class)
+                    .flatMap(Sponge.getServer()::getPlayer);
+            if (!optionalPlayer.isPresent()) {
+                return;
+            }
+            final Player player = optionalPlayer.get();
+            if (!active.contains(player.getUniqueId())) {
                 return;
             }
             tickMap.compute(player.getUniqueId(),
@@ -470,21 +473,22 @@ public class Bella extends AbstractChallenger {
         }
 
         @Override public void tick() {
-            long ticks = Common.toTicks(3, TimeUnit.SECONDS);
+            final long ticks = Common.toTicks(3, TimeUnit.SECONDS);
             tickMap.entrySet().removeIf(entry -> {
-                Pair<UUID, Long> pair = entry.getValue();
-                long val = pair.getValue() + 1;
+                final Pair<UUID, Long> pair = entry.getValue();
+                final long val = pair.getValue() + 1;
                 entry.setValue(new Pair<>(pair.getKey(), val));
                 return val >= ticks;
             });
         }
 
-        @Listener public void onProc(CircletOfTheAccused.ProcEvent event) { //Handles the proc event
-            Player invoker = event.getInvoker();
+        @Listener
+        public void onProc(final CircletOfTheAccused.ProcEvent event) { //Handles the proc event
+            final Player invoker = event.getInvoker();
             if (!tickMap.containsKey(invoker.getUniqueId())) {
                 return;
             }
-            Optional<Player> optionalPlayer =
+            final Optional<Player> optionalPlayer =
                 Sponge.getServer().getPlayer(tickMap.get(invoker.getUniqueId()).getKey());
             optionalPlayer.ifPresent(event::setTarget);
         }
@@ -494,19 +498,19 @@ public class Bella extends AbstractChallenger {
     public static class CoupDEclat extends AbstractRune {
 
         private static final CoupDEclat instance = new CoupDEclat();
-        private Collection<UUID> active = new HashSet<>();
-        private Map<UUID, StackData> stackCount = new HashMap<>();
+        private final Collection<UUID> active = new HashSet<>();
+        private final Map<UUID, StackData> stackCount = new HashMap<>();
 
         public static CoupDEclat getInstance() {
             return instance;
         }
 
-        @Override public void applyTo(Player player) {
+        @Override public void applyTo(final Player player) {
             clearFrom(player);
             active.add(player.getUniqueId());
         }
 
-        @Override public void clearFrom(Player player) {
+        @Override public void clearFrom(final Player player) {
             active.remove(player.getUniqueId());
         }
 
@@ -523,7 +527,7 @@ public class Bella extends AbstractChallenger {
          * @param circletData The data to create an extent view from.
          * @return Returns a section (extent) of the world where the ring/spherical region is.
          */
-        public Extent getExtentViewFor(CircletOfTheAccused.CircletData circletData) {
+        public Extent getExtentViewFor(final CircletOfTheAccused.CircletData circletData) {
             final Location<World> location = circletData.getRingCenter();
             final double radius = circletData.getRadius();
             final Vector3i bottom = new Vector3i(location.getX() + radius, location.getY() - radius,
@@ -534,9 +538,9 @@ public class Bella extends AbstractChallenger {
         }
 
         @Override public void tick() {
-            Map<UUID, Long> map = CircletOfTheAccused.getInstance().cooldownMap;
+            final Map<UUID, Long> map = CircletOfTheAccused.getInstance().cooldownMap;
             //Loop through all known circlets to update effects.
-            for (CircletOfTheAccused.CircletData data : CircletOfTheAccused
+            for (final CircletOfTheAccused.CircletData data : CircletOfTheAccused
                 .getInstance().registeredMap.values()) {
                 Optional<Team> optional =
                     SimplePlayerMatchManager.INSTANCE.getTeamOf(data.getCaster());
@@ -544,17 +548,17 @@ public class Bella extends AbstractChallenger {
                     return;
                 }
                 final Team team = optional.get();
-                Collection<Player> players = Common
+                final Collection<Player> players = Common
                     .getEntities(Player.class, getExtentViewFor(data),
                         (player -> data.generateCircleTest().test(player.getLocation())));
                 int stacks = 0;
-                for (Player player : players) { //Loop through all nearby entities.
+                for (final Player player : players) { //Loop through all nearby entities.
                     optional = SimplePlayerMatchManager.INSTANCE.getTeamOf(player.getUniqueId());
                     if (!optional.isPresent() || team == optional
                         .get()) { //Continue if no team or allied.
                         continue;
                     }
-                    StackData stackData = stackCount.get(data.getCaster());
+                    final StackData stackData = stackCount.get(data.getCaster());
                     assert stackData != null;
                     stackData.tick(); //Tick before adding players.
                     stackData.addPlayer(player.getUniqueId());
@@ -563,21 +567,21 @@ public class Bella extends AbstractChallenger {
                         break;
                     }
                 }
-                long cooldownRemove = Math.round(Common.toTicks(stacks * 2, TimeUnit.SECONDS) / 2D);
+                final long cooldownRemove = Math.round(Common.toTicks(stacks * 2, TimeUnit.SECONDS) / 2D);
                 assert map.containsKey(data.getCaster());
-                long val = map.get(data.getCaster());
+                final long val = map.get(data.getCaster());
                 //Reduce cooldown
-                long newVal = val - cooldownRemove;
+                final long newVal = val - cooldownRemove;
                 if (newVal < 0) { //Remove if cooldown is negative.
                     map.remove(data.getCaster());
                 } else {
                     map.replace(data.getCaster(), newVal);
                 }
-                Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(data.getCaster());
+                final Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(data.getCaster());
                 //Give players absorption
                 optionalPlayer.ifPresent(
                     (Player player) -> Sponge.getScheduler().createTaskBuilder().execute(() -> {
-                        PotionEffectData peData = player.get(PotionEffectData.class).orElseThrow(
+                        final PotionEffectData peData = player.get(PotionEffectData.class).orElseThrow(
                             () -> new IllegalStateException(
                                 "Unable to get potiond data for " + player.getName()));
                         peData.addElement(
@@ -592,27 +596,27 @@ public class Bella extends AbstractChallenger {
          * Handles bella teleporting in and out of the circle.
          * We don't need to check for the proc event because each entity in the circle will be "ticked".
          */
-        @Listener public void onMove(MoveEntityEvent event) {
-            Entity entity = event.getTargetEntity();
+        @Listener public void onMove(final MoveEntityEvent event) {
+            final Entity entity = event.getTargetEntity();
             if (!(entity instanceof Player)) {
                 return;
             }
-            Player player = (Player) entity;
-            Location<World> location = player.getLocation();
+            final Player player = (Player) entity;
+            final Location<World> location = player.getLocation();
             CircletOfTheAccused.getInstance().registeredMap.values().forEach(circletData -> {
-                UUID caster = circletData.getCaster();
+                final UUID caster = circletData.getCaster();
                 if (!active.contains(caster)) {
                     return;
                 }
-                StackData stackData = stackCount.get(caster);
+                final StackData stackData = stackCount.get(caster);
                 if (stackData == null) {
                     return;
                 }
-                boolean inCircle = circletData.generateCircleTest().test(location);
+                final boolean inCircle = circletData.generateCircleTest().test(location);
                 if (entity.getUniqueId().equals(caster)) { //If the player is bella.
-                    Location<World> current = entity.getLocation();
+                    final Location<World> current = entity.getLocation();
 
-                    double distanceToRadius =
+                    final double distanceToRadius =
                         MathUtils.calculateDistance(current, circletData.getRingCenter());
                     if (Math.abs(distanceToRadius - circletData.radius) <= 1) { //If on border edge
                         ChallengerUtils.teleportPlayer(player, 1); //Teleport 1 block forward bella.
@@ -639,21 +643,21 @@ public class Bella extends AbstractChallenger {
 
         private static class StackData {
 
-            private Map<UUID, Long> stackTime = new HashMap<>();
+            private final Map<UUID, Long> stackTime = new HashMap<>();
 
-            public void addPlayer(UUID player) {
+            public void addPlayer(final UUID player) {
                 if (stackTime.containsKey(player)) {
                     return;
                 }
                 stackTime.put(player, 0L);
             }
 
-            public void removePlayer(UUID player) {
+            public void removePlayer(final UUID player) {
                 stackTime.remove(player);
             }
 
-            public long getTickCount(UUID player) {
-                Long val = stackTime.get(player);
+            public long getTickCount(final UUID player) {
+                final Long val = stackTime.get(player);
                 return val == null ? 0L : val;
             }
 
@@ -664,9 +668,9 @@ public class Bella extends AbstractChallenger {
 
             public int calculateStacks() {
                 int stacks = 0;
-                long ticks = Common.toTicks(1, TimeUnit.SECONDS);
-                for (Map.Entry<UUID, Long> entry : stackTime.entrySet()) {
-                    int seconds = (int) Math.floor(entry.getValue() / (double) ticks);
+                final long ticks = Common.toTicks(1, TimeUnit.SECONDS);
+                for (final Map.Entry<UUID, Long> entry : stackTime.entrySet()) {
+                    final int seconds = (int) Math.floor(entry.getValue() / (double) ticks);
                     stacks += seconds;
                     if (stacks == 2) {
                         break;
@@ -683,7 +687,7 @@ public class Bella extends AbstractChallenger {
     public static class DivineCrown extends AbstractRune {
 
         private static final DivineCrown instance = new DivineCrown();
-        private Collection<UUID> casters = new HashSet<>();
+        private final Collection<UUID> casters = new HashSet<>();
 
         private DivineCrown() {
         }
@@ -692,12 +696,12 @@ public class Bella extends AbstractChallenger {
             return instance;
         }
 
-        @Override public void applyTo(Player player) {
+        @Override public void applyTo(final Player player) {
             clearFrom(player);
             casters.add(player.getUniqueId());
         }
 
-        @Override public void clearFrom(Player player) {
+        @Override public void clearFrom(final Player player) {
             casters.remove(player.getUniqueId());
         }
 
@@ -706,34 +710,34 @@ public class Bella extends AbstractChallenger {
         }
 
         @Override public void tick() {
-            for (UUID uuid : casters) {
-                CircletOfTheAccused.CircletData data =
+            for (final UUID uuid : casters) {
+                final CircletOfTheAccused.CircletData data =
                     CircletOfTheAccused.instance.registeredMap.get(uuid);
                 if (data == null) {
                     continue;
                 }
-                Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(uuid);
+                final Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(uuid);
                 if (!optionalPlayer.isPresent()) {
                     continue;
                 }
-                Player player = optionalPlayer.get();
-                Optional<Team> optionalTeam =
+                final Player player = optionalPlayer.get();
+                final Optional<Team> optionalTeam =
                     SimplePlayerMatchManager.INSTANCE.getTeamOf(player.getUniqueId());
                 if (!optionalTeam.isPresent()) {
                     return;
                 }
-                Team team = optionalTeam.get();
-                Collection<Player> players = Common
+                final Team team = optionalTeam.get();
+                final Collection<Player> players = Common
                     .getEntities(Player.class, CoupDEclat.instance.getExtentViewFor(data),
                         (Player p) -> {
-                            Optional<Team> optional =
+                            final Optional<Team> optional =
                                 SimplePlayerMatchManager.INSTANCE.getTeamOf(p.getUniqueId());
                             return optional.isPresent() && optional.get() == team && data
                                 .generateCircleTest()
                                 .test(p.getLocation()); //If in circle and ifallied
                         }); //Get players in circle
-                for (Player p : players) {
-                    PotionEffectData peData = p.get(PotionEffectData.class).orElseThrow(
+                for (final Player p : players) {
+                    final PotionEffectData peData = p.get(PotionEffectData.class).orElseThrow(
                         () -> new IllegalStateException(
                             "Unable to get potion effect data for " + p.getName()));
                     peData.asList().removeIf(
@@ -768,7 +772,7 @@ public class Bella extends AbstractChallenger {
     public static class ExpandingAgony extends AbstractRune {
 
         private static final ExpandingAgony instance = new ExpandingAgony();
-        private Collection<UUID> registered = new HashSet<>();
+        private final Collection<UUID> registered = new HashSet<>();
 
         private ExpandingAgony() {
         }
@@ -777,12 +781,12 @@ public class Bella extends AbstractChallenger {
             return instance;
         }
 
-        @Override public void applyTo(Player player) {
+        @Override public void applyTo(final Player player) {
             clearFrom(player);
             this.registered.add(player.getUniqueId());
         }
 
-        @Override public void clearFrom(Player player) {
+        @Override public void clearFrom(final Player player) {
             registered.remove(player.getUniqueId());
         }
 
@@ -791,29 +795,29 @@ public class Bella extends AbstractChallenger {
         }
 
         @Override public void tick() {
-            for (UUID uuid : registered) {
-                CircletOfTheAccused.CircletData data =
+            for (final UUID uuid : registered) {
+                final CircletOfTheAccused.CircletData data =
                     CircletOfTheAccused.instance.registeredMap.get(uuid);
                 if (data == null) {
                     continue;
                 }
-                Optional<Team> optionalTeam = SimplePlayerMatchManager.INSTANCE.getTeamOf(uuid);
+                final Optional<Team> optionalTeam = SimplePlayerMatchManager.INSTANCE.getTeamOf(uuid);
                 if (!optionalTeam.isPresent()) {
                     return;
                 }
-                Team team = optionalTeam.get();
-                Collection<Player> players = Common
+                final Team team = optionalTeam.get();
+                final Collection<Player> players = Common
                     .getEntities(Player.class, CoupDEclat.instance.getExtentViewFor(data),
                         (Player p) -> {
-                            Optional<Team> optional =
+                            final Optional<Team> optional =
                                 SimplePlayerMatchManager.INSTANCE.getTeamOf(p.getUniqueId());
                             return optional.isPresent() && optional.get() != team && data
                                 .generateCircleTest().test(p.getLocation());
                         });
-                int size = players.size();
+                final int size = players.size();
                 players.forEach((Player player) -> {
                     if (size >= 2) { //If 2 enemies are in the circle
-                        PotionEffectData peData = player.get(PotionEffectData.class).orElseThrow(
+                        final PotionEffectData peData = player.get(PotionEffectData.class).orElseThrow(
                             () -> new IllegalStateException(
                                 "Unable to get potion effect data for " + player.getName()));
                         peData.addElement((PotionEffect) new BuffEffectSilence(1,
@@ -825,7 +829,7 @@ public class Bella extends AbstractChallenger {
             }
         }
 
-        @Listener public void onProc(CircletOfTheAccused.ProcEvent event) {
+        @Listener public void onProc(final CircletOfTheAccused.ProcEvent event) {
             if (registered.contains(event.getInvoker().getUniqueId())) {
                 event.setCircletRadius(6); //Change circle radius to 6.
             }

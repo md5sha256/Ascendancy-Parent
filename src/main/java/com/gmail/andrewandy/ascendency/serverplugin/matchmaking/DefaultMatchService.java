@@ -18,19 +18,16 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 /**
  * Represents a service which automatically tries so make matches based on current player queues.
  */
 public class DefaultMatchService implements AscendancyMatchService {
 
-    private LinkedList<Player> playerQueue = new LinkedList<>();
-
-    private MatchMakingMode mode = MatchMakingMode.BALANCED; //The way server matches players.
-
-    private MatchFactory<AscendancyMatch> matchFactory;
     private final Config config;
+    private final LinkedList<Player> playerQueue = new LinkedList<>();
+    private MatchMakingMode mode = MatchMakingMode.BALANCED; //The way server matches players.
+    private MatchFactory<AscendancyMatch> matchFactory;
 
     /**
      * Create a new match making service.
@@ -39,7 +36,7 @@ public class DefaultMatchService implements AscendancyMatchService {
      *                           be created with the correct teams AND these should be empty.
      * @param config             The config file.
      */
-    @Inject public DefaultMatchService(AscendancyMatchFactory matchMakingFactory, Config config) {
+    @Inject public DefaultMatchService(final AscendancyMatchFactory matchMakingFactory, final Config config) {
         this.matchFactory = matchMakingFactory;
         this.config = Objects.requireNonNull(config);
         registerListeners();
@@ -47,7 +44,7 @@ public class DefaultMatchService implements AscendancyMatchService {
     }
 
     public void reloadConfiguration() {
-        ConfigurationNode node = config.getRootNode().getNode("MatchMaking");
+        final ConfigurationNode node = config.getRootNode().getNode("MatchMaking");
         this.mode = MatchMakingMode.valueOf(node.getNode("Mode").getString());
     }
 
@@ -56,12 +53,12 @@ public class DefaultMatchService implements AscendancyMatchService {
     }
 
     @Override
-    public DefaultMatchService setMatchFactory(MatchFactory<AscendancyMatch> matchFactory) {
+    public DefaultMatchService setMatchFactory(final MatchFactory<AscendancyMatch> matchFactory) {
         this.matchFactory = matchFactory;
         return this;
     }
 
-    private boolean isInvalidPlayerCount(int min, int max) {
+    private boolean isInvalidPlayerCount(final int min, final int max) {
         return min <= 0 || min >= max;
     }
 
@@ -106,7 +103,7 @@ public class DefaultMatchService implements AscendancyMatchService {
      * @return Returns a clone of the current queue.
      */
     @Override public Queue<Player> clearQueue() {
-        Queue<Player> players = new LinkedList<>(playerQueue);
+        final Queue<Player> players = new LinkedList<>(playerQueue);
         playerQueue.clear();
         return players;
     }
@@ -120,9 +117,10 @@ public class DefaultMatchService implements AscendancyMatchService {
      * this method will stop trying to start new matches.
      */
     @Override public void tryMatch() {
-        AscendancyMatch match = matchFactory.generateNewMatch();
-        int minPlayersPerGame = matchFactory.getMinPlayersPerGame(), maxPlayersPerGame = matchFactory.getMaxPlayersPerGame();
-        int creatableMatchCount = playerQueue.size() / minPlayersPerGame;
+        final AscendancyMatch match = matchFactory.generateNewMatch();
+        final int minPlayersPerGame = matchFactory.getMinPlayersPerGame(), maxPlayersPerGame =
+            matchFactory.getMaxPlayersPerGame();
+        final int creatableMatchCount = playerQueue.size() / minPlayersPerGame;
         int optimizedMatchCount;
         switch (mode) {
             case FASTEST:
@@ -140,9 +138,9 @@ public class DefaultMatchService implements AscendancyMatchService {
                 throw new IllegalStateException("Unknown MatchMakingMode: " + mode + " found!");
         }
         while (optimizedMatchCount > 0) {
-            Collection<UUID> players = new HashSet<>(minPlayersPerGame);
+            final Collection<UUID> players = new HashSet<>(minPlayersPerGame);
             int index = 0;
-            for (Player player : playerQueue) {
+            for (final Player player : playerQueue) {
                 if (index == maxPlayersPerGame) {
                     break;
                 }
@@ -161,12 +159,12 @@ public class DefaultMatchService implements AscendancyMatchService {
         }
     }
 
-    @SuppressWarnings("unchecked") @Override public int getQueuePosition(Player player) {
+    @SuppressWarnings("unchecked") @Override public int getQueuePosition(final Player player) {
         return playerQueue.indexOf(player);
     }
 
-    @Override public boolean addToQueue(Player player) {
-        PlayerMatchManager matchManager = SimplePlayerMatchManager.INSTANCE;
+    @Override public boolean addToQueue(final Player player) {
+        final PlayerMatchManager matchManager = SimplePlayerMatchManager.INSTANCE;
         if (matchManager.getMatchOf(player.getUniqueId()).isPresent()) {
             playerQueue.remove(player);
             return false;
@@ -177,23 +175,23 @@ public class DefaultMatchService implements AscendancyMatchService {
         return playerQueue.add(player);
     }
 
-    @Override public void removeFromQueue(UUID uuid) {
+    @Override public void removeFromQueue(final UUID uuid) {
         playerQueue.removeIf(player -> player.getUniqueId().equals(uuid));
     }
 
-    @Override public void removeFromQueue(Player player) {
+    @Override public void removeFromQueue(final Player player) {
         removeFromQueue(player.getUniqueId());
     }
 
-    @Override public void addToQueueAndTryMatch(Player player) {
+    @Override public void addToQueueAndTryMatch(final Player player) {
         if (addToQueue(player)) {
             tryMatch();
         }
     }
 
 
-    @Listener(order = Order.LAST) public void onPlayerJoin(ClientConnectionEvent.Join event) {
-        Optional<ManagedMatch> current =
+    @Listener(order = Order.LAST) public void onPlayerJoin(final ClientConnectionEvent.Join event) {
+        final Optional<ManagedMatch> current =
             SimplePlayerMatchManager.INSTANCE.getMatchOf(event.getTargetEntity().getUniqueId());
         if (!current.isPresent()) {
             //If not in previous match, then try to load them into the matchmaking queue.
@@ -203,13 +201,13 @@ public class DefaultMatchService implements AscendancyMatchService {
     }
 
     @Listener(order = Order.LAST)
-    public void onPlayerDisconnect(ClientConnectionEvent.Disconnect event) {
+    public void onPlayerDisconnect(final ClientConnectionEvent.Disconnect event) {
         System.out.println(playerQueue);
         playerQueue.remove(event.getTargetEntity());
     }
 
-    @Listener(order = Order.LAST) public void onPlayerLeaveMatch(PlayerLeftMatchEvent event) {
-        Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(event.getPlayer());
+    @Listener(order = Order.LAST) public void onPlayerLeaveMatch(final PlayerLeftMatchEvent event) {
+        final Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(event.getPlayer());
         optionalPlayer.ifPresent(this::addToQueueAndTryMatch); //Add the player to the queue.
     }
 }

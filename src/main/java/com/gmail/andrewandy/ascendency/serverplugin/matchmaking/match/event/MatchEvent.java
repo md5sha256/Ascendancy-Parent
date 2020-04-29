@@ -11,15 +11,15 @@ import java.util.Objects;
  */
 public abstract class MatchEvent extends AscendencyServerEvent {
 
-    private Match match;
+    private final Match match;
     private Cause cause;
 
-    public MatchEvent(Match match) {
+    public MatchEvent(final Match match) {
         this.match = Objects.requireNonNull(match);
         cause = Cause.builder().named("match", match).build();
     }
 
-    public MatchEvent(Match match, String name, Object cause) {
+    public MatchEvent(final Match match, final String name, final Object cause) {
         this(match);
         this.cause = Cause.builder().named(name, cause).build();
     }

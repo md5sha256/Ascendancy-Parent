@@ -4,15 +4,15 @@ public class MatchStartedException extends IllegalArgumentException {
     public MatchStartedException() {
     }
 
-    public MatchStartedException(String s) {
+    public MatchStartedException(final String s) {
         super(s);
     }
 
-    public MatchStartedException(String message, Throwable cause) {
+    public MatchStartedException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
-    public MatchStartedException(Throwable cause) {
+    public MatchStartedException(final Throwable cause) {
         super(cause);
     }
 }

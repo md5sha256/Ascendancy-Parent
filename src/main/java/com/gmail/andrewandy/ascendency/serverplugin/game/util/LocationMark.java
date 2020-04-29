@@ -15,7 +15,7 @@ public class LocationMark {
         return primaryMark;
     }
 
-    public void setPrimaryMark(Location<World> primaryMark) {
+    public void setPrimaryMark(final Location<World> primaryMark) {
         this.primaryMark = primaryMark;
     }
 
@@ -23,7 +23,7 @@ public class LocationMark {
         return secondaryMark;
     }
 
-    public void setSecondaryMark(Location<World> secondaryMark) {
+    public void setSecondaryMark(final Location<World> secondaryMark) {
         this.secondaryMark = secondaryMark;
     }
 

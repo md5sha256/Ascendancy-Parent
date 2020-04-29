@@ -18,10 +18,10 @@ public class YamlConfig implements Config {
 
     }
 
-    @Override public void loadFromFile(Path path) throws IOException {
-        YAMLConfigurationLoader loader;
+    @Override public void loadFromFile(final Path path) throws IOException {
+        final YAMLConfigurationLoader loader;
         Common.log(Level.INFO, "&bLoading settings from disk...");
-        long time = System.currentTimeMillis();
+        final long time = System.currentTimeMillis();
         loader = new YamlLoader("settings.yml").getLoader();
         this.loader = loader;
         root = loader.load();

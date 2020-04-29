@@ -7,9 +7,9 @@ import org.spongepowered.api.event.cause.Cause;
 public class ActiveKeyReleasedEvent extends AscendencyServerEvent {
 
     private final Player player;
-    private Cause cause;
+    private final Cause cause;
 
-    ActiveKeyReleasedEvent(Player player) {
+    ActiveKeyReleasedEvent(final Player player) {
         this.player = player;
         this.cause = Cause.builder().named("Player", player).build();
     }

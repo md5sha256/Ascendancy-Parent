@@ -68,7 +68,7 @@ import java.util.logging.Level;
     public ConfigurationNode getSettings() {
         try {
             return configurationLoader.load();
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             throw new IllegalStateException(ex);
         }
     }
@@ -81,10 +81,10 @@ import java.util.logging.Level;
         return logger;
     }
 
-    @Listener(order = Order.DEFAULT) public void onServerStart(GameStartedServerEvent event) {
+    @Listener(order = Order.DEFAULT) public void onServerStart(final GameStartedServerEvent event) {
         instance = this;
         injector = Guice.createInjector(Stage.PRODUCTION, module);
-        String load = Challengers.LOAD; //Load up S1 champions.
+        final String load = Challengers.LOAD; //Load up S1 champions.
         Common.setup();
         Common.setPrefix("[CustomServerMod]");
         loadSettings();
@@ -100,7 +100,7 @@ import java.util.logging.Level;
         Common.log(Level.INFO, "Plugin enabled!");
     }
 
-    @Listener(order = Order.DEFAULT) public void onServerStop(GameStoppedServerEvent event) {
+    @Listener(order = Order.DEFAULT) public void onServerStop(final GameStoppedServerEvent event) {
         SimplePlayerMatchManager.disableManager();
         unregisterIO();
         unregisterKeybindHandlers();
@@ -111,7 +111,7 @@ import java.util.logging.Level;
         instance = null;
     }
 
-    @Listener(order = Order.DEFAULT) public void onServerReload(GameReloadEvent event) {
+    @Listener(order = Order.DEFAULT) public void onServerReload(final GameReloadEvent event) {
         loadSettings();
     }
 
@@ -120,7 +120,7 @@ import java.util.logging.Level;
         try {
             injector.getInstance(Config.class).loadFromFile(Paths.get(
                 getDataFolder().getAbsolutePath().concat(File.separator).concat("Config.yml")));
-        } catch (IOException e) {
+        } catch (final IOException e) {
             Common.log(Level.SEVERE, "&cUnable to load config!");
             e.printStackTrace();
         }
@@ -156,15 +156,15 @@ import java.util.logging.Level;
             throw new IllegalArgumentException(
                 "Invalid settings detected! Missing MatchMaking section!");
         }
-        int min = node.getNode("Min-Players").getInt();
-        int max = node.getNode("Max-Players").getInt();
-        String modeEnumName = node.getNode("Mode").getString().toUpperCase();
-        DefaultMatchService.MatchMakingMode mode =
+        final int min = node.getNode("Min-Players").getInt();
+        final int max = node.getNode("Max-Players").getInt();
+        final String modeEnumName = node.getNode("Mode").getString().toUpperCase();
+        final DefaultMatchService.MatchMakingMode mode =
             DefaultMatchService.MatchMakingMode.valueOf(modeEnumName);
-        DefaultMatchService service =
+        final DefaultMatchService service =
             new DefaultMatchService(new DraftMatchFactory(config), config).setMatchMakingMode(mode);
         if (matchMatchMakingService != null) {
-            for (Player player : matchMatchMakingService.clearQueue()) {
+            for (final Player player : matchMatchMakingService.clearQueue()) {
                 service.addToQueue(player);
             }
         }

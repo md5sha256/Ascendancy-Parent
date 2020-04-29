@@ -19,26 +19,29 @@ import java.util.stream.Collectors;
  */
 public enum Challengers {
 
-    KNAVIS(Knavis.getInstance()), ASTSRICION(Astricion.getInstance()), SOLACE(
-        Solace.getInstance()), VENGLIS(Vengelis.getInstance()), BREEZY(null), BELLA(
-        Bella.getInstance());
+    KNAVIS(Knavis.getInstance()),
+    ASTSRICION(Astricion.getInstance()),
+    SOLACE(Solace.getInstance()),
+    VENGLIS(Vengelis.getInstance()),
+    BREEZY(null),
+    BELLA(Bella.getInstance());
 
     public static final String LOAD = null; //Invoke to force classloader to load this class
     private final Challenger challengerObject;
 
-    Challengers(Challenger challengerObject) {
+    Challengers(final Challenger challengerObject) {
         this.challengerObject = challengerObject;
     }
 
     public static void initHandlers() {
-        EventManager manager = Sponge.getEventManager();
-        Object plugin = AscendencyServerPlugin.getInstance();
-        for (Challengers s1Challenger : values()) {
-            Challenger challenger = s1Challenger.challengerObject;
+        final EventManager manager = Sponge.getEventManager();
+        final Object plugin = AscendencyServerPlugin.getInstance();
+        for (final Challengers s1Challenger : values()) {
+            final Challenger challenger = s1Challenger.challengerObject;
             if (challenger == null) {
                 continue;
             }
-            for (Ability ability : challenger.getAbilities()) {
+            for (final Ability ability : challenger.getAbilities()) {
                 manager.unregisterListeners(ability);
                 manager.registerListeners(plugin, ability);
                 MinecraftForge.EVENT_BUS.unregister(ability);
@@ -48,7 +51,7 @@ public enum Challengers {
                     TickHandler.getInstance().submitTickable((Tickable) ability);
                 }
             }
-            for (Rune rune : challenger.getRunes()) {
+            for (final Rune rune : challenger.getRunes()) {
                 manager.unregisterListeners(rune);
                 manager.registerListeners(plugin, rune);
                 MinecraftForge.EVENT_BUS.unregister(rune);
@@ -59,10 +62,10 @@ public enum Challengers {
         }
     }
 
-    public static List<String> getLoreOf(String name) {
+    public static List<String> getLoreOf(final String name) {
         ConfigurationNode node = AscendencyServerPlugin.getInstance().getSettings();
         node = node.getNode("Champions");
-        List<? extends ConfigurationNode> nodes =
+        final List<? extends ConfigurationNode> nodes =
             node.getNode(name).getNode("lore").getChildrenList();
         return nodes.parallelStream().map(ConfigurationNode::getString)
             .collect(Collectors.toList());

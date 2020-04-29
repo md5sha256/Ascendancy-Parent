@@ -24,7 +24,7 @@ public enum SimplePlayerMatchManager implements PlayerMatchManager {
     INSTANCE;
 
     private Location<World> resetCoordinate;
-    private Collection<ManagedMatch> matches = new HashSet<>(); //Holds all the registered matches.
+    private final Collection<ManagedMatch> matches = new HashSet<>(); //Holds all the registered matches.
 
     public static void enableManager() {
         disableManager();
@@ -35,19 +35,19 @@ public enum SimplePlayerMatchManager implements PlayerMatchManager {
         Sponge.getEventManager().unregisterListeners(INSTANCE);
     }
 
-    public void setResetCoordinate(Location<World> location) {
+    public void setResetCoordinate(final Location<World> location) {
         this.resetCoordinate = location;
     }
 
     @Listener(order = Order.LAST) //Executed last
-    public void onMatchStartConflictCheck(MatchStartEvent event) {
-        Match started = event.getMatch();
+    public void onMatchStartConflictCheck(final MatchStartEvent event) {
+        final Match started = event.getMatch();
         //Check for player conflicts.
-        String message =
+        final String message =
             "[WARNING] [Ascendency Match Manager] Detected a player conflict in a match being started which is not being tracked!";
         boolean logged = false;
-        for (UUID uuid : started.getPlayers()) {
-            Optional<ManagedMatch> optionalMatch = getMatchOf(uuid);
+        for (final UUID uuid : started.getPlayers()) {
+            final Optional<ManagedMatch> optionalMatch = getMatchOf(uuid);
             if (optionalMatch.isPresent()) {
                 if (optionalMatch.get() != started && !logged) {
                     System.out.println(message);
@@ -61,8 +61,8 @@ public enum SimplePlayerMatchManager implements PlayerMatchManager {
     }
 
     @Listener(order = Order.LAST) //Executed last.
-    public void onMatchEnd(MatchEndedEvent event) {
-        Match match = event.getMatch();
+    public void onMatchEnd(final MatchEndedEvent event) {
+        final Match match = event.getMatch();
         if (!(match instanceof ManagedMatch)) {
             return;
         }
@@ -71,23 +71,23 @@ public enum SimplePlayerMatchManager implements PlayerMatchManager {
 
     @Listener(order = Order.FIRST) //teleports the player to a reset point if it is set.
     //Run this first, so that the queue checker will ALWAYS have the most up to date state of the player.
-    public void onPlayerJoin(ClientConnectionEvent.Join event) {
-        UUID player = event.getTargetEntity().getUniqueId();
+    public void onPlayerJoin(final ClientConnectionEvent.Join event) {
+        final UUID player = event.getTargetEntity().getUniqueId();
         if (resetCoordinate == null) {
             return;
         }
-        Player playerObj = event.getTargetEntity();
+        final Player playerObj = event.getTargetEntity();
         //Teleport to the reset coordinates on join.
         if (!playerObj.setLocation(resetCoordinate)) {
             throw new IllegalStateException("Unable to teleport player to reset location!");
         }
-        Optional<ManagedMatch> match = getMatchOf(player); //Check for existing games
+        final Optional<ManagedMatch> match = getMatchOf(player); //Check for existing games
         match.ifPresent(managedMatch -> managedMatch.rejoinPlayer(player));
     }
 
     @Override public Collection<UUID> getManagedPlayers() {
-        Collection<UUID> collection = new HashSet<>();
-        for (ManagedMatch match : matches) {
+        final Collection<UUID> collection = new HashSet<>();
+        for (final ManagedMatch match : matches) {
             collection.addAll(match.getPlayers());
         }
         return collection;
@@ -97,14 +97,14 @@ public enum SimplePlayerMatchManager implements PlayerMatchManager {
         return new HashSet<>(matches);
     }
 
-    @Override public Optional<Team> getTeamOf(UUID player) {
-        Optional<ManagedMatch> match = getMatchOf(player);
+    @Override public Optional<Team> getTeamOf(final UUID player) {
+        final Optional<ManagedMatch> match = getMatchOf(player);
         return match.map(managedMatch -> managedMatch.getTeamOf(player));
     }
 
-    @Override public Optional<ManagedMatch> getMatchOf(UUID player) {
+    @Override public Optional<ManagedMatch> getMatchOf(final UUID player) {
         Objects.requireNonNull(player);
-        for (ManagedMatch match : matches) {
+        for (final ManagedMatch match : matches) {
             if (match.containsPlayer(player)) {
                 return Optional.of(match);
             }
@@ -112,14 +112,14 @@ public enum SimplePlayerMatchManager implements PlayerMatchManager {
         return Optional.empty();
     }
 
-    @Override public boolean addPlayerToMatch(UUID player, Team team, ManagedMatch match)
+    @Override public boolean addPlayerToMatch(final UUID player, final Team team, final ManagedMatch match)
         throws IllegalArgumentException {
-        Optional<ManagedMatch> optionalCurrentMatch = getMatchOf(player);
+        final Optional<ManagedMatch> optionalCurrentMatch = getMatchOf(player);
         if (!canPlayerBeAddedToMatch(player, match)) {
             return false;
         }
         if (optionalCurrentMatch.isPresent()) {
-            ManagedMatch current = optionalCurrentMatch.get();
+            final ManagedMatch current = optionalCurrentMatch.get();
             if (!current.removePlayer(player)) {
                 throw new IllegalStateException(
                     "Unable to remove the player from their current match!");
@@ -128,18 +128,18 @@ public enum SimplePlayerMatchManager implements PlayerMatchManager {
         return match.addPlayer(team, player);
     }
 
-    @Override public boolean removePlayerFromMatch(UUID player) {
-        Optional<ManagedMatch> optional = getMatchOf(player);
+    @Override public boolean removePlayerFromMatch(final UUID player) {
+        final Optional<ManagedMatch> optional = getMatchOf(player);
         return optional.map(match -> match.removePlayer(player)).orElse(false);
     }
 
-    @Override public boolean canPlayerBeAddedToMatch(UUID player, ManagedMatch newMatch) {
+    @Override public boolean canPlayerBeAddedToMatch(final UUID player, final ManagedMatch newMatch) {
         if (newMatch == null) {
             return false;
         }
-        Optional<ManagedMatch> optional = getMatchOf(player);
+        final Optional<ManagedMatch> optional = getMatchOf(player);
         if (optional.isPresent()) {
-            ManagedMatch old = optional.get();
+            final ManagedMatch old = optional.get();
             if (old != newMatch) {
                 return newMatch.acceptsNewPlayers() && optional
                     .map(match -> match.isLobby() || match.isEnded()).orElse(false);
@@ -149,25 +149,25 @@ public enum SimplePlayerMatchManager implements PlayerMatchManager {
         return newMatch.acceptsNewPlayers();
     }
 
-    @Override public boolean canMovePlayerTo(UUID player, ManagedMatch newMatch) {
+    @Override public boolean canMovePlayerTo(final UUID player, final ManagedMatch newMatch) {
         return Objects.requireNonNull(newMatch).acceptsNewPlayers();
     }
 
-    @Override public void registerMatch(ManagedMatch managedMatch) {
+    @Override public void registerMatch(final ManagedMatch managedMatch) {
         unregisterMatch(managedMatch);
         matches.add(managedMatch);
     }
 
-    @Override public void unregisterMatch(ManagedMatch managedMatch) {
+    @Override public void unregisterMatch(final ManagedMatch managedMatch) {
         matches.remove(managedMatch);
     }
 
-    @Override public boolean startMatch(ManagedMatch managedMatch) {
+    @Override public boolean startMatch(final ManagedMatch managedMatch) {
         Objects.requireNonNull(managedMatch);
         if (managedMatch.canStart() || managedMatch.getState() != Match.MatchState.LOBBY) {
             return false;
         }
-        for (UUID player : managedMatch.getPlayers()) {
+        for (final UUID player : managedMatch.getPlayers()) {
             if (canPlayerBeAddedToMatch(player, managedMatch)) {
                 return false;
             }

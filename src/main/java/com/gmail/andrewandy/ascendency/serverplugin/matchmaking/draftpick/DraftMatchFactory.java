@@ -19,10 +19,10 @@ import ninja.leaping.configurate.ConfigurationNode;
     }
 
     public void reloadConfiguration() {
-        ConfigurationNode root = config.getRootNode();
-        ConfigurationNode node = root.getNode("MatchMaking");
-        int min = node.getNode("Min-Players").getInt();
-        int max = node.getNode("Max-Players").getInt();
+        final ConfigurationNode root = config.getRootNode();
+        final ConfigurationNode node = root.getNode("MatchMaking");
+        final int min = node.getNode("Min-Players").getInt();
+        final int max = node.getNode("Max-Players").getInt();
         if (min > max || min < 0) {
             throw new IllegalArgumentException(
                 "Invalid Min and Max players! Min must be positive and max must be greater than min.");
