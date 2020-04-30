@@ -6,8 +6,8 @@ import com.gmail.andrewandy.ascendency.lib.game.data.IChallengerData;
 import com.gmail.andrewandy.ascendency.lib.game.data.game.ChallengerDataImpl;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.Ability;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractAbility;
+import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractCooldownAbility;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.AbstractChallenger;
-import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.ChallengerUtils;
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.PlayerSpecificRune;
 import com.gmail.andrewandy.ascendency.serverplugin.game.util.MathUtils;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.Team;
@@ -15,7 +15,6 @@ import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.ManagedMat
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.PlayerMatchManager;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.engine.GameEngine;
 import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
-import com.gmail.andrewandy.ascendency.serverplugin.util.game.Tickable;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyPressedEvent;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyReleasedEvent;
 import com.google.inject.Inject;
@@ -60,33 +59,30 @@ public class Vengelis extends AbstractChallenger {
     }
 
 
-    public static class Gyration extends AbstractAbility implements Tickable {
+    public static class Gyration extends AbstractCooldownAbility {
 
         public static final Gyration instance = new Gyration();
 
-        private final UUID uuid = UUID.randomUUID();
-        private final Map<UUID, Long> cooldownMap = new HashMap<>();
-        private final Collection<UUID> registered = new HashSet<>(), active = new HashSet<>();
+        private final Collection<UUID> active = new HashSet<>();
 
         private Gyration() {
-            super("Gyration", true);
+            super("Gyration", true, 10, TimeUnit.SECONDS);
         }
 
-        @Listener(order = Order.LATE)
+        @Listener(order = Order.LAST)
         public void onActivePressed(final ActiveKeyPressedEvent event) {
             final Player player = event.getPlayer();
-            if (!isActiveOnPlayer(player.getUniqueId()) && registered
-                .contains(player.getUniqueId())) {
+            if (!isActiveOnPlayer(player.getUniqueId()) && !isRegistered(player.getUniqueId())) {
                 active.add(player.getUniqueId());
             }
         }
 
-        @Listener(order = Order.LATE)
+        @Listener(order = Order.LAST)
         public void onActiveKeyRelease(final ActiveKeyReleasedEvent event) {
             active.remove(event.getPlayer().getUniqueId());
         }
 
-        @Listener public void onAttack(final DamageEntityEvent event) {
+        @Listener(order = Order.LAST) public void onAttack(final DamageEntityEvent event) {
             final Optional<Player> source =
                 event.getCause().get(DamageEntityEvent.CREATOR, UUID.class)
                     .flatMap(Sponge.getServer()::getPlayer);
@@ -100,22 +96,12 @@ public class Vengelis extends AbstractChallenger {
         }
 
         private boolean canExecuteRoot(final UUID player) {
-            return !cooldownMap.containsKey(player) && isActiveOnPlayer(player);
+            return !isOnCooldown(player) && isActiveOnPlayer(player);
         }
 
         private boolean isActiveOnPlayer(final UUID player) {
             return active.contains(player);
         }
-
-        public void registerPlayer(final UUID player) {
-            unregisterPlayer(player);
-            registered.add(player);
-        }
-
-        public void unregisterPlayer(final UUID player) {
-            registered.remove(player);
-        }
-
 
         private void executeAsPlayer(final Player player) {
             active.remove(player.getUniqueId());
@@ -143,13 +129,8 @@ public class Vengelis extends AbstractChallenger {
             cooldownMap.put(player.getUniqueId(), 0L);
         }
 
-        @Override public UUID getUniqueID() {
-            return uuid;
-        }
-
         @Override public void tick() {
-            cooldownMap.entrySet()
-                .removeIf(ChallengerUtils.mapTickPredicate(10, TimeUnit.SECONDS, null));
+            super.tick();
         }
     }
 
@@ -168,6 +149,7 @@ public class Vengelis extends AbstractChallenger {
 
         private Map<UUID, Integer> hitMap = new HashMap<>();
 
+        @Override
         public void register(final UUID player) {
             if (hitMap.containsKey(player)) {
                 return;
@@ -175,6 +157,7 @@ public class Vengelis extends AbstractChallenger {
             hitMap.put(player, 0);
         }
 
+        @Override
         public void unregister(final UUID player) {
             hitMap.remove(player);
         }

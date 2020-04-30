@@ -67,6 +67,10 @@ public class Common {
         return TimeUnit.MILLISECONDS.convert(time, timeUnit) * 5; //one tick = 5ms
     }
 
+    public static long fromTicks(final long ticks, final TimeUnit to) {
+        return to.convert(ticks / 20, TimeUnit.SECONDS);
+    }
+
     public static void addHealth(final Player player, final double health) {
         addHealth(player, health, false);
     }

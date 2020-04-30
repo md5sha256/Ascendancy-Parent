@@ -5,16 +5,19 @@ import com.gmail.andrewandy.ascendency.lib.game.data.IChallengerData;
 import com.gmail.andrewandy.ascendency.lib.game.data.game.ChallengerDataImpl;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.Ability;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractAbility;
+import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractTickableAbility;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.AbstractChallenger;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.Challenger;
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.AbstractRune;
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.PlayerSpecificRune;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.ManagedMatch;
+import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.PlayerMatchManager;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.SimplePlayerMatchManager;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.engine.GamePlayer;
 import com.gmail.andrewandy.ascendency.serverplugin.util.game.Tickable;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyPressedEvent;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyReleasedEvent;
+import com.google.inject.Inject;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
@@ -35,6 +38,7 @@ import java.util.UUID;
 public class Astricion extends AbstractChallenger {
 
     private static final Astricion instance = new Astricion();
+    @Inject private static PlayerMatchManager matchManager;
 
     private Astricion() {
         super("Astricion", new Ability[] {Suppression.instance, DemonicCapacity.instance},
@@ -144,7 +148,6 @@ public class Astricion extends AbstractChallenger {
     private static class Suppression extends AbstractAbility {
 
         private static final Suppression instance = new Suppression();
-        private final Collection<UUID> active = new HashSet<>();
 
         private Suppression() {
             super("Suppression", true);
@@ -155,13 +158,13 @@ public class Astricion extends AbstractChallenger {
         }
 
         public void activateAs(final UUID player) {
-            active.remove(player);
-            active.add(player);
+            unregister(player);
+            register(player);
         }
 
         @Listener public void onEntityDamage(final DamageEntityEvent event) {
             final Entity entity = event.getTargetEntity();
-            if (!(entity instanceof Player) || !active.contains(entity.getUniqueId())) {
+            if (!(entity instanceof Player) || !isRegistered(entity.getUniqueId())) {
                 return;
             }
             final PotionEffect entanglement = (PotionEffect) new BuffEffectEntangled(4,
@@ -178,7 +181,7 @@ public class Astricion extends AbstractChallenger {
 
         @Listener public void onActiveKeyPress(final ActiveKeyPressedEvent event) {
             final Optional<ManagedMatch> match =
-                SimplePlayerMatchManager.INSTANCE.getMatchOf(event.getPlayer().getUniqueId());
+                matchManager.getMatchOf(event.getPlayer().getUniqueId());
             match.ifPresent((managedMatch -> {
                 final Optional<? extends GamePlayer> optionalGamePlayer =
                     managedMatch.getGamePlayerOf(event.getPlayer().getUniqueId());
@@ -208,16 +211,14 @@ public class Astricion extends AbstractChallenger {
                 if (challenger != Astricion.instance) {
                     return;
                 }
-                active.remove(gamePlayer.getPlayerUUID());
+                unregister(gamePlayer.getPlayerUUID());
             }));
         }
     }
 
 
-    private static class DemonicCapacity extends AbstractAbility implements Tickable {
+    private static class DemonicCapacity extends AbstractTickableAbility {
         private static final DemonicCapacity instance = new DemonicCapacity();
-        private final UUID uniqueID = UUID.randomUUID();
-        private final Collection<UUID> active = new HashSet<>();
 
         private DemonicCapacity() {
             super("Demonic Capacity", false);
@@ -228,16 +229,12 @@ public class Astricion extends AbstractChallenger {
         }
 
         public void activateAs(final UUID player) {
-            active.remove(player);
-            active.add(player);
-        }
-
-        @Override public UUID getUniqueID() {
-            return uniqueID;
+            unregister(player);
+            register(player);
         }
 
         @Override public void tick() {
-            for (final UUID uuid : active) {
+            for (final UUID uuid : registered) {
                 final Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(uuid);
                 if (!optionalPlayer.isPresent()) {
                     return;

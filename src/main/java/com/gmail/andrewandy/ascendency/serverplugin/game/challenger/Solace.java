@@ -4,12 +4,11 @@ import am2.buffs.BuffEffectManaRegen;
 import am2.buffs.BuffEffectSilence;
 import com.gmail.andrewandy.ascendency.lib.game.data.IChallengerData;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.Ability;
-import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractAbility;
+import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractCooldownAbility;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.AbstractChallenger;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.ChallengerUtils;
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.PlayerSpecificRune;
 import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
-import com.gmail.andrewandy.ascendency.serverplugin.util.game.Tickable;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyHandler;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyPressedEvent;
 import org.spongepowered.api.Sponge;
@@ -23,7 +22,10 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.ChangeEntityPotionEffectEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class Solace extends AbstractChallenger {
@@ -43,28 +45,22 @@ public class Solace extends AbstractChallenger {
         return null;
     }
 
-    public static class CallbackOfTheAfterlife extends AbstractAbility implements Tickable {
+    public static class CallbackOfTheAfterlife extends AbstractCooldownAbility {
 
         public static final CallbackOfTheAfterlife instance = new CallbackOfTheAfterlife();
-        private static final long tickCount = Common.toTicks(5, TimeUnit.SECONDS);
-        private final UUID uuid = UUID.randomUUID();
-        private final Map<UUID, Long> registered = new HashMap<>(); //Whoever has the souls
-        private final Map<UUID, Long> cooldownMap = new HashMap<>();
+        private final Map<UUID, Long> soulRegister = new HashMap<>(); //Whoever has the souls
         private final Map<UUID, UUID> soulMap = new HashMap<>(); //Maps Solace to its target.
 
         private CallbackOfTheAfterlife() {
-            super("CallBackOfTheAfterlife", true);
+            super("CallBackOfTheAfterlife", true, 5, TimeUnit.SECONDS);
         }
 
         public static CallbackOfTheAfterlife getInstance() {
             return instance;
         }
 
-        @Override public UUID getUniqueID() {
-            return uuid;
-        }
-
-        @Listener public void onActiveKeyPress(final ActiveKeyPressedEvent event) {
+        @Listener(order = Order.LAST)
+        public void onActiveKeyPress(final ActiveKeyPressedEvent event) {
             if (ActiveKeyHandler.INSTANCE
                 .isKeyPressed(event.getPlayer())) { //If active key was already pressed, skip.
                 return;
@@ -72,9 +68,9 @@ public class Solace extends AbstractChallenger {
             if (cooldownMap.containsKey(event.getPlayer().getUniqueId())) { //If on cooldown, skip
                 return;
             }
-            final Optional<Player> lowestHealth = event.getPlayer().getNearbyEntities(10).stream()
-                .filter(entity -> entity instanceof Player).map(entity -> (Player) entity)
-                .min((Player player1, Player player2) -> {
+            final Optional<Player> lowestHealth =
+                event.getPlayer().getNearbyEntities(10).stream().filter(Player.class::isInstance)
+                    .map(Player.class::cast).min((Player player1, Player player2) -> {
                     final double h1 = player1.health().get(), h2 = player2.health().get();
                     return Double.compare(h1, h2);
                 });
@@ -84,8 +80,8 @@ public class Solace extends AbstractChallenger {
             final Player lowest = lowestHealth.get();
             soulMap.put(event.getPlayer().getUniqueId(),
                 lowest.getUniqueId()); //Map the invoker (solace) to the person with the soul.
-            registered
-                .put(lowest.getUniqueId(), tickCount); //Add the target to the registered soul map.
+            soulRegister.put(lowest.getUniqueId(),
+                getCooldownDuration()); //Add the target to the registered soul map.
         }
 
 
@@ -106,7 +102,8 @@ public class Solace extends AbstractChallenger {
             target.offer(healthData);
             soulMap.entrySet().removeIf(
                 (Map.Entry<UUID, UUID> entry) -> { //Key = Solace, Value = Player with soul.
-                    final boolean ret = entry.getValue().equals(event.getTargetEntity().getUniqueId());
+                    final boolean ret =
+                        entry.getValue().equals(event.getTargetEntity().getUniqueId());
                     if (ret) {
                         cooldownMap.put(entry.getKey(), 0L); //Add Solace to cooldown.
                     }
@@ -115,42 +112,30 @@ public class Solace extends AbstractChallenger {
         }
 
         @Override public void tick() {
-            registered.entrySet()
-                .removeIf(ChallengerUtils.mapTickPredicate(tickCount, soulMap::remove));
+            super.tick();
+            soulRegister.entrySet()
+                .removeIf(ChallengerUtils.mapTickPredicate(getCooldownDuration(), soulMap::remove));
             cooldownMap.entrySet().removeIf(
                 ChallengerUtils.mapTickPredicate(Common.toTicks(1, TimeUnit.MINUTES), null));
         }
     }
 
 
-    public static class UndiminishedSoul extends AbstractAbility implements Tickable {
+    public static class UndiminishedSoul extends AbstractCooldownAbility {
 
         private static final UndiminishedSoul instance = new UndiminishedSoul();
-        private final UUID uniqueID = UUID.randomUUID();
-        private final Collection<UUID> active = new HashSet<>();
-        private final Map<UUID, Long> dispelCooldown = new HashMap<>();
 
 
         private UndiminishedSoul() {
-            super("Undiminished Soul", false);
+            super("Undiminished Soul", false, 5, TimeUnit.SECONDS);
         }
 
         public static UndiminishedSoul getInstance() {
             return instance;
         }
 
-        public void register(final UUID uuid) {
-            deregister(uuid);
-            active.add(uuid);
-        }
-
-        public void deregister(final UUID uuid) {
-            active.remove(uuid);
-            dispelCooldown.remove(uuid);
-        }
-
         @Listener public void onPotionAdded(final ChangeEntityPotionEffectEvent.Gain event) {
-            if (!active.contains(event.getTargetEntity().getUniqueId())) {
+            if (!isRegistered(event.getTargetEntity().getUniqueId())) {
                 return;
             }
             final Entity entity = event.getTargetEntity();
@@ -161,7 +146,7 @@ public class Solace extends AbstractChallenger {
             final PotionEffect effect = event.getPotionEffect();
             if (effect instanceof BuffEffectSilence) { //If silence then remove.
                 event.setCancelled(true);
-                dispelCooldown.put(player.getUniqueId(), 0L);
+                resetCooldown(player.getUniqueId());
             }
         }
 
@@ -170,13 +155,8 @@ public class Solace extends AbstractChallenger {
 
         }
 
-
-        @Override public UUID getUniqueID() {
-            return uniqueID;
-        }
-
         @Override public void tick() {
-            for (final UUID uuid : active) {
+            for (final UUID uuid : registered) {
                 final Optional<Player> optional = Sponge.getServer().getPlayer(uuid);
                 optional.ifPresent((Player player) -> {
                     final PotionEffectData peData = player.get(PotionEffectData.class).orElseThrow(
@@ -186,8 +166,7 @@ public class Solace extends AbstractChallenger {
                     player.offer(peData);
                 });
             }
-            dispelCooldown.entrySet()
-                .removeIf(ChallengerUtils.mapTickPredicate(5, TimeUnit.SECONDS, null));
+            super.tick();
         }
     }
 }

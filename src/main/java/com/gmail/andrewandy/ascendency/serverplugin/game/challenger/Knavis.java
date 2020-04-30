@@ -6,6 +6,7 @@ import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerEvent;
 import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.Ability;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractAbility;
+import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractTickableAbility;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.AbstractChallenger;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.Challenger;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.ChallengerUtils;
@@ -18,7 +19,6 @@ import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.SimplePlay
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.engine.GameEngine;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.engine.GamePlayer;
 import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
-import com.gmail.andrewandy.ascendency.serverplugin.util.game.Tickable;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyPressedEvent;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
@@ -31,6 +31,7 @@ import org.spongepowered.api.effect.potion.PotionEffectTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.entity.ChangeEntityPotionEffectEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
@@ -75,25 +76,17 @@ public class Knavis extends AbstractChallenger implements Challenger {
         }
     }
 
-    public static class LivingGift implements Ability {
+    public static class LivingGift extends AbstractAbility {
 
         private static final LivingGift instance = new LivingGift();
         private final Map<UUID, Integer> hitHistory = new HashMap<>();
 
         private LivingGift() {
-
+            super("LivingGift", false);
         }
 
         public static LivingGift getInstance() {
             return instance;
-        }
-
-        @Override public boolean isPassive() {
-            return true;
-        }
-
-        @Override public boolean isActive() {
-            return true;
         }
 
         @Override public String getName() {
@@ -123,7 +116,7 @@ public class Knavis extends AbstractChallenger implements Challenger {
             hitHistory.replace(player.getUniqueId(), hits); //Update hit count
         }
 
-        private class LivingGiftUseEvent extends AscendencyServerEvent {
+        private static class LivingGiftUseEvent extends AscendencyServerEvent {
 
             private final Cause cause;
 
@@ -138,12 +131,11 @@ public class Knavis extends AbstractChallenger implements Challenger {
     }
 
 
-    public static class ShadowsRetreat extends AbstractAbility implements Tickable {
+    public static class ShadowsRetreat extends AbstractTickableAbility {
 
         public static final Long[] defaultTickThreshold =
             new Long[] {Common.toTicks(6, TimeUnit.SECONDS), Common.toTicks(6, TimeUnit.SECONDS)};
         private static final ShadowsRetreat instance = new ShadowsRetreat();
-        private final UUID uuid = UUID.randomUUID();
         private final Map<UUID, LocationMark> dataMap = new HashMap<>();
         private final Map<UUID, Integer> castCounter = new HashMap<>();
         private BiFunction<UUID, LocationMark, Long[]> tickThresholdFunction;
@@ -195,10 +187,6 @@ public class Knavis extends AbstractChallenger implements Challenger {
             });
         }
 
-        @Override public UUID getUniqueID() {
-            return uuid;
-        }
-
         private void castAbilityAs(final Player player) {
             if (!dataMap.containsKey(player.getUniqueId())) {
                 throw new IllegalArgumentException("Player does not have this ability!");
@@ -224,7 +212,8 @@ public class Knavis extends AbstractChallenger implements Challenger {
         }
 
 
-        @Listener public void onHotbarChange(final ChangeInventoryEvent.Held event) {
+        @Listener(order = Order.LAST)
+        public void onHotbarChange(final ChangeInventoryEvent.Held event) {
             final Cause cause = event.getCause();
             final Optional<Player> optionalPlayer = cause.allOf(UUID.class).parallelStream()
                 .map((uniqueID) -> Sponge.getServer().getPlayer(uniqueID))
@@ -255,7 +244,8 @@ public class Knavis extends AbstractChallenger implements Challenger {
             });
         }
 
-        @Listener public void onActiveKeyPress(final ActiveKeyPressedEvent event) {
+        @Listener(order = Order.LAST)
+        public void onActiveKeyPress(final ActiveKeyPressedEvent event) {
             final Player player = event.getPlayer();
             final Optional<ManagedMatch> managedMatch =
                 SimplePlayerMatchManager.INSTANCE.getMatchOf(player.getUniqueId());
@@ -263,7 +253,8 @@ public class Knavis extends AbstractChallenger implements Challenger {
                 return;
             }
             final ManagedMatch match = managedMatch.get();
-            final Optional<? extends GamePlayer> optional = match.getGamePlayerOf(player.getUniqueId());
+            final Optional<? extends GamePlayer> optional =
+                match.getGamePlayerOf(player.getUniqueId());
             optional.ifPresent(gamePlayer -> {
                 final Challenger challenger = gamePlayer.getChallenger();
                 if (challenger != Knavis.getInstance()) {
@@ -599,7 +590,8 @@ public class Knavis extends AbstractChallenger implements Challenger {
             final Player playerObj = optionalPlayer.get();
             tickHistory.replace(playerObj.getUniqueId(), 0L);
             stacks.compute(playerObj.getUniqueId(), ((UUID player, Integer stack) -> {
-                final int stackVal = stack == null ? 0 : stack; //Unboxing here may throw nullpointer.
+                final int stackVal =
+                    stack == null ? 0 : stack; //Unboxing here may throw nullpointer.
                 double health = 3;
                 for (int index = 1; index < stackVal; ) {
                     health += index++;
