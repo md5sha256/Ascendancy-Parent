@@ -23,7 +23,7 @@ public enum Challengers {
     ASTSRICION(Astricion.getInstance()),
     SOLACE(Solace.getInstance()),
     VENGLIS(Vengelis.getInstance()),
-    BREEZY(null),
+    BREEZY(Breezy.getInstance()),
     BELLA(Bella.getInstance());
 
     public static final String LOAD = null; //Invoke to force classloader to load this class

@@ -101,7 +101,6 @@ public class Breezy extends AbstractChallenger {
                         && circlePredicate.test(entity.getLocation()));
             final World world = player.getWorld();
             for (final Player p : players) {
-                //TODO Write using falling-block instances
                 final FallingBlock fallingBlock = (FallingBlock) world
                     .createEntity(EntityTypes.FALLING_BLOCK, p.getLocation().getPosition());
                 final FallingBlockData fallingBlockData = fallingBlock.getFallingBlockData();
