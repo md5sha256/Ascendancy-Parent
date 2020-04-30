@@ -1,6 +1,7 @@
 package com.gmail.andrewandy.ascendency.serverplugin.matchmaking.draftpick;
 
 import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
+import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.Challenger;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.Team;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.ManagedMatch;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.engine.GameEngine;
@@ -52,6 +53,17 @@ public class DraftPickMatchEngine implements GameEngine {
      */
     Collection<AscendencyPlayer> getAscendencyPlayers() {
         return new HashSet<>(ascendencyPlayers);
+    }
+
+    @Override public Collection<Player> getPlayersOfChallenger(final Challenger challenger) {
+        final Collection<Player> collection = new HashSet<>(ascendencyPlayers.size());
+        for (final AscendencyPlayer ascendencyPlayer : ascendencyPlayers) {
+            if (ascendencyPlayer.getChallenger().equals(challenger)) {
+                final Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(ascendencyPlayer.getPlayerUUID());
+                optionalPlayer.ifPresent(collection::add);
+            }
+        }
+        return collection;
     }
 
     /**

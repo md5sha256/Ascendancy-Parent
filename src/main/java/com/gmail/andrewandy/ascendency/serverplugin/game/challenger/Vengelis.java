@@ -1,7 +1,7 @@
 package com.gmail.andrewandy.ascendency.serverplugin.game.challenger;
 
-import am2.api.event.SpellCastEvent;
 import am2.buffs.BuffEffectEntangled;
+import am2.buffs.BuffEffectFury;
 import com.gmail.andrewandy.ascendency.lib.game.data.IChallengerData;
 import com.gmail.andrewandy.ascendency.lib.game.data.game.ChallengerDataImpl;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.Ability;
@@ -11,13 +11,14 @@ import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.ChallengerUti
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.PlayerSpecificRune;
 import com.gmail.andrewandy.ascendency.serverplugin.game.util.MathUtils;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.Team;
+import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.ManagedMatch;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.PlayerMatchManager;
+import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.engine.GameEngine;
 import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
 import com.gmail.andrewandy.ascendency.serverplugin.util.game.Tickable;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyPressedEvent;
+import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyReleasedEvent;
 import com.google.inject.Inject;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
 import org.spongepowered.api.effect.potion.PotionEffect;
@@ -42,8 +43,8 @@ public class Vengelis extends AbstractChallenger {
     @Inject private static PlayerMatchManager matchManager;
 
     private Vengelis() {
-        super("Vengelis", new Ability[] {Gyration.instance}, new PlayerSpecificRune[0],
-            Challengers.getLoreOf("Vengelis"));
+        super("Vengelis", new Ability[] {Gyration.instance, HauntingFury.instance},
+            new PlayerSpecificRune[0], Challengers.getLoreOf("Vengelis"));
     }
 
     public static Vengelis getInstance() {
@@ -71,7 +72,8 @@ public class Vengelis extends AbstractChallenger {
             super("Gyration", true);
         }
 
-        @Listener(order = Order.LATE) public void onActivePressed(final ActiveKeyPressedEvent event) {
+        @Listener(order = Order.LATE)
+        public void onActivePressed(final ActiveKeyPressedEvent event) {
             final Player player = event.getPlayer();
             if (!isActiveOnPlayer(player.getUniqueId()) && registered
                 .contains(player.getUniqueId())) {
@@ -79,17 +81,15 @@ public class Vengelis extends AbstractChallenger {
             }
         }
 
-        @SubscribeEvent public void onSpellCast(final SpellCastEvent event) {
-            final EntityLivingBase caster = event.entityLiving;
-            if (!canExecuteRoot(caster.getPersistentID())) {
-                return;
-            }
-            Sponge.getServer().getPlayer(caster.getPersistentID()).ifPresent(this::executeAsPlayer);
+        @Listener(order = Order.LATE)
+        public void onActiveKeyRelease(final ActiveKeyReleasedEvent event) {
+            active.remove(event.getPlayer().getUniqueId());
         }
 
         @Listener public void onAttack(final DamageEntityEvent event) {
-            final Optional<Player> source = event.getCause().get(DamageEntityEvent.CREATOR, UUID.class)
-                .flatMap(Sponge.getServer()::getPlayer);
+            final Optional<Player> source =
+                event.getCause().get(DamageEntityEvent.CREATOR, UUID.class)
+                    .flatMap(Sponge.getServer()::getPlayer);
             if (!source.isPresent()) {
                 return;
             }
@@ -150,6 +150,72 @@ public class Vengelis extends AbstractChallenger {
         @Override public void tick() {
             cooldownMap.entrySet()
                 .removeIf(ChallengerUtils.mapTickPredicate(10, TimeUnit.SECONDS, null));
+        }
+    }
+
+
+    public static class HauntingFury extends AbstractAbility {
+
+        private static final HauntingFury instance = new HauntingFury();
+
+        public static HauntingFury getInstance() {
+            return instance;
+        }
+
+        private HauntingFury() {
+            super("HauntingFury", false);
+        }
+
+        private Map<UUID, Integer> hitMap = new HashMap<>();
+
+        public void register(final UUID player) {
+            if (hitMap.containsKey(player)) {
+                return;
+            }
+            hitMap.put(player, 0);
+        }
+
+        public void unregister(final UUID player) {
+            hitMap.remove(player);
+        }
+
+        @Listener(order = Order.DEFAULT) public void onHit(final DamageEntityEvent event) {
+            final Optional<Player> optionalPlayer =
+                event.getCause().get(DamageEntityEvent.CREATOR, UUID.class)
+                    .flatMap(Sponge.getServer()::getPlayer);
+            if (!optionalPlayer.isPresent()) {
+                return;
+            }
+            final Player vengelis = optionalPlayer.get();
+            final Optional<ManagedMatch> optionalManagedMatch =
+                matchManager.getMatchOf(vengelis.getUniqueId());
+            if (!optionalManagedMatch.isPresent()) {
+                return;
+            }
+            if (hitMap.containsKey(vengelis.getUniqueId())) {
+                return;
+            }
+
+            final int hitCount = hitMap.get(vengelis.getUniqueId());
+            hitMap.replace(vengelis.getUniqueId(), hitCount == 4 ? 0 : hitCount + 1);
+            if (hitCount != 4) {
+                return;
+            }
+            event.setBaseDamage(event.getBaseDamage() + 6); //Add 6 damage
+
+            final ManagedMatch managedMatch = optionalManagedMatch.get();
+            final GameEngine engine = managedMatch.getGameEngine();
+            //Get all knavises in the current match
+            final Collection<Player> knavises = managedMatch.getGameEngine()
+                .getPlayersOfChallenger(Challengers.KNAVIS.asChallenger());
+            //Give them fury for 1second
+            for (final Player knavis : knavises) {
+                final PotionEffectData data = knavis.get(PotionEffectData.class).orElseThrow(
+                    () -> new IllegalArgumentException("Unable to get potion effect data!"));
+                data.addElement((PotionEffect) new BuffEffectFury(1,
+                    0)); //1 Second of fury to all knavises | Safe cast because of mixins.
+                knavis.offer(data);
+            }
         }
     }
 }
