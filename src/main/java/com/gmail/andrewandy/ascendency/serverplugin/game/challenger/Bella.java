@@ -14,7 +14,6 @@ import com.gmail.andrewandy.ascendency.lib.game.data.game.ChallengerDataImpl;
 import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerEvent;
 import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.Ability;
-import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractAbility;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractCooldownAbility;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractTickableAbility;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.AbstractChallenger;
@@ -27,13 +26,15 @@ import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.ManagedMat
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.PlayerMatchManager;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.SimplePlayerMatchManager;
 import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
-import com.gmail.andrewandy.ascendency.serverplugin.util.game.Tickable;
+import com.gmail.andrewandy.ascendency.serverplugin.util.CustomEvents;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyHandler;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyPressedEvent;
 import com.google.inject.Inject;
 import javafx.util.Pair;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockTypes;
@@ -64,7 +65,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
 /**
- * Represents the "Bella" Character in ascendency.
+ * Represents the "Bella" Character in ascendancy.
  */
 public class Bella extends AbstractChallenger {
 
@@ -184,6 +185,22 @@ public class Bella extends AbstractChallenger {
             return true;
         }
 
+        /**
+         * Get the CircletData from a specified location.
+         * @param location The location to get the circlet for.
+         * @return Returns an optional, populated if an circlet exists at a given
+         * location checked using {@link CircletData#generateCircleTest()}.
+         */
+        public Optional<CircletData> getCirecletAt(final Location<World> location) {
+            final Location<World> copy = location.copy();
+            for (final CircletData circletData : registeredMap.values()) {
+                if (circletData.generateCircleTest().test(copy)) {
+                    return Optional.of(circletData);
+                }
+            }
+            return Optional.empty();
+        }
+
         @Override public void tick() {
             super.tick();
             registeredMap.forEach((key, data) -> {
@@ -250,8 +267,8 @@ public class Bella extends AbstractChallenger {
                     return;
                 }
                 final Player target = procEvent.getTarget();
-                activateAs(procEvent.getInvoker().getUniqueId(),
-                    procEvent.getTarget().getUniqueId(), procEvent.circletRadius, true);
+                activateAs(procEvent.getInvoker().getUniqueId(), target.getUniqueId(),
+                    procEvent.circletRadius, true);
             }
         }
 
@@ -298,6 +315,16 @@ public class Bella extends AbstractChallenger {
                 entity.damage(event.getFinalDamage(),
                     DamageSource.builder().from(DamageSources.GENERIC).build());
             }));
+        }
+
+        @Listener(order = Order.DEFAULT)
+        public void onJump(final CustomEvents.PlayerJumpEvent event) {
+            final Player player = event.getPlayer();
+            final Optional<CircletData> optionalCirclet = getCirecletAt(player.getLocation());
+            if (optionalCirclet.isPresent() && !optionalCirclet.get().caster
+                .equals(player.getUniqueId())) {
+                event.setCancelled(true);
+            }
         }
 
         /**

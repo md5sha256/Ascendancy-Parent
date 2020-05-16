@@ -4,6 +4,7 @@ import am2.buffs.BuffEffectEntangled;
 import com.gmail.andrewandy.ascendency.lib.game.data.IChallengerData;
 import com.gmail.andrewandy.ascendency.lib.game.data.game.ChallengerDataImpl;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.Ability;
+import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractAbility;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractCooldownAbility;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.AbstractChallenger;
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.PlayerSpecificRune;
@@ -24,8 +25,6 @@ import org.spongepowered.api.entity.FallingBlock;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.cause.entity.damage.DamageTypes;
-import org.spongepowered.api.event.cause.entity.damage.source.DamageSource;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -44,7 +43,8 @@ public class Breezy extends AbstractChallenger {
     @Inject private static PlayerMatchManager matchManager;
 
     private Breezy() {
-        super("Breezy", new Ability[]{Oops.instance}, new PlayerSpecificRune[0], Challengers.getLoreOf("Breezy"));
+        super("Breezy", new Ability[] {Oops.instance}, new PlayerSpecificRune[0],
+            Challengers.getLoreOf("Breezy"));
     }
 
     public static Breezy getInstance() {
@@ -85,6 +85,7 @@ public class Breezy extends AbstractChallenger {
 
         /**
          * Execute this ability as a given player.
+         *
          * @param player The {@link Player} object of to execute as.
          */
         public void executeAs(final Player player) {
@@ -102,20 +103,16 @@ public class Breezy extends AbstractChallenger {
             final World world = player.getWorld();
             for (final Player p : players) {
                 final FallingBlock fallingBlock = (FallingBlock) world
-                    .createEntity(EntityTypes.FALLING_BLOCK, p.getLocation().getPosition());
+                    .createEntity(EntityTypes.FALLING_BLOCK,
+                        p.getLocation().getPosition().add(0, 3f, 0));
                 final FallingBlockData fallingBlockData = fallingBlock.getFallingBlockData();
                 //Make sure anvil can't be placed (i.e self destructs on place)
                 fallingBlockData.set(Keys.CAN_PLACE_AS_BLOCK, false);
                 fallingBlock.offer(fallingBlockData);
                 fallingBlock.setCreator(player.getUniqueId());
-                fallingBlock.maxFallDamage().set(0D); //Manually do damage.
-                final double damage = 0; //TODO;
-                //Schedule damage after 0.5s
-                Sponge.getScheduler().createTaskBuilder()
-                    .delayTicks(Common.toTicks(500, TimeUnit.MILLISECONDS)).execute(() -> {
-                    p.damage(damage,
-                        DamageSource.builder().type(DamageTypes.MAGIC).build()); //TODO is AP magic?
-                });
+                fallingBlock.fallDamagePerBlock().set(100D);
+                fallingBlock.maxFallDamage()
+                    .set(calculateDamageToDeal(player)); //Override damage per block
                 final PotionEffectData potionEffectData = p.get(PotionEffectData.class)
                     .orElseThrow(() -> new IllegalStateException("Unable to get potion data!"));
                 potionEffectData.addElement((PotionEffect) new BuffEffectEntangled(1,
@@ -123,6 +120,12 @@ public class Breezy extends AbstractChallenger {
                 p.offer(potionEffectData);
             }
             resetCooldown(player.getUniqueId()); //Reset the cooldown ticker to 0.
+        }
+
+        private double calculateDamageToDeal(final Player player) {
+            final int abilityPower = Common.getAbilityPower(player);
+            final int level = Math.floorDiv(abilityPower, 10);
+            return level >= 6 ? 54 : level * 9;
         }
 
         @Override public void tick() {
@@ -138,5 +141,14 @@ public class Breezy extends AbstractChallenger {
                 });
             }
         }
+    }
+
+    public static class RuneBoom extends AbstractAbility {
+
+        private RuneBoom() {
+            super("RuneBoom", false);
+        }
+        
+
     }
 }

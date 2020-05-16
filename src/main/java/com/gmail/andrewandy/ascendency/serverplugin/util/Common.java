@@ -107,6 +107,14 @@ public class Common {
         return EntityExtension.For((EntityLivingBase) player);
     }
 
+    public static int getAbilityPower(final Player player) {
+        return getExtensionFor(player).getCurrentLevel();
+    }
+
+    public static void setAbilityPower(final Player player, final int level) {
+        getExtensionFor(player).setCurrentLevel(level);
+    }
+
     public static float getMana(final Player player) {
         return getExtensionFor(player).getCurrentMana();
     }

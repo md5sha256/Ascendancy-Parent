@@ -1,6 +1,6 @@
 package com.gmail.andrewandy.ascendency.serverplugin.api;
 
-import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.Challenger;
+import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.engine.GamePlayer;
 
 public class Mechanics {
 
@@ -8,15 +8,8 @@ public class Mechanics {
 
         ATTACK_DAMAGE, ABILITY_POWER, TRUE;
 
-
         DamageType() {
         }
 
-        double calculateDamage(final Challenger challenger, final double damage) {
-            //return challenger.getDamageType() == this ? damage : damage * modifier;
-            throw new UnsupportedOperationException("Unimplemented");
-        }
-
     }
-
 }

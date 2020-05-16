@@ -30,6 +30,15 @@ public interface PlayerMatchManager {
      */
     Optional<ManagedMatch> getMatchOf(UUID player);
 
+    /**
+     * Check whether a player is in a match, regardless of the {@link Match#getState()}
+     *
+     * @param player The UniqueID of the player.
+     * @return Returns whether a player is in a match, equivalent to checking if {@link #getMatchOf(UUID)} if present.
+     */
+    default boolean isInMatch(final UUID player) {
+        return getMatchOf(player).isPresent();
+    }
 
     /**
      * Check if a player is in a match which has been engaged.
@@ -83,8 +92,9 @@ public interface PlayerMatchManager {
      * @param removeIfFailed Whether to remove the player if the operation fails.
      * @return Returns whether the operation was successful.
      */
-    default boolean movePlayerToMatch(final UUID player, final Team team, final ManagedMatch managedMatch,
-        final boolean removeIfFailed) throws IllegalStateException {
+    default boolean movePlayerToMatch(final UUID player, final Team team,
+        final ManagedMatch managedMatch, final boolean removeIfFailed)
+        throws IllegalStateException {
         Objects.requireNonNull(managedMatch);
         final Optional<ManagedMatch> previous = getMatchOf(player);
         if (previous.isPresent()) {
@@ -112,7 +122,8 @@ public interface PlayerMatchManager {
      * @param managedMatch The match instance to assign the player.
      * @return Returns whether the operation was successful.
      */
-    default boolean moveWaitingPlayerToMatch(final UUID player, final Team team, final ManagedMatch managedMatch) {
+    default boolean moveWaitingPlayerToMatch(final UUID player, final Team team,
+        final ManagedMatch managedMatch) {
         Objects.requireNonNull(managedMatch);
         final Optional<ManagedMatch> previous = getMatchOf(player);
         if (previous.isPresent() && previous.get().getState() != Match.MatchState.LOBBY) {
@@ -135,6 +146,21 @@ public interface PlayerMatchManager {
      */
     boolean addPlayerToMatch(UUID player, Team team, ManagedMatch match)
         throws IllegalArgumentException;
+
+
+    /**
+     *
+     * @param player
+     * @param managedMatch
+     * @return
+     */
+    default boolean addPlayerToMatch(final UUID player, final ManagedMatch managedMatch) {
+        if (!canMovePlayerTo(player, managedMatch)) {
+            return false;
+        }
+        managedMatch.addAndAssignTeam(player);
+        return true;
+    }
 
     /**
      * Removes a player from the match they are in.

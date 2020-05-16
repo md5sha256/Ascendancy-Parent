@@ -30,9 +30,21 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
+compileJava {
+    options.compilerArgs += ["-parameters"]
+    options.fork = true
+    options.forkOptions.executable = 'javac'
+}
+repositories {
+    maven {
+        name = 'aikar'
+        url = "https://repo.aikar.co/content/groups/aikar/"
+    }
+}
 
 dependencies {
     compile 'org.spongepowered:spongeapi:5.1.0' //SpongeAPI
+    compile "co.aikar:acf-sponge:0.5.0-SNAPSHOT"
     compile project(':AscendencyLib') //AscendencyLib
     compile 'am2:arsmagica2:1.5.0-21' //AM2 Dependency
 }
@@ -56,6 +68,8 @@ shadowJar {
     classifier = null
     dependencies {
         include(dependency(":AscendencyLib"))
+        include(dependency("co.aikar:acf-sponge"))
     }
-    minimize()
+    relocate 'co.aikar.commands', 'com.gmail.andrewandy.acf'
+    relocate 'co.aikar.locales', 'com.gmail.andrewandy.locales'
 }

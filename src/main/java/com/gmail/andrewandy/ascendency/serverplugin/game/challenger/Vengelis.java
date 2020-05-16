@@ -5,15 +5,14 @@ import am2.buffs.BuffEffectFury;
 import com.gmail.andrewandy.ascendency.lib.game.data.IChallengerData;
 import com.gmail.andrewandy.ascendency.lib.game.data.game.ChallengerDataImpl;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.Ability;
-import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractAbility;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractCooldownAbility;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.AbstractChallenger;
+import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.ChallengerUtils;
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.PlayerSpecificRune;
 import com.gmail.andrewandy.ascendency.serverplugin.game.util.MathUtils;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.Team;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.ManagedMatch;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.PlayerMatchManager;
-import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.engine.GameEngine;
 import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyPressedEvent;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyReleasedEvent;
@@ -64,6 +63,7 @@ public class Vengelis extends AbstractChallenger {
         public static final Gyration instance = new Gyration();
 
         private final Collection<UUID> active = new HashSet<>();
+        //Represents whether they have an active 1st hit - do not remove!
 
         private Gyration() {
             super("Gyration", true, 10, TimeUnit.SECONDS);
@@ -135,7 +135,12 @@ public class Vengelis extends AbstractChallenger {
     }
 
 
-    public static class HauntingFury extends AbstractAbility {
+    /**
+     * Represents the HauntingFury Ability - The cooldown of this
+     * ability is actually the time before the player's attacks are
+     * cleared.
+     */
+    public static class HauntingFury extends AbstractCooldownAbility {
 
         private static final HauntingFury instance = new HauntingFury();
 
@@ -144,22 +149,27 @@ public class Vengelis extends AbstractChallenger {
         }
 
         private HauntingFury() {
-            super("HauntingFury", false);
+            super("HauntingFury", false, 6, TimeUnit.SECONDS);
+            super.setTickHandler(ChallengerUtils
+                .mapTickPredicate(6, TimeUnit.SECONDS, this::scheduleUnregisterNextTick));
         }
 
         private Map<UUID, Integer> hitMap = new HashMap<>();
 
-        @Override
-        public void register(final UUID player) {
+        @Override public void register(final UUID player) {
             if (hitMap.containsKey(player)) {
                 return;
             }
             hitMap.put(player, 0);
         }
 
-        @Override
-        public void unregister(final UUID player) {
+        @Override public void unregister(final UUID player) {
             hitMap.remove(player);
+        }
+
+        public void scheduleUnregisterNextTick(final UUID player) {
+            unregister(player);
+            hitMap.put(player, 3);
         }
 
         @Listener(order = Order.DEFAULT) public void onHit(final DamageEntityEvent event) {
@@ -181,13 +191,11 @@ public class Vengelis extends AbstractChallenger {
 
             final int hitCount = hitMap.get(vengelis.getUniqueId());
             hitMap.replace(vengelis.getUniqueId(), hitCount == 4 ? 0 : hitCount + 1);
+            resetCooldown(vengelis.getUniqueId()); //Reset hit "cooldown"
             if (hitCount != 4) {
                 return;
             }
-            event.setBaseDamage(event.getBaseDamage() + 6); //Add 6 damage
-
             final ManagedMatch managedMatch = optionalManagedMatch.get();
-            final GameEngine engine = managedMatch.getGameEngine();
             //Get all knavises in the current match
             final Collection<Player> knavises = managedMatch.getGameEngine()
                 .getPlayersOfChallenger(Challengers.KNAVIS.asChallenger());
@@ -198,6 +206,33 @@ public class Vengelis extends AbstractChallenger {
                 data.addElement((PotionEffect) new BuffEffectFury(1,
                     0)); //1 Second of fury to all knavises | Safe cast because of mixins.
                 knavis.offer(data);
+            }
+        }
+
+        @Override public void tick() {
+            super.tick();
+            final PotionEffect potionEffect = PotionEffect.of(PotionEffectTypes.STRENGTH, 2, 1);
+            for (final Map.Entry<UUID, Integer> entry : hitMap.entrySet()) {
+                final Optional<Player> optionalPlayer =
+                    Sponge.getServer().getPlayer(entry.getKey());
+                if (!optionalPlayer.isPresent()) {
+                    scheduleUnregisterNextTick(entry.getKey());
+                    continue;
+                }
+                final Player player = optionalPlayer.get();
+                final PotionEffectData potionEffectData = player.get(PotionEffectData.class)
+                    .orElseThrow(() -> new IllegalStateException("Unable to get potion data!"));
+                switch (entry.getValue()) {
+                    case 3:
+                        player.offer(potionEffectData.copy().addElement(potionEffect));
+                        break;
+                    case 4:
+                        potionEffectData.removeAll(effect -> effect.getType()
+                            == PotionEffectTypes.STRENGTH); //Remove strength
+                        player.offer(potionEffectData);
+                    default:
+                        break;
+                }
             }
         }
     }

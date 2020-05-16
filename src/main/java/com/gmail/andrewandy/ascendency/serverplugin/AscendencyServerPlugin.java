@@ -9,6 +9,7 @@ import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.draftpick.DraftM
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.SimplePlayerMatchManager;
 import com.gmail.andrewandy.ascendency.serverplugin.module.AscendencyModule;
 import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
+import com.gmail.andrewandy.ascendency.serverplugin.util.CustomEvents;
 import com.gmail.andrewandy.ascendency.serverplugin.util.ForceLoadChunks;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyHandler;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.KeyBindHandler;
@@ -96,6 +97,7 @@ import java.util.logging.Level;
         ForceLoadChunks.getInstance().loadSettings(); //Register the force event handler.
         SimplePlayerMatchManager.enableManager();
         Challengers.initHandlers();
+        Sponge.getEventManager().registerListeners(this, CustomEvents.INSTANCE);
         loadMatchMaking(); //Load after the player match manager.
         Common.log(Level.INFO, "Plugin enabled!");
     }
