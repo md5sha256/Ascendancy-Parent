@@ -1,0 +1,18 @@
+[
+  {
+    "modid": "AscendencyCustomMod",
+    "name": "AscendencyCustomMod",
+    "description": "Custom mod for Ascendency.",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "",
+    "updateUrl": "",
+    "authorList": [
+      "andrewandy"
+    ],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]
