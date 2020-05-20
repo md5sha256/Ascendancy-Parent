@@ -1,0 +1,3 @@
+include ':AscendencyLib'
+include ':AscendencyCustomMod'
+include ':AscendencyServerPlugin'
