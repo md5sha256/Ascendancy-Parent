@@ -1,0 +1,34 @@
+MatchMaking:
+  Mode: BALANCED
+  Max-Players: 10
+  Min-Players: 6
+
+DamageScoreboard:
+  ScoreboardDamager: "lastDamager"
+  ScoreboardVictim: "lastVictim"
+
+KeyBinding:
+  #The custom objective in which players should be placed into when they have
+  #Their active key pressed.
+  ScoreboardObjective: "keyBinding"
+  ScoreboardScore: "activeKey"
+
+ChunkLoading:
+#  Example:
+#   x: 0
+#   z: 0
+#   world: "world"
+
+Teams:
+  Arctic:
+    - Min: 1
+    - Max: 5
+  Blazic:
+    - Min: 6
+    - Max: 10
+
+Champions:
+  Knavis:
+    lore:
+      - "Active: Some desc"
+      - "Passive: Some desc"
