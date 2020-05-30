@@ -1,7 +1,7 @@
 package com.gmail.andrewandy.ascendency.lib.data;
 
 import com.gmail.andrewandy.ascendency.lib.AscendencyPacket;
-import com.gmail.andrewandy.ascendency.lib.packet.util.CommonUtils;
+import com.gmail.andrewandy.ascendency.lib.util.CommonUtils;
 import io.netty.buffer.ByteBuf;
 
 import java.io.IOException;
@@ -22,26 +22,26 @@ public abstract class DataPacket extends AscendencyPacket {
 
     }
 
-    public DataPacket(UUID player) {
+    public DataPacket(final UUID player) {
         super(player);
     }
 
-    public DataPacket(UUID player, byte[] data) {
+    public DataPacket(final UUID player, final byte[] data) {
         this(player);
         this.data = data;
     }
 
-    public DataPacket(UUID player, InputStream src) throws IOException {
+    public DataPacket(final UUID player, final InputStream src) throws IOException {
         this(player);
         data = CommonUtils.readFromStream(src);
     }
 
-    public DataPacket(ByteBuf buffer) {
+    public DataPacket(final ByteBuf buffer) {
         data = Objects.requireNonNull(buffer).array();
     }
 
 
-    public DataPacket(ByteBuffer buffer) {
+    public DataPacket(final ByteBuffer buffer) {
         if (!Objects.requireNonNull(buffer).hasArray()) {
             throw new IllegalArgumentException("Buffer has no array!");
         }
@@ -52,11 +52,11 @@ public abstract class DataPacket extends AscendencyPacket {
         return data;
     }
 
-    protected void setData(byte[] data) {
+    protected void setData(final byte[] data) {
         this.data = data;
     }
 
-    public void writeToStream(OutputStream outputStream, boolean closeAfter) throws IOException {
+    public void writeToStream(final OutputStream outputStream, final boolean closeAfter) throws IOException {
         try {
             Objects.requireNonNull(outputStream).write(getFormattedData());
         } finally {

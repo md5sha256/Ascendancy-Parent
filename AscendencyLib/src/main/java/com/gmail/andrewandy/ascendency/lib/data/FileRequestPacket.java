@@ -21,11 +21,11 @@ public class FileRequestPacket extends DataRequestPacket {
 
     }
 
-    public FileRequestPacket(UUID player) {
+    public FileRequestPacket(final UUID player) {
         super(player);
     }
 
-    public FileRequestPacket(FileRequestPacket other) {
+    public FileRequestPacket(final FileRequestPacket other) {
         if (other == null) {
             return;
         }
@@ -35,11 +35,11 @@ public class FileRequestPacket extends DataRequestPacket {
         super.setTargetPlayer(other.getTargetPlayer());
     }
 
-    public FileRequestPacket(UUID player, String filePath) {
+    public FileRequestPacket(final UUID player, final String filePath) {
         this(player, Paths.get(filePath));
     }
 
-    public FileRequestPacket(UUID player, Path path) {
+    public FileRequestPacket(final UUID player, final Path path) {
         this(player);
         this.filePath = Objects.requireNonNull(path);
     }
@@ -49,21 +49,21 @@ public class FileRequestPacket extends DataRequestPacket {
     }
 
     @Override
-    public int fromBytes(byte[] bytes) {
-        ByteBuf buf = ByteBufAllocator.DEFAULT.buffer(bytes.length);
+    public int fromBytes(final byte[] bytes) {
+        final ByteBuf buf = ByteBufAllocator.DEFAULT.buffer(bytes.length);
         buf.writeBytes(bytes);
-        byte[] rawString = buf.array();
-        String str = new String(rawString);
-        String[] split = str.split(SPLITTER);
+        final byte[] rawString = buf.array();
+        final String str = new String(rawString);
+        final String[] split = str.split(SPLITTER);
         if (split.length < 3) {
             throw new IllegalArgumentException("Invalid buffer parsed!");
         }
         int index = 0;
-        String classAsString = split[index++];
-        String protocolVersion = split[index++];
-        String filePath = split[index];
+        final String classAsString = split[index++];
+        final String protocolVersion = split[index++];
+        final String filePath = split[index];
         try {
-            Class<?> clazz = Class.forName(classAsString);
+            final Class<?> clazz = Class.forName(classAsString);
             if (!FileRequestPacket.class.isAssignableFrom(clazz)) {
                 throw new IllegalArgumentException("Invalid packet, not type of FileRequestPacket!");
             }
@@ -71,7 +71,7 @@ public class FileRequestPacket extends DataRequestPacket {
                 //Convert.
             }
             this.filePath = Paths.get(filePath);
-        } catch (ClassNotFoundException ex) {
+        } catch (final ClassNotFoundException ex) {
             throw new IllegalArgumentException("Invalid packet, not type of FileRequestPacket!", ex);
         }
         return buf.readerIndex();
@@ -79,7 +79,7 @@ public class FileRequestPacket extends DataRequestPacket {
 
     @Override
     public byte[] getFormattedData() {
-        String str = getClass().getCanonicalName() + SPLITTER + PROTOCOL_VERSION + SPLITTER + filePath.toString();
+        final String str = getClass().getCanonicalName() + SPLITTER + PROTOCOL_VERSION + SPLITTER + filePath.toString();
         return str.getBytes();
     }
 

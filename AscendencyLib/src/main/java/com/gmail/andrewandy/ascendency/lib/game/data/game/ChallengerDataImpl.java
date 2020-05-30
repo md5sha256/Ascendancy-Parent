@@ -1,7 +1,7 @@
 package com.gmail.andrewandy.ascendency.lib.game.data.game;
 
 import com.gmail.andrewandy.ascendency.lib.game.data.IChallengerData;
-import com.gmail.andrewandy.ascendency.lib.packet.util.CommonUtils;
+import com.gmail.andrewandy.ascendency.lib.util.CommonUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,8 +10,8 @@ import java.util.List;
 
 public class ChallengerDataImpl implements IChallengerData {
 
-    private String name;
     private final byte[] iconData;
+    private String name;
     private List<String> lore;
 
     public ChallengerDataImpl(String name, File icon, List<String> lore) throws IOException {
@@ -28,13 +28,11 @@ public class ChallengerDataImpl implements IChallengerData {
         return name;
     }
 
-    @Override
-    public byte[] getIcon() {
+    @Override public byte[] getIcon() {
         return iconData;
     }
 
-    @Override
-    public List<String> getLore() {
+    @Override public List<String> getLore() {
         return lore;
     }
 }

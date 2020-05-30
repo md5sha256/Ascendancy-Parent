@@ -11,11 +11,11 @@ public abstract class DataRequestPacket extends AscendencyPacket {
     public DataRequestPacket() {
     }
 
-    public DataRequestPacket(UUID player) {
+    public DataRequestPacket(final UUID player) {
         super(player);
     }
 
-    public DataRequestPacket(UUID player, byte[] requestMessage) {
+    public DataRequestPacket(final UUID player, final byte[] requestMessage) {
         this(player);
         this.requestMessage = requestMessage;
     }
@@ -24,7 +24,7 @@ public abstract class DataRequestPacket extends AscendencyPacket {
         return requestMessage;
     }
 
-    protected void setRequestMessage(byte[] message) {
+    protected void setRequestMessage(final byte[] message) {
         this.requestMessage = message;
     }
 

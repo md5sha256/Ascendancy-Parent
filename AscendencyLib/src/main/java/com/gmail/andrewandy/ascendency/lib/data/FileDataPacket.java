@@ -25,16 +25,16 @@ public class FileDataPacket extends DataPacket {
     public FileDataPacket() {
     }
 
-    public FileDataPacket(UUID player) {
+    public FileDataPacket(final UUID player) {
         super(player);
     }
 
-    public FileDataPacket(UUID player, File file) throws IOException {
+    public FileDataPacket(final UUID player, final File file) throws IOException {
         this(player, new FileInputStream(file), file.getName(), file.length());
     }
 
 
-    public FileDataPacket(UUID player, InputStream src, String fileName, long targetFileSize) throws IOException {
+    public FileDataPacket(final UUID player, final InputStream src, final String fileName, final long targetFileSize) throws IOException {
         super(player, src);
         this.fileName = fileName;
         if (targetFileSize < 0) {
@@ -43,19 +43,19 @@ public class FileDataPacket extends DataPacket {
         this.targetFileSize = targetFileSize;
     }
 
-    public static void setDataFolder(File dataFolder) {
+    public static void setDataFolder(final File dataFolder) {
         FileDataPacket.dataFolder = dataFolder.getAbsolutePath();
     }
 
-    public static AscendencyPacket handleIncomingPacket(FileDataPacket incoming) throws IOException {
-        byte[] bytes = incoming.getData();
-        String fileName = incoming.fileName;
+    public static AscendencyPacket handleIncomingPacket(final FileDataPacket incoming) throws IOException {
+        final byte[] bytes = incoming.getData();
+        final String fileName = incoming.fileName;
         if (dataFolder == null) {
             throw new IllegalStateException("No data folder set!");
         }
-        File file = new File(dataFolder, fileName);
+        final File file = new File(dataFolder, fileName);
         file.createNewFile();
-        try (OutputStream os = new FileOutputStream(file)) {
+        try (final OutputStream os = new FileOutputStream(file)) {
             os.write(bytes);
         }
         if (!incoming.fileSizeIsCorrect(file)) {
@@ -66,35 +66,35 @@ public class FileDataPacket extends DataPacket {
     }
 
     @Override
-    public int fromBytes(byte[] bytes) {
+    public int fromBytes(final byte[] bytes) {
         ByteBuf buf = ByteBufAllocator.DEFAULT.buffer(bytes.length);
         buf.writeBytes(bytes);
-        int idLength = Objects.requireNonNull(buf).readInt();
-        String identifier = new String(buf.readSlice(idLength).array());
+        final int idLength = Objects.requireNonNull(buf).readInt();
+        final String identifier = new String(buf.readSlice(idLength).array());
         buf = buf.readBytes(idLength); //Since buf is immutable we must reassign.
-        String[] arr = identifier.split(SPLITTER);
+        final String[] arr = identifier.split(SPLITTER);
         if (arr.length < 2) {
             throw new IllegalArgumentException("Invalid identifier!");
         }
         try {
-            Class<?> clazz = Class.forName(arr[0]);
+            final Class<?> clazz = Class.forName(arr[0]);
             if (!FileDataPacket.class.isAssignableFrom(clazz)) {
                 throw new IllegalArgumentException("Packet identifier not type of FileDataPacket!");
             }
-            String otherVersion = arr[1];
+            final String otherVersion = arr[1];
             if (!otherVersion.equals(PROTOCOL_VERSION)) {
                 //Conversion
             }
-        } catch (ClassNotFoundException ex) {
+        } catch (final ClassNotFoundException ex) {
             throw new IllegalArgumentException("Packet identifier not type of FileDataPacket!");
         }
-        int nameLength = buf.readInt();
+        final int nameLength = buf.readInt();
         assert nameLength > 0;
-        byte[] nameBytes = buf.readBytes(nameLength).slice().array();
+        final byte[] nameBytes = buf.readBytes(nameLength).slice().array();
         fileName = new String(nameBytes);
         targetFileSize = buf.readLong();
-        int dataLen = buf.readInt();
-        byte[] data = dataLen > 0 ? buf.readBytes(dataLen).slice().array() : new byte[0];
+        final int dataLen = buf.readInt();
+        final byte[] data = dataLen > 0 ? buf.readBytes(dataLen).slice().array() : new byte[0];
         super.setData(data);
         if (!fileSizeIsCorrect()) {
             throw new IllegalStateException("File size != target file size!");
@@ -102,7 +102,7 @@ public class FileDataPacket extends DataPacket {
         return buf.readerIndex();
     }
 
-    private boolean fileSizeIsCorrect(File file) {
+    private boolean fileSizeIsCorrect(final File file) {
         return Objects.requireNonNull(file).length() == targetFileSize;
     }
 
@@ -110,11 +110,11 @@ public class FileDataPacket extends DataPacket {
         File temp = null;
         try {
             temp = File.createTempFile(UUID.randomUUID().toString(), ".tmp");
-            try (FileOutputStream os = new FileOutputStream(temp)) {
+            try (final FileOutputStream os = new FileOutputStream(temp)) {
                 os.write(getData());
                 return fileSizeIsCorrect(temp);
             }
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             return false;
         } finally {
             if (temp != null) {
@@ -129,11 +129,11 @@ public class FileDataPacket extends DataPacket {
         if (fileName == null) {
             return new byte[0];
         }
-        ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
-        byte[] nameBytes = fileName.getBytes();
-        String identifier = getIdentifier();
-        byte[] identifierBytes = identifier.getBytes();
-        byte[] data = getData();
+        final ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
+        final byte[] nameBytes = fileName.getBytes();
+        final String identifier = getIdentifier();
+        final byte[] identifierBytes = identifier.getBytes();
+        final byte[] data = getData();
         buf.writeInt(identifierBytes.length)
                 .writeBytes(identifierBytes)
                 .writeInt(nameBytes.length)
@@ -144,11 +144,11 @@ public class FileDataPacket extends DataPacket {
         return buf.array();
     }
 
-    public void writeToFile(File file) throws IOException {
+    public void writeToFile(final File file) throws IOException {
         if (file == null) {
             throw new FileNotFoundException("null file!");
         }
-        try (OutputStream stream = new FileOutputStream(file)) {
+        try (final OutputStream stream = new FileOutputStream(file)) {
             writeToStream(stream, false);
         }
     }
