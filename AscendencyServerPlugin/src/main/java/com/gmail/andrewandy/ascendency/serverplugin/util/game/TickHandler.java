@@ -8,22 +8,28 @@ import java.util.HashSet;
 
 public class TickHandler {
 
-    private Collection<TickData> toTick = new HashSet<>();
+    private static final TickHandler instance = new TickHandler();
+    private final Collection<TickData> toTick = new HashSet<>();
 
-    public TickHandler() {
-        Sponge.getScheduler().createTaskBuilder().execute(this::run).intervalTicks(1).submit(AscendencyServerPlugin.getInstance());
+    private TickHandler() {
+        Sponge.getScheduler().createTaskBuilder().execute(this::run).intervalTicks(1)
+            .submit(AscendencyServerPlugin.getInstance());
     }
 
-    public void submitTickable(Tickable tickable) {
+    public static TickHandler getInstance() {
+        return instance;
+    }
+
+    public void submitTickable(final Tickable tickable) {
         removeTickable(tickable);
         submitTickable(tickable, 1);
     }
 
-    public void removeTickable(Tickable tickable) {
+    public void removeTickable(final Tickable tickable) {
         toTick.removeIf((tickData) -> tickData.getTickable() == tickable);
     }
 
-    public void submitTickable(Tickable tickable, int ticks) {
+    public void submitTickable(final Tickable tickable, final int ticks) {
         removeTickable(tickable);
         toTick.add(new TickData(tickable, ticks));
     }
@@ -34,7 +40,7 @@ public class TickHandler {
 
     private class TickData {
 
-        private Tickable tickable;
+        private final Tickable tickable;
         private int remainingTicks;
 
         public TickData(Tickable tickable, int remainingTicks) {

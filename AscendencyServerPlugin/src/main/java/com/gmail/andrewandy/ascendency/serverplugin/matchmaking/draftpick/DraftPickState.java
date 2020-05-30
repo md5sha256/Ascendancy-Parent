@@ -6,10 +6,10 @@ import java.util.*;
 
 public class DraftPickState {
 
-    private Collection<Challenger> banned = new HashSet<>();
-    private Map<UUID, Challenger> selected = new HashMap<>();
+    private final Collection<Challenger> banned = new HashSet<>();
+    private final Map<UUID, Challenger> selected = new HashMap<>();
 
-    public DraftPickState(byte[] data) {
+    public DraftPickState(final byte[] data) {
     }
 
     public byte[] toData() {

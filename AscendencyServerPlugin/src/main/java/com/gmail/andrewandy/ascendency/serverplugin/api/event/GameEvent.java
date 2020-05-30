@@ -1,6 +1,6 @@
 package com.gmail.andrewandy.ascendency.serverplugin.api.event;
 
-import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.AscendencyServerEvent;
+import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerEvent;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.Team;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
@@ -12,7 +12,7 @@ public abstract class GameEvent extends AscendencyServerEvent {
     private final Cause cause;
 
 
-    public GameEvent(Player player, Team team) {
+    public GameEvent(final Player player, final Team team) {
         this.player = player;
         this.playerTeam = team;
         this.cause = Cause.builder().named("Player", player).build();
@@ -26,8 +26,7 @@ public abstract class GameEvent extends AscendencyServerEvent {
         return playerTeam;
     }
 
-    @Override
-    public Cause getCause() {
+    @Override public Cause getCause() {
         return cause;
     }
 }

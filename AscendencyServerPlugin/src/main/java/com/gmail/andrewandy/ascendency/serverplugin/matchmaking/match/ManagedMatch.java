@@ -2,6 +2,8 @@ package com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match;
 
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.Team;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.engine.GameEngine;
+import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.engine.GamePlayer;
+import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -13,8 +15,8 @@ public interface ManagedMatch extends Match {
 
     boolean addPlayer(Team team, UUID player);
 
-    default boolean addPlayer(String teamName, UUID player) {
-        Optional<Team> team = getTeamByName(teamName);
+    default boolean addPlayer(final String teamName, final UUID player) {
+        final Optional<Team> team = getTeamByName(teamName);
         return team.filter(value -> addPlayer(value, player)).isPresent();
     }
 
@@ -23,6 +25,8 @@ public interface ManagedMatch extends Match {
     void setTeamOfPlayer(UUID player, Team newTeam) throws IllegalArgumentException;
 
     void addAndAssignPlayersTeams(Collection<UUID> players);
+
+    void addAndAssignTeam(UUID player);
 
     Team getTeamOf(UUID player) throws IllegalArgumentException;
 
@@ -39,5 +43,9 @@ public interface ManagedMatch extends Match {
     boolean canStart();
 
     GameEngine getGameEngine();
+
+    default Optional<? extends GamePlayer> getGamePlayerOf(final UUID player) {
+        return getGameEngine().getGamePlayerOf(player);
+    }
 
 }

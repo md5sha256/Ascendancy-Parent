@@ -29,7 +29,7 @@ public interface Match {
         return getState() == MatchState.LOADING;
     }
 
-    default boolean containsPlayer(UUID uuid) {
+    default boolean containsPlayer(final UUID uuid) {
         return getTeams().stream().anyMatch((Team team) -> team.containsPlayer(uuid));
     }
 

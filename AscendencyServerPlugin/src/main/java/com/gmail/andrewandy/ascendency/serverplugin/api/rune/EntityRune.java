@@ -8,24 +8,21 @@ public interface EntityRune extends Rune {
 
     void clearFrom(Entity entity);
 
-    @Override
-    default void clearFrom(Object object) {
+    @Override default void clearFrom(final Object object) {
         if (!canApplyTo(object)) {
             return;
         }
         clearFrom((Entity) object);
     }
 
-    @Override
-    default void applyTo(Object object) {
+    @Override default void applyTo(final Object object) {
         if (!canApplyTo(object)) {
             throw new UnsupportedOperationException();
         }
         applyTo((Entity) object);
     }
 
-    @Override
-    default boolean canApplyTo(Object object) {
+    @Override default boolean canApplyTo(final Object object) {
         return object instanceof Entity;
     }
 }

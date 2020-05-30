@@ -48,6 +48,7 @@ dependencies {
     compile "co.aikar:taskchain-sponge:3.7.2"
     implementation project(':AscendencyLib') //AscendencyLib
     compileOnly 'org.jetbrains:annotations:16.0.2'
+    compile project(':AscendencyLib') //AscendencyLib
     compile 'am2:arsmagica2:1.5.0-21' //AM2 Dependency
 }
 

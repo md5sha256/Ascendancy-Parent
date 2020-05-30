@@ -7,21 +7,19 @@ public class MatchResumptionEvent extends MatchEvent implements Cancellable {
 
     private boolean cancel;
 
-    public MatchResumptionEvent(Match match) {
+    public MatchResumptionEvent(final Match match) {
         super(match);
     }
 
-    public MatchResumptionEvent(Match match, String name, Object cause) {
+    public MatchResumptionEvent(final Match match, final String name, final Object cause) {
         super(match, name, cause);
     }
 
-    @Override
-    public boolean isCancelled() {
+    @Override public boolean isCancelled() {
         return cancel;
     }
 
-    @Override
-    public void setCancelled(boolean cancel) {
+    @Override public void setCancelled(final boolean cancel) {
         this.cancel = cancel;
     }
 }

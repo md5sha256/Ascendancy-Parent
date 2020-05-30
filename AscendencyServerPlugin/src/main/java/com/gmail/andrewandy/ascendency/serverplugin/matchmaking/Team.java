@@ -3,10 +3,7 @@ package com.gmail.andrewandy.ascendency.serverplugin.matchmaking;
 import java.util.*;
 
 public class Team implements Cloneable {
-
     private final int startingPlayerCount;
-    private final transient org.spongepowered.api.scoreboard.Team team;
-    private Map<UUID, Integer> relativeIDs = new HashMap<>();
     private final List<UUID> players;
     private final String name;
     private int minID;
@@ -20,11 +17,6 @@ public class Team implements Cloneable {
         this.name = Objects.requireNonNull(name);
         this.players = new ArrayList<>(players);
         this.startingPlayerCount = players.size();
-        this.team = org.spongepowered.api.scoreboard.Team.builder().name(name).build();
-    }
-
-    public org.spongepowered.api.scoreboard.Team getScoreboardTeam() {
-        return team;
     }
 
 
@@ -33,12 +25,18 @@ public class Team implements Cloneable {
             this.players.remove(uuid);
             this.players.add(uuid);
         }
+        removePlayers(players);
+        this.players.addAll(Arrays.asList(players));
     }
 
     public void removePlayers(final UUID... players) {
         for (final UUID uuid : players) {
             this.players.remove(uuid);
         }
+    }
+
+    public void removePlayers(final Iterable<UUID> players) {
+        players.forEach(this.players::remove);
     }
 
     public void setIDs(final int maxID, final int minID) {
@@ -101,43 +99,7 @@ public class Team implements Cloneable {
     }
 
 
-    /**
-     * Get the relative ID (command-block)
-     *
-     * @param player The player
-     * @return Returns the relative ID of the player.
-     * @throws IllegalArgumentException Thrown if {@link #containsPlayer(UUID)} returns false.
-     */
-    public int getRelativeID(final UUID player) {
-        if (!containsPlayer(player)) {
-            throw new IllegalArgumentException("Specified player is not in this team!");
-        }
-        final Map.Entry<?, Integer> ret = relativeIDs.entrySet()
-                .stream()
-                .filter((entry) -> entry.getKey().equals(player))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("Relative ID not assigned!"));
-        return ret.getValue();
-    }
-
-    /**
-     * Calculates the relative IDs for this team instance.
-     * This method mutates the current ID map.
-     */
-    public void calculateIDs() {
-        relativeIDs.clear();
-        int currentID = minID;
-        if (players.size() > maxID - minID) {
-            throw new IllegalArgumentException("Players size overflow!");
-        }
-        for (final UUID player : players) {
-            relativeIDs.put(player, currentID++);
-        }
-        assert relativeIDs.size() == maxID - minID;
-    }
-
-    @Override
-    public Team clone() {
+    @Override public Team clone() {
         try {
             super.clone();
         } catch (final CloneNotSupportedException ex) {
@@ -145,7 +107,6 @@ public class Team implements Cloneable {
         }
         final Team team = new Team(name, startingPlayerCount);
         team.players.addAll(this.players);
-        team.relativeIDs = new HashMap<>(this.relativeIDs);
         return team;
     }
 }

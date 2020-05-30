@@ -7,6 +7,7 @@ import com.gmail.andrewandy.ascendency.lib.game.data.game.ChallengerDataPacket;
 import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.Challenger;
 import com.gmail.andrewandy.ascendency.serverplugin.io.SpongeAscendencyPacketHandler;
+import com.google.inject.Inject;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -25,12 +26,13 @@ public enum GameRegistry {
 
     INSTANCE;
 
-    private Map<UUID, Task> syncGuard = new HashMap<>();
-    private Collection<UUID> notUpdated = ConcurrentHashMap.newKeySet();
+    private final Map<AscendencyChampions, Challenger> championRegistry = new HashMap<>();
+    private final Map<UUID, Task> syncGuard = new HashMap<>();
+    private final Collection<UUID> notUpdated = ConcurrentHashMap.newKeySet();
+    @Inject private SpongeAscendencyPacketHandler handler;
 
-    private Map<AscendencyChampions, Challenger> championRegistry = new HashMap<>();
-
-    public void mapChampion(AscendencyChampions champion, Challenger object, boolean invalidate) {
+    public void mapChampion(final AscendencyChampions champion, final Challenger object,
+        final boolean invalidate) {
         championRegistry.remove(champion);
         championRegistry.put(champion, object);
         if (invalidate) {
@@ -40,24 +42,24 @@ public enum GameRegistry {
         }
     }
 
-    @Listener public void onPlayerJoin(ClientConnectionEvent.Join event) {
-        Player player = event.getTargetEntity();
+    @Listener public void onPlayerJoin(final ClientConnectionEvent.Join event) {
+        final Player player = event.getTargetEntity();
         notUpdated.add(player.getUniqueId());
         queueResync(player.getUniqueId());
     }
 
-    @Listener public void onPlayerLeave(ClientConnectionEvent.Disconnect event) {
-        Player player = event.getTargetEntity();
+    @Listener public void onPlayerLeave(final ClientConnectionEvent.Disconnect event) {
+        final Player player = event.getTargetEntity();
         syncGuard.remove(player.getUniqueId());
         notUpdated.remove(player.getUniqueId());
     }
 
 
-    public boolean isUpdated(UUID uuid) {
+    public boolean isUpdated(final UUID uuid) {
         return !notUpdated.contains(uuid);
     }
 
-    public void setUpdate(UUID uuid, boolean updated) {
+    public void setUpdate(final UUID uuid, final boolean updated) {
         if (updated) {
             notUpdated.remove(uuid);
         } else {
@@ -71,7 +73,7 @@ public enum GameRegistry {
      * @param async Whether to update the players async.
      * @return Returns a {@link Task} if async is true, <code>null</code> if not.
      */
-    public Task updateNotUpdated(boolean async) {
+    public Task updateNotUpdated(final boolean async) {
         if (async) {
             return queueResync(notUpdated);
         } else {
@@ -85,32 +87,33 @@ public enum GameRegistry {
      *
      * @param uuid The UUID of the player.
      */
-    private void resync(UUID uuid, boolean async) {
+    private void resync(final UUID uuid, final boolean async) {
         if (syncGuard.containsKey(uuid)) {
             return;
         }
         syncGuard.put(uuid, null);
-        ChallengerDataMarkerPacket packet = new ChallengerDataMarkerPacket(championRegistry.size());
-        Queue<AscendencyPacket> packets = new ArrayDeque<>(championRegistry.size() + 1);
+        final ChallengerDataMarkerPacket packet =
+            new ChallengerDataMarkerPacket(championRegistry.size());
+        final Queue<AscendencyPacket> packets = new ArrayDeque<>(championRegistry.size() + 1);
         championRegistry.values()
             .forEach((challenger -> packets.add(new ChallengerDataPacket(challenger.toData()))));
         packets.add(packet);
-        Optional<Player> optional;
+        final Optional<Player> optional;
         if (async) {
-            Future<Optional<Player>> future =
+            final Future<Optional<Player>> future =
                 Common.getSyncExecutor().submit(() -> Sponge.getServer().getPlayer(uuid));
             while (!future.isDone())
                 ;
             try {
                 optional = future.get();
-            } catch (ExecutionException | InterruptedException ex) {
+            } catch (final ExecutionException | InterruptedException ex) {
                 throw new IllegalStateException(ex);
             }
         } else {
             optional = Sponge.getServer().getPlayer(uuid);
         }
         optional.ifPresent(player -> {
-            SpongeAscendencyPacketHandler handler = SpongeAscendencyPacketHandler.getInstance();
+
             while (packets.size() != 0) {
                 handler.sendMessageTo(player, packets.remove());
             }
@@ -124,9 +127,9 @@ public enum GameRegistry {
      *
      * @param players The UUID of the player.
      */
-    public void forceResync(UUID... players) {
+    public void forceResync(final UUID... players) {
         Sponge.getScheduler().createTaskBuilder().async().execute(() -> {
-            for (UUID uuid : players) {
+            for (final UUID uuid : players) {
                 Common.getSyncExecutor().submit(() -> resync(uuid, false));
             }
         });
@@ -135,7 +138,7 @@ public enum GameRegistry {
     /**
      * @see #forceResync(UUID...)
      */
-    public void forceResync(Collection<UUID> players) {
+    public void forceResync(final Collection<UUID> players) {
         forceResync((UUID[]) players.toArray());
     }
 
@@ -155,9 +158,9 @@ public enum GameRegistry {
      * @param players The UUIDs of the players to resynchronise.
      * @return Returns an {@link Task} which represents the state of execution.
      */
-    public Task queueResync(UUID... players) {
+    public Task queueResync(final UUID... players) {
         return Sponge.getScheduler().createTaskBuilder().execute(task -> {
-            for (UUID uuid : players) {
+            for (final UUID uuid : players) {
                 resync(uuid, true);
             }
         }).async().submit(AscendencyServerPlugin.getInstance());
@@ -166,7 +169,7 @@ public enum GameRegistry {
     /**
      * @see #queueResync(UUID...)
      */
-    public Task queueResync(Collection<UUID> players) {
+    public Task queueResync(final Collection<UUID> players) {
         return queueResync((UUID[]) players.toArray());
     }
 
