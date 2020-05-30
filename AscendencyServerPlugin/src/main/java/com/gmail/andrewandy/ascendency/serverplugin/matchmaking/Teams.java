@@ -1,17 +1,16 @@
 package com.gmail.andrewandy.ascendency.serverplugin.matchmaking;
 
 import com.gmail.andrewandy.ascendency.lib.game.AscendencyTeam;
-import com.gmail.andrewandy.ascendency.lib.packet.util.CommonUtils;
+import com.gmail.andrewandy.ascendency.lib.util.CommonUtils;
 
 public enum Teams {
 
-    ARCTIC(AscendencyTeam.ARCTIC, 1, 5),
-    BLAZIC(AscendencyTeam.BLAZIC, 6, 10);
+    ARCTIC(AscendencyTeam.ARCTIC, 1, 5), BLAZIC(AscendencyTeam.BLAZIC, 6, 10);
 
-    private AscendencyTeam ascendencyTeam;
-    private Team team = new Team(CommonUtils.capitalise(name().toLowerCase()), 3);
+    private final AscendencyTeam ascendencyTeam;
+    private final Team team = new Team(CommonUtils.capitalise(name().toLowerCase()), 3);
 
-    Teams(AscendencyTeam ascendencyTeam, int min, int max) {
+    Teams(final AscendencyTeam ascendencyTeam, final int min, final int max) {
         this.ascendencyTeam = ascendencyTeam;
         team.setIDs(min, max);
     }

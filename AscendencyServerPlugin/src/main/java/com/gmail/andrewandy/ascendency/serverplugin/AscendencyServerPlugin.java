@@ -1,5 +1,6 @@
 package com.gmail.andrewandy.ascendency.serverplugin;
 
+import com.gmail.andrewandy.ascendency.lib.util.CommonUtils;
 import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.Season1Challengers;
 import com.gmail.andrewandy.ascendency.serverplugin.io.SpongeAscendencyPacketHandler;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.MatchMakingService;
@@ -27,32 +28,20 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 
-@Plugin(
-        id = "ascendencyserverplugin",
-        name = "AscendencyServerPlugin",
-        version = "${project.version}",
-        description = "Ascendency Server Plugin",
-        authors = {
-                "andrewandy"
-        }
-)
-public class AscendencyServerPlugin {
+@Plugin(id = "ascendencyserverplugin", name = "AscendencyServerPlugin", version = "${project.version}", description = "Ascendency Server Plugin", authors = {
+    "andrewandy"}) public class AscendencyServerPlugin {
 
     private static final String DEFAULT_NETWORK_CHANNEL_NAME = "ASCENDENCY_DEFAULT_CHANNEL";
     private static AscendencyServerPlugin instance;
     private MatchMakingService<DraftPickMatch> matchMatchMakingService;
 
 
-    @Inject
-    @ConfigDir(sharedRoot = true)
-    private File dataFolder;
+    @Inject @ConfigDir(sharedRoot = true) private File dataFolder;
     private YAMLConfigurationLoader configurationLoader;
 
-    @Inject
-    private Logger logger;
+    @Inject private Logger logger;
 
-    @Inject
-    public AscendencyServerPlugin() {
+    @Inject public AscendencyServerPlugin() {
     }
 
     public static AscendencyServerPlugin getInstance() {
@@ -66,7 +55,7 @@ public class AscendencyServerPlugin {
     public ConfigurationNode getSettings() {
         try {
             return configurationLoader.load();
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             throw new IllegalStateException(ex);
         }
     }
@@ -75,10 +64,9 @@ public class AscendencyServerPlugin {
         return logger;
     }
 
-    @Listener(order = Order.DEFAULT)
-    public void onServerStart(GameStartedServerEvent event) {
+    @Listener(order = Order.DEFAULT) public void onServerStart(final GameStartedServerEvent event) {
         instance = this;
-        String load = Season1Challengers.LOAD; //Load up S1 champions.
+        final String load = Season1Challengers.LOAD; //Load up S1 champions.
         Common.setup();
         Common.setPrefix("[CustomServerMod]");
         loadSettings();
@@ -90,8 +78,7 @@ public class AscendencyServerPlugin {
         Common.log(Level.INFO, "Plugin enabled!");
     }
 
-    @Listener(order = Order.DEFAULT)
-    public void onServerStop(GameStoppedServerEvent event) {
+    @Listener(order = Order.DEFAULT) public void onServerStop(final GameStoppedServerEvent event) {
         SimplePlayerMatchManager.disableManager();
         unregisterIO();
         unregisterKeybindHandlers();
@@ -102,17 +89,17 @@ public class AscendencyServerPlugin {
         instance = null;
     }
 
-    @Listener(order = Order.DEFAULT)
-    public void onServerReload(GameReloadEvent event) {
+    @Listener(order = Order.DEFAULT) public void onServerReload(final GameReloadEvent event) {
         loadSettings();
     }
 
 
     public void loadSettings() {
         Common.log(Level.INFO, "&bLoading settings from disk...");
-        long time = System.currentTimeMillis();
+        final long time = System.currentTimeMillis();
         configurationLoader = new YamlLoader("settings.yml").getLoader();
-        Common.log(Level.INFO, "&aLoad complete! Took " + (System.currentTimeMillis() - time) + "ms.");
+        Common.log(Level.INFO,
+            "&aLoad complete! Took " + (System.currentTimeMillis() - time) + "ms.");
     }
 
     private void loadKeybindHandlers() {
@@ -142,19 +129,25 @@ public class AscendencyServerPlugin {
         ConfigurationNode node = getSettings();
         node = node.getNode("MatchMaking");
         if (node == null) {
-            throw new IllegalArgumentException("Invalid settings detected! Missing MatchMaking section!");
+            throw new IllegalArgumentException(
+                "Invalid settings detected! Missing MatchMaking section!");
         }
-        int min = node.getNode("Min-Players").getInt();
-        int max = node.getNode("Max-Players").getInt();
-        String modeEnumName = node.getNode("Mode").getString().toUpperCase();
-        MatchMakingService.MatchMakingMode mode = MatchMakingService.MatchMakingMode.valueOf(modeEnumName);
-        MatchMakingService<DraftPickMatch> service = new MatchMakingService<>(min, max, () -> new DraftPickMatch(Math.round(max / 2f))).setMatchMakingMode(mode);
+        final int min = node.getNode("Min-Players").getInt();
+        final int max = node.getNode("Max-Players").getInt();
+        final String modeEnumName = node.getNode("Mode").getString().toUpperCase();
+        final MatchMakingService.MatchMakingMode mode =
+            MatchMakingService.MatchMakingMode.valueOf(modeEnumName);
+        final MatchMakingService<DraftPickMatch> service =
+            new MatchMakingService<>(min, max, () -> new DraftPickMatch(Math.round(max / 2f)))
+                .setMatchMakingMode(mode);
         if (matchMatchMakingService != null) {
-            for (Player player : matchMatchMakingService.clearQueue()) {
+            for (final Player player : matchMatchMakingService.clearQueue()) {
                 service.addToQueue(player);
             }
         }
-        Common.log(Level.INFO, "7a[Matchmaking] Loaded: Max-Players = " + max + ", Min-Players = " + min + ", Mode = " + com.gmail.andrewandy.ascendency.lib.packet.util.CommonUtils.capitalise(mode.name().toLowerCase()));
+        Common.log(Level.INFO,
+            "7a[Matchmaking] Loaded: Max-Players = " + max + ", Min-Players = " + min + ", Mode = "
+                + CommonUtils.capitalise(mode.name().toLowerCase()));
         matchMatchMakingService = service;
     }
 }

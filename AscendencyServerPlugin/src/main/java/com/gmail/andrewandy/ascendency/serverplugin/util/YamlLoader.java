@@ -1,6 +1,6 @@
 package com.gmail.andrewandy.ascendency.serverplugin.util;
 
-import com.gmail.andrewandy.ascendency.lib.packet.util.CommonUtils;
+import com.gmail.andrewandy.ascendency.lib.util.CommonUtils;
 import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 
@@ -23,13 +23,15 @@ public class YamlLoader {
      * @param fileName The name of the file.
      * @throws IllegalArgumentException if no file was found in this jar with the given name.
      */
-    public YamlLoader(String fileName) {
-        File folder = AscendencyServerPlugin.getInstance().getDataFolder();
-        File file = new File(folder.getAbsolutePath(), fileName);
-        OutputStream os;
-        try (InputStream inputStream = YamlLoader.class.getClassLoader().getResourceAsStream(fileName)) {
+    public YamlLoader(final String fileName) {
+        final File folder = AscendencyServerPlugin.getInstance().getDataFolder();
+        final File file = new File(folder.getAbsolutePath(), fileName);
+        final OutputStream os;
+        try (final InputStream inputStream = YamlLoader.class.getClassLoader()
+            .getResourceAsStream(fileName)) {
             if (inputStream == null) {
-                throw new IllegalArgumentException("Null InputStream - No file found in the jar with name " + fileName);
+                throw new IllegalArgumentException(
+                    "Null InputStream - No file found in the jar with name " + fileName);
             }
             if (!file.isFile()) {
                 file.createNewFile();
@@ -37,7 +39,7 @@ public class YamlLoader {
             os = new FileOutputStream(file);
             os.write(CommonUtils.readFromStream(inputStream));
             os.close();
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             throw new IllegalStateException("Unnable to load or copy file from jar!", ex);
         }
         loader = YAMLConfigurationLoader.builder().setFile(file).build();

@@ -1,40 +1,24 @@
 package com.gmail.andrewandy.ascendency.serverplugin.api;
 
-import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.Challenger;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.data.DataContainer;
+import org.spongepowered.api.data.DataHolder;
+import org.spongepowered.api.data.key.Key;
+import org.spongepowered.api.data.manipulator.immutable.common.AbstractImmutableMappedData;
+import org.spongepowered.api.data.manipulator.mutable.common.AbstractMappedData;
+import org.spongepowered.api.data.manipulator.mutable.entity.HealthData;
+import org.spongepowered.api.data.merge.MergeFunction;
+import org.spongepowered.api.data.value.BaseValue;
+import org.spongepowered.api.data.value.mutable.MutableBoundedValue;
 import org.spongepowered.api.entity.living.player.Player;
 
-public class Mechanics {
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
-    public enum DamageType {
+@SuppressWarnings("UnstableApiUsage") public class Mechanics {
 
-        AD() {
-            @Override
-            public void applyDamage(Player player, double baseDamage) {
-
-            }
-        },
-        AP() {
-            @Override
-            public void applyDamage(Player player, double baseDamage) {
-                player.get()
-            }
-        },
-        TRUE;
-
-        DamageType() {
-        }
-
-        public String getToKey() {
-            return name();
-        }
-
-        public abstract void applyDamage(final Player player, final double baseDamage);
-
-        double calculateDamage(Challenger challenger, double damage) {
-            //return challenger.getDamageType() == this ? damage : damage * modifier;
-            throw new UnsupportedOperationException("Unimplemented");
-        }
-
+    public class AscendencyAttributes {
     }
 
 }

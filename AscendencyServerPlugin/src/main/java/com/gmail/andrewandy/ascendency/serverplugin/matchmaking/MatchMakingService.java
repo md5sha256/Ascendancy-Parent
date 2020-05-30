@@ -9,14 +9,10 @@ import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.event.Play
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.event.PlayerLeftMatchEvent;
 import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.action.InteractEvent;
-import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
-import org.spongepowered.api.item.inventory.ItemStack;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -29,13 +25,13 @@ import java.util.function.Supplier;
  */
 public class MatchMakingService<M extends ManagedMatch> {
 
-    private Queue<Player> playerQueue = new LinkedList<>();
+    private final Queue<Player> playerQueue = new LinkedList<>();
 
     private int minPlayersPerGame;
     private int maxPlayersPerGame;
     private MatchMakingMode mode = MatchMakingMode.BALANCED; //The way server matches players.
 
-    private Supplier<M> matchMakingFactory;
+    private final Supplier<M> matchMakingFactory;
     private Consumer<ManagedMatch> onMatchStart; //TODO --> Add a match start handler!
 
     /**
@@ -46,17 +42,16 @@ public class MatchMakingService<M extends ManagedMatch> {
      * @param matchMakingFactory A supplier for creating matches. Matches should already
      *                           be created with the correct teams AND these should be empty.
      */
-    public MatchMakingService(int minPlayers, int maxPlayers, Supplier<M> matchMakingFactory) {
+    public MatchMakingService(final int minPlayers, final int maxPlayers, final Supplier<M> matchMakingFactory) {
         if (isInvalidPlayerCount(minPlayers, maxPlayers)) {
             throw new IllegalArgumentException("Invalid Player limits!");
         }
-        ItemStack is;
         this.matchMakingFactory = Objects.requireNonNull(matchMakingFactory);
         this.maxPlayersPerGame = maxPlayers;
         this.minPlayersPerGame = minPlayers;
     }
 
-    private boolean isInvalidPlayerCount(int min, int max) {
+    private boolean isInvalidPlayerCount(final int min, final int max) {
         return min <= 0 || min >= max;
     }
 
@@ -66,7 +61,7 @@ public class MatchMakingService<M extends ManagedMatch> {
      * @param maxPlayers The max players to allocate.
      * @throws IllegalArgumentException Thrown if the player limits are invalid.
      */
-    public MatchMakingService<M> setMaxPlayersPerGame(int maxPlayers) {
+    public MatchMakingService<M> setMaxPlayersPerGame(final int maxPlayers) {
         if (isInvalidPlayerCount(minPlayersPerGame, maxPlayers)) {
             throw new IllegalArgumentException("Invalid Player limits!");
         }
@@ -80,7 +75,7 @@ public class MatchMakingService<M extends ManagedMatch> {
      * @param minPlayers The min players to allocate.
      * @throws IllegalArgumentException Thrown if the player limits are invalid.
      */
-    public MatchMakingService<M> setMinPlayersPerGame(int minPlayers) {
+    public MatchMakingService<M> setMinPlayersPerGame(final int minPlayers) {
         if (isInvalidPlayerCount(minPlayers, maxPlayersPerGame)) {
             throw new IllegalStateException("Invalid Player limits!");
         }
@@ -128,7 +123,7 @@ public class MatchMakingService<M extends ManagedMatch> {
      * @return Returns a clone of the current queue.
      */
     public Queue<Player> clearQueue() {
-        Queue<Player> players = new LinkedList<>(playerQueue);
+        final Queue<Player> players = new LinkedList<>(playerQueue);
         playerQueue.clear();
         return players;
     }
@@ -142,7 +137,7 @@ public class MatchMakingService<M extends ManagedMatch> {
      * this method will stop trying to start new matches.
      */
     public void tryMatch() {
-        int creatableMatchCount = playerQueue.size() / minPlayersPerGame;
+        final int creatableMatchCount = playerQueue.size() / minPlayersPerGame;
         int optimizedMatchCount;
         switch (mode) {
             case FASTEST:
@@ -160,10 +155,10 @@ public class MatchMakingService<M extends ManagedMatch> {
                 throw new IllegalStateException("Unknown MatchMakingMode: " + mode + " found!");
         }
         while (optimizedMatchCount > 0) {
-            M match = matchMakingFactory.get();
-            Collection<UUID> players = new HashSet<>(minPlayersPerGame);
+            final M match = matchMakingFactory.get();
+            final Collection<UUID> players = new HashSet<>(minPlayersPerGame);
             int index = 0;
-            for (Player player : playerQueue) {
+            for (final Player player : playerQueue) {
                 if (index == maxPlayersPerGame) {
                     break;
                 }
@@ -182,8 +177,8 @@ public class MatchMakingService<M extends ManagedMatch> {
         }
     }
 
-    public boolean addToQueue(Player player) {
-        PlayerMatchManager matchManager = SimplePlayerMatchManager.INSTANCE;
+    public boolean addToQueue(final Player player) {
+        final PlayerMatchManager matchManager = SimplePlayerMatchManager.INSTANCE;
         if (matchManager.getMatchOf(player.getUniqueId()).isPresent()) {
             playerQueue.remove(player);
             return false;
@@ -194,23 +189,23 @@ public class MatchMakingService<M extends ManagedMatch> {
         return playerQueue.add(player);
     }
 
-    public void removeFromQueue(UUID uuid) {
+    public void removeFromQueue(final UUID uuid) {
         playerQueue.removeIf(player -> player.getUniqueId().equals(uuid));
     }
 
-    public void removeFromQueue(Player player) {
+    public void removeFromQueue(final Player player) {
         removeFromQueue(player.getUniqueId());
     }
 
-    public void addToQueueAndTryMatch(Player player) {
+    public void addToQueueAndTryMatch(final Player player) {
         if (addToQueue(player)) {
             tryMatch();
         }
     }
 
 
-    @Listener(order = Order.LAST) public void onPlayerJoin(ClientConnectionEvent.Join event) {
-        Optional<ManagedMatch> current =
+    @Listener(order = Order.LAST) public void onPlayerJoin(final ClientConnectionEvent.Join event) {
+        final Optional<ManagedMatch> current =
             SimplePlayerMatchManager.INSTANCE.getMatchOf(event.getTargetEntity().getUniqueId());
         if (!current.isPresent()) {
             //If not in previous match, then try to load them into the matchmaking queue.
@@ -220,13 +215,13 @@ public class MatchMakingService<M extends ManagedMatch> {
     }
 
     @Listener(order = Order.LAST)
-    public void onPlayerDisconnect(ClientConnectionEvent.Disconnect event) {
+    public void onPlayerDisconnect(final ClientConnectionEvent.Disconnect event) {
         System.out.println(playerQueue);
         playerQueue.remove(event.getTargetEntity());
     }
 
-    @Listener(order = Order.LAST) public void onPlayerLeaveMatch(PlayerLeftMatchEvent event) {
-        Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(event.getPlayer());
+    @Listener(order = Order.LAST) public void onPlayerLeaveMatch(final PlayerLeftMatchEvent event) {
+        final Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(event.getPlayer());
         optionalPlayer.ifPresent(this::addToQueueAndTryMatch); //Add the player to the queue.
     }
 
