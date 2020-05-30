@@ -1,8 +1,8 @@
 package com.gmail.andrewandy.ascendency.serverplugin.game.challenger;
 
 import am2.buffs.BuffEffectEntangled;
-import com.gmail.andrewandy.ascendency.lib.game.data.IChampionData;
-import com.gmail.andrewandy.ascendency.lib.game.data.game.ChampionDataImpl;
+import com.gmail.andrewandy.ascendency.lib.game.data.IChallengerData;
+import com.gmail.andrewandy.ascendency.lib.game.data.game.ChallengerDataImpl;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.Ability;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractAbility;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.AbstractChallenger;
@@ -30,126 +30,110 @@ public class Astricion extends AbstractChallenger {
     private static final Astricion instance = new Astricion();
 
     private Astricion() {
-        super("Astricion",
-                new Ability[]{Suppression.instance, DemonicCapacity.instance},
-                new PlayerSpecificRune[]{ReleasedLimit.instance, DiabolicResistance.instance, EmpoweringRage.instance},
-                Season1Challengers.getLoreOf("Astricion"));
+        super("Astricion", new Ability[] {Suppression.instance, DemonicCapacity.instance},
+            new PlayerSpecificRune[] {ReleasedLimit.instance, DiabolicResistance.instance,
+                EmpoweringRage.instance}, Season1Challengers.getLoreOf("Astricion"));
     }
 
     public static Astricion getInstance() {
         return instance;
     }
 
-    public static class ReleasedLimit extends AbstractRune {
-        private static final ReleasedLimit instance = new ReleasedLimit();
-
-        @Override
-        public void applyTo(Player player) {
-
-        }
-
-        @Override
-        public void clearFrom(Player player) {
-
-        }
-
-        @Override
-        public String getName() {
-            return null;
-        }
-
-        @Override
-        public void tick() {
-
-        }
-
-        @Override
-        public int getContentVersion() {
-            return 0;
-        }
-
-        @Override
-        public DataContainer toContainer() {
-            return null;
-        }
-    }
-
-    public static class DiabolicResistance extends AbstractRune {
-        public static final DiabolicResistance instance = new DiabolicResistance();
-
-        @Override
-        public void applyTo(Player player) {
-
-        }
-
-        @Override
-        public void clearFrom(Player player) {
-
-        }
-
-        @Override
-        public String getName() {
-            return null;
-        }
-
-        @Override
-        public void tick() {
-
-        }
-
-        @Override
-        public int getContentVersion() {
-            return 0;
-        }
-
-        @Override
-        public DataContainer toContainer() {
-            return null;
-        }
-    }
-
-    public static class EmpoweringRage extends AbstractRune {
-        public static final EmpoweringRage instance = new EmpoweringRage();
-
-        @Override
-        public void applyTo(Player player) {
-
-        }
-
-        @Override
-        public void clearFrom(Player player) {
-
-        }
-
-        @Override
-        public String getName() {
-            return null;
-        }
-
-        @Override
-        public void tick() {
-
-        }
-
-        @Override
-        public int getContentVersion() {
-            return 0;
-        }
-
-        @Override
-        public DataContainer toContainer() {
-            return null;
-        }
-    }
-
-    @Override
-    public IChampionData toData() {
+    @Override public IChallengerData toData() {
         try {
-            return new ChampionDataImpl(getName(), new File("Path to data"), getLore());
+            return new ChallengerDataImpl(getName(), new File("Path to data"), getLore());
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
     }
+
+
+    public static class ReleasedLimit extends AbstractRune {
+        private static final ReleasedLimit instance = new ReleasedLimit();
+
+        @Override public void applyTo(Player player) {
+
+        }
+
+        @Override public void clearFrom(Player player) {
+
+        }
+
+        @Override public String getName() {
+            return null;
+        }
+
+        @Override public void tick() {
+
+        }
+
+        @Override public int getContentVersion() {
+            return 0;
+        }
+
+        @Override public DataContainer toContainer() {
+            return null;
+        }
+    }
+
+
+    public static class DiabolicResistance extends AbstractRune {
+        public static final DiabolicResistance instance = new DiabolicResistance();
+
+        @Override public void applyTo(Player player) {
+
+        }
+
+        @Override public void clearFrom(Player player) {
+
+        }
+
+        @Override public String getName() {
+            return null;
+        }
+
+        @Override public void tick() {
+
+        }
+
+        @Override public int getContentVersion() {
+            return 0;
+        }
+
+        @Override public DataContainer toContainer() {
+            return null;
+        }
+    }
+
+
+    public static class EmpoweringRage extends AbstractRune {
+        public static final EmpoweringRage instance = new EmpoweringRage();
+
+        @Override public void applyTo(Player player) {
+
+        }
+
+        @Override public void clearFrom(Player player) {
+
+        }
+
+        @Override public String getName() {
+            return null;
+        }
+
+        @Override public void tick() {
+
+        }
+
+        @Override public int getContentVersion() {
+            return 0;
+        }
+
+        @Override public DataContainer toContainer() {
+            return null;
+        }
+    }
+
 
     private static class Suppression extends AbstractAbility {
 
@@ -170,14 +154,15 @@ public class Astricion extends AbstractChallenger {
         }
 
         //TODO use entangle & give resistance
-        @Listener
-        public void onEntityDamage(DamageEntityEvent event) {
+        @Listener public void onEntityDamage(DamageEntityEvent event) {
             Entity entity = event.getTargetEntity();
             if (!(entity instanceof Player) || !active.contains(entity.getUniqueId())) {
                 return;
             }
-            PotionEffect entanglement = (PotionEffect) (Object) new BuffEffectEntangled(4, 1); //Safe cast as per forge's runtime changes
-            event.setBaseDamage(calculateIncomingDamage(event.getBaseDamage())); //Modifies the base damage directly
+            PotionEffect entanglement = (PotionEffect) (Object) new BuffEffectEntangled(4,
+                1); //Safe cast as per forge's runtime changes
+            event.setBaseDamage(
+                calculateIncomingDamage(event.getBaseDamage())); //Modifies the base damage directly
         }
 
         public double calculateIncomingDamage(double incoming) {
@@ -185,17 +170,17 @@ public class Astricion extends AbstractChallenger {
         }
     }
 
+
     private static class DemonicCapacity extends AbstractAbility {
         private static final DemonicCapacity instance = new DemonicCapacity();
-
-        public static DemonicCapacity getInstance() {
-            return instance;
-        }
-
         private Collection<UUID> active = new HashSet<>();
 
         private DemonicCapacity() {
             super("Demonic Capacity", false);
+        }
+
+        public static DemonicCapacity getInstance() {
+            return instance;
         }
 
         public void activateAs(UUID player) {
@@ -203,31 +188,32 @@ public class Astricion extends AbstractChallenger {
             active.add(player);
         }
 
-        @Listener
-        public void onEntityDamage(DamageEntityEvent event) {
+        @Listener public void onEntityDamage(DamageEntityEvent event) {
             Entity entity = event.getTargetEntity();
             if ((!active.contains(entity.getUniqueId())) || (!(entity instanceof Player))) {
                 return;
             } else {
-                int astricionHealth = (int) Math.round(((Player) entity).getHealthData().health().get());
+                int astricionHealth =
+                    (int) Math.round(((Player) entity).getHealthData().health().get());
                 Optional<PotionEffectData> optional = entity.getOrCreate(PotionEffectData.class);
                 if (!optional.isPresent()) {
-                    throw new IllegalStateException("Potion effect data could not be gathered for " + entity.getUniqueId().toString());
+                    throw new IllegalStateException(
+                        "Potion effect data could not be gathered for " + entity.getUniqueId()
+                            .toString());
                 }
 
                 PotionEffectData data = optional.get();
-                PotionEffect[] effects = new PotionEffect[]{PotionEffect.builder()
-                        //Strength scaling on current health
-                        .potionType(PotionEffectTypes.STRENGTH)
-                        .duration(999999).amplifier((int) Math.round((astricionHealth - 10) / 10D)).build()};
+                PotionEffect[] effects = new PotionEffect[] {PotionEffect.builder()
+                    //Strength scaling on current health
+                    .potionType(PotionEffectTypes.STRENGTH).duration(999999)
+                    .amplifier((int) Math.round((astricionHealth - 10) / 10D)).build()};
                 for (PotionEffect effect : effects) {
                     data.addElement(effect);
                 }
             }
         }
 
-        @Listener
-        public void onPlayerRespawn(RespawnPlayerEvent event) {
+        @Listener public void onPlayerRespawn(RespawnPlayerEvent event) {
             Player player = event.getTargetEntity();
             if (!active.contains(player.getUniqueId())) {
                 return;
@@ -235,15 +221,18 @@ public class Astricion extends AbstractChallenger {
             int astricionHealth = (int) Math.round(player.getHealthData().maxHealth().get());
             Optional<PotionEffectData> optional = player.getOrCreate(PotionEffectData.class);
             if (!optional.isPresent()) {
-                throw new IllegalStateException("Potion effect data could not be gathered for " + player.getUniqueId().toString());
+                throw new IllegalStateException(
+                    "Potion effect data could not be gathered for " + player.getUniqueId()
+                        .toString());
             }
 
             PotionEffectData data = optional.get();
-            PotionEffect[] effects = new PotionEffect[]{PotionEffect.builder()
-                    //Strength scaling on current health
-                    .potionType(PotionEffectTypes.STRENGTH)
+            PotionEffect[] effects = new PotionEffect[] {PotionEffect.builder()
+                //Strength scaling on current health
+                .potionType(PotionEffectTypes.STRENGTH)
 
-                    .duration(999999).amplifier((int) Math.round((astricionHealth - 10) / 10D)).build()};
+                .duration(999999)
+                .amplifier((int) Math.round((astricionHealth - 10) / 10D)).build()};
             for (PotionEffect effect : effects) {
                 data.addElement(effect);
             }

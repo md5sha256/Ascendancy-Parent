@@ -9,10 +9,14 @@ import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.event.Play
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.event.PlayerLeftMatchEvent;
 import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.action.InteractEvent;
+import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.item.inventory.ItemStack;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -46,6 +50,7 @@ public class MatchMakingService<M extends ManagedMatch> {
         if (isInvalidPlayerCount(minPlayers, maxPlayers)) {
             throw new IllegalArgumentException("Invalid Player limits!");
         }
+        ItemStack is;
         this.matchMakingFactory = Objects.requireNonNull(matchMakingFactory);
         this.maxPlayersPerGame = maxPlayers;
         this.minPlayersPerGame = minPlayers;
@@ -144,7 +149,9 @@ public class MatchMakingService<M extends ManagedMatch> {
                 optimizedMatchCount = creatableMatchCount;
                 break;
             case BALANCED:
-                optimizedMatchCount = creatableMatchCount > 0 ? playerQueue.size() / maxPlayersPerGame : creatableMatchCount;
+                optimizedMatchCount = creatableMatchCount > 0 ?
+                    playerQueue.size() / maxPlayersPerGame :
+                    creatableMatchCount;
                 break;
             case OPTIMAL:
                 optimizedMatchCount = playerQueue.size() / maxPlayersPerGame;
@@ -202,9 +209,9 @@ public class MatchMakingService<M extends ManagedMatch> {
     }
 
 
-    @Listener(order = Order.LAST)
-    public void onPlayerJoin(ClientConnectionEvent.Join event) {
-        Optional<ManagedMatch> current = SimplePlayerMatchManager.INSTANCE.getMatchOf(event.getTargetEntity().getUniqueId());
+    @Listener(order = Order.LAST) public void onPlayerJoin(ClientConnectionEvent.Join event) {
+        Optional<ManagedMatch> current =
+            SimplePlayerMatchManager.INSTANCE.getMatchOf(event.getTargetEntity().getUniqueId());
         if (!current.isPresent()) {
             //If not in previous match, then try to load them into the matchmaking queue.
             addToQueueAndTryMatch(event.getTargetEntity());
@@ -218,8 +225,7 @@ public class MatchMakingService<M extends ManagedMatch> {
         playerQueue.remove(event.getTargetEntity());
     }
 
-    @Listener(order = Order.LAST)
-    public void onPlayerLeaveMatch(PlayerLeftMatchEvent event) {
+    @Listener(order = Order.LAST) public void onPlayerLeaveMatch(PlayerLeftMatchEvent event) {
         Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(event.getPlayer());
         optionalPlayer.ifPresent(this::addToQueueAndTryMatch); //Add the player to the queue.
     }

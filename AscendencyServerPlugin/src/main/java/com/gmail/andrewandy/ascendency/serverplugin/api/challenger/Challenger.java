@@ -1,6 +1,6 @@
 package com.gmail.andrewandy.ascendency.serverplugin.api.challenger;
 
-import com.gmail.andrewandy.ascendency.lib.game.data.IChampionData;
+import com.gmail.andrewandy.ascendency.lib.game.data.IChallengerData;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.Ability;
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.PlayerSpecificRune;
 
@@ -37,7 +37,7 @@ public interface Challenger {
      *
      * @return
      */
-    IChampionData toData();
+    IChallengerData toData();
 
     /**
      * Get this Challenger's abilities
