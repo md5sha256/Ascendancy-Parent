@@ -1,4 +1,4 @@
-package com.gmail.andrewandy.ascendency.lib.packet.util;
+package com.gmail.andrewandy.ascendency.lib.util;
 
 import java.io.IOException;
 import java.io.InputStream;
