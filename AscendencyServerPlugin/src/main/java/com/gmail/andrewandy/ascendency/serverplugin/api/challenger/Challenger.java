@@ -3,6 +3,7 @@ package com.gmail.andrewandy.ascendency.serverplugin.api.challenger;
 import com.gmail.andrewandy.ascendency.lib.game.data.IChallengerData;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.Ability;
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.PlayerSpecificRune;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -16,35 +17,35 @@ public interface Challenger {
      *
      * @return The name of the challenger.
      */
-    String getName();
+    @NotNull String getName();
 
     /**
      * Get this Challenger's runes
      *
      * @return Returns an array of this challenger's runes
      */
-    PlayerSpecificRune[] getRunes();
+    @NotNull PlayerSpecificRune[] getRunes();
 
     /**
      * Get the lore of this challenger.
      *
      * @return Returns the lore.
      */
-    List<String> getLore();
+    @NotNull List<String> getLore();
 
     /**
      * Convert this champion into a serialisable data object.
      *
      * @return
      */
-    IChallengerData toData();
+    @NotNull IChallengerData toData();
 
     /**
      * Get this Challenger's abilities
      *
      * @return Returns an array of this challenger's abilities
      */
-    Ability[] getAbilities();
+    @NotNull Ability[] getAbilities();
 
     /**
      * Calculate the damage which should be dealt based on incoming damage.

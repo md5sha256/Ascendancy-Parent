@@ -33,8 +33,6 @@ import com.google.inject.Inject;
 import javafx.util.Pair;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockTypes;
@@ -71,6 +69,7 @@ public class Bella extends AbstractChallenger {
 
     private static final Bella instance = new Bella();
     @Inject private static PlayerMatchManager matchManager;
+    @Inject private static AscendencyServerPlugin plugin;
 
     private Bella() {
         super("Bella", new Ability[] {CircletOfTheAccused.instance, ReleasedRebellion.instance},
@@ -92,8 +91,7 @@ public class Bella extends AbstractChallenger {
     public static Collection<Location<World>> generateCircleBlocks(final Location<World> centre,
         final int radius) {
         final Collection<Location<World>> rawCircle = MathUtils.createCircle(centre, radius);
-        final Cause cause =
-            Cause.builder().named("Bella", AscendencyServerPlugin.getInstance()).build();
+        final Cause cause = Cause.builder().named("Bella", plugin).build();
         rawCircle.forEach((location -> location.setBlockType(BlockTypes.AIR, cause)));
         return rawCircle;
     }
@@ -187,6 +185,7 @@ public class Bella extends AbstractChallenger {
 
         /**
          * Get the CircletData from a specified location.
+         *
          * @param location The location to get the circlet for.
          * @return Returns an optional, populated if an circlet exists at a given
          * location checked using {@link CircletData#generateCircleTest()}.
@@ -386,8 +385,8 @@ public class Bella extends AbstractChallenger {
          */
         private static class CircletData {
 
-            private UUID caster;
             private final int radius;
+            private UUID caster;
             private long tickCount = 0;
             private Location<World> ringCenter;
             private Collection<Location<World>> ringBlocks;
@@ -446,8 +445,7 @@ public class Bella extends AbstractChallenger {
             public void reset() {
                 this.tickCount = 0L;
                 this.ringCenter = null;
-                final Cause cause =
-                    Cause.builder().named("Bella", AscendencyServerPlugin.getInstance()).build();
+                final Cause cause = Cause.builder().named("Bella", plugin).build();
                 ringBlocks.forEach(location -> location.setBlockType(BlockTypes.AIR, cause));
                 this.ringBlocks = null;
             }
@@ -603,7 +601,7 @@ public class Bella extends AbstractChallenger {
                             PotionEffect.builder().potionType(PotionEffectTypes.ABSORPTION)
                                 .amplifier(1).build());
                         player.offer(peData);
-                    }).submit(AscendencyServerPlugin.getInstance()));
+                    }).submit(plugin));
             }
         }
 

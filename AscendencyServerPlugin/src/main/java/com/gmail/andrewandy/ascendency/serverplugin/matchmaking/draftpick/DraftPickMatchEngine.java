@@ -5,6 +5,7 @@ import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.Challenger;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.Team;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.ManagedMatch;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.engine.GameEngine;
+import com.google.inject.Inject;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.Entity;
@@ -29,6 +30,8 @@ import java.util.*;
 
 //TODO integrate draft-picking with the UI
 public class DraftPickMatchEngine implements GameEngine {
+
+    @Inject private static AscendencyServerPlugin plugin;
 
     private static Scoreboard scoreboard;
     private static Objective damagerObjective, victimObjective, relativeIDObjective;
@@ -108,7 +111,7 @@ public class DraftPickMatchEngine implements GameEngine {
 
     private void init() {
         initScoreBoard();
-        Sponge.getEventManager().registerListeners(AscendencyServerPlugin.getInstance(), this);
+        Sponge.getEventManager().registerListeners(plugin, this);
         ascendencyPlayers.forEach(this::preInitPlayer);
         final DraftPickMatch match = matchReference.get();
         assert match != null;
@@ -156,7 +159,7 @@ public class DraftPickMatchEngine implements GameEngine {
         if (scoreboard != null) {
             return;
         }
-        ConfigurationNode node = AscendencyServerPlugin.getInstance().getSettings();
+        ConfigurationNode node = plugin.getSettings();
         node = node.getNode("DamageScoreboard");
         Objects.requireNonNull(node, "Invalid Config! DamageScoreboard is missing!");
         final String rawName, rawDamager, rawVictim;

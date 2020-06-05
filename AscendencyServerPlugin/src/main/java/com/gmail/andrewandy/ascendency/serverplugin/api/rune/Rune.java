@@ -1,6 +1,7 @@
 package com.gmail.andrewandy.ascendency.serverplugin.api.rune;
 
 import com.gmail.andrewandy.ascendency.serverplugin.util.game.Tickable;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.data.DataSerializable;
 
 /**
@@ -14,7 +15,7 @@ public interface Rune extends DataSerializable, Tickable {
      *
      * @return The name of the rune.
      */
-    String getName();
+    @NotNull String getName();
 
     /**
      * Apply this rune to the given object.
@@ -22,14 +23,14 @@ public interface Rune extends DataSerializable, Tickable {
      * @param object The object to apply to.
      * @throws IllegalArgumentException thrown if {@link #canApplyTo(Object)} returns false.
      */
-    void applyTo(Object object) throws IllegalArgumentException;
+    void applyTo(@NotNull Object object) throws IllegalArgumentException;
 
     /**
      * Clear this rune's effects from the target object.
      *
      * @param object The target object.
      */
-    void clearFrom(Object object);
+    void clearFrom(@NotNull Object object);
 
     /**
      * Checks whether a given object can have this rune applied to it.
@@ -37,5 +38,5 @@ public interface Rune extends DataSerializable, Tickable {
      * @param object The object to apply to.
      * @return Returns whether or not this object can have this rune applied to it.
      */
-    boolean canApplyTo(Object object);
+    boolean canApplyTo(@NotNull Object object);
 }

@@ -2,6 +2,7 @@ package com.gmail.andrewandy.ascendency.serverplugin.util;
 
 import com.gmail.andrewandy.ascendency.lib.util.CommonUtils;
 import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
+import com.google.inject.Inject;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 
 import java.io.*;
@@ -12,6 +13,7 @@ import java.io.*;
  */
 public class YamlLoader {
 
+    @Inject private static AscendencyServerPlugin plugin;
     private YAMLConfigurationLoader loader;
 
     private YamlLoader() {
@@ -24,7 +26,7 @@ public class YamlLoader {
      * @throws IllegalArgumentException if no file was found in this jar with the given name.
      */
     public YamlLoader(final String fileName) {
-        final File folder = AscendencyServerPlugin.getInstance().getDataFolder();
+        final File folder = plugin.getDataFolder();
         final File file = new File(folder.getAbsolutePath(), fileName);
         final OutputStream os;
         try (final InputStream inputStream = YamlLoader.class.getClassLoader()

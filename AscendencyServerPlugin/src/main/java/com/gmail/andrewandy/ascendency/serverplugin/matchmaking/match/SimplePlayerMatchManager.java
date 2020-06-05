@@ -4,6 +4,7 @@ import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.Team;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.event.MatchEndedEvent;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.event.MatchStartEvent;
+import com.google.inject.Inject;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -23,12 +24,14 @@ public enum SimplePlayerMatchManager implements PlayerMatchManager {
 
     INSTANCE;
 
+    @Inject private static AscendencyServerPlugin plugin;
+
     private Location<World> resetCoordinate;
     private final Collection<ManagedMatch> matches = new HashSet<>(); //Holds all the registered matches.
 
     public static void enableManager() {
         disableManager();
-        Sponge.getEventManager().registerListeners(AscendencyServerPlugin.getInstance(), INSTANCE);
+        Sponge.getEventManager().registerListeners(plugin, INSTANCE);
     }
 
     public static void disableManager() {

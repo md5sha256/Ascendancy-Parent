@@ -1,6 +1,7 @@
 package com.gmail.andrewandy.ascendency.serverplugin.util.game;
 
 import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
+import com.google.inject.Inject;
 import org.spongepowered.api.Sponge;
 
 import java.util.Collection;
@@ -9,11 +10,12 @@ import java.util.HashSet;
 public class TickHandler {
 
     private static final TickHandler instance = new TickHandler();
+    @Inject private static AscendencyServerPlugin plugin;
     private final Collection<TickData> toTick = new HashSet<>();
 
     private TickHandler() {
         Sponge.getScheduler().createTaskBuilder().execute(this::run).intervalTicks(1)
-            .submit(AscendencyServerPlugin.getInstance());
+            .submit(plugin);
     }
 
     public static TickHandler getInstance() {
@@ -38,7 +40,7 @@ public class TickHandler {
         toTick.removeIf(TickData::failedTick);
     }
 
-    private class TickData {
+    private static class TickData {
 
         private final Tickable tickable;
         private int remainingTicks;

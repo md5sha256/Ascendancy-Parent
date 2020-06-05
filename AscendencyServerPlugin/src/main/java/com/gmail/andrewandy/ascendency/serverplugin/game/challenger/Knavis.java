@@ -20,6 +20,8 @@ import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.engine.Gam
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.engine.GamePlayer;
 import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyPressedEvent;
+import com.google.inject.Inject;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
@@ -56,6 +58,7 @@ import java.util.function.BiFunction;
 public class Knavis extends AbstractChallenger implements Challenger {
 
     private static final Knavis instance = new Knavis();
+    @Inject private static AscendencyServerPlugin plugin;
 
     private Knavis() {
         super("Knavis", new Ability[] {ShadowsRetreat.instance, LivingGift.instance}, //Abilities
@@ -124,7 +127,7 @@ public class Knavis extends AbstractChallenger implements Challenger {
                 this.cause = Cause.builder().named("Player", player).build();
             }
 
-            @Override public Cause getCause() {
+            @Override @NotNull public Cause getCause() {
                 return cause;
             }
         }
@@ -154,9 +157,6 @@ public class Knavis extends AbstractChallenger implements Challenger {
             this.tickThresholdFunction = tickThresholdFunction;
         }
 
-        public void setOnMark(final BiConsumer<Player, Integer> onMark) {
-            this.onMark = onMark;
-        }
 
         public Optional<LocationMark> getMarkFor(final UUID player) {
             if (dataMap.containsKey(player)) {
@@ -187,11 +187,9 @@ public class Knavis extends AbstractChallenger implements Challenger {
             });
         }
 
-        private void castAbilityAs(final Player player) {
-            if (!dataMap.containsKey(player.getUniqueId())) {
-                throw new IllegalArgumentException("Player does not have this ability!");
-            }
-            final LocationMark mark = dataMap.get(player.getUniqueId());
+        private @NotNull LocationMark castAbilityAs(@NotNull final Player player) {
+            final LocationMark mark = dataMap.compute(player.getUniqueId(),
+                (key, value) -> value == null ? new LocationMark() : value);
             castCounter.compute(player.getUniqueId(), (uuid, castCount) -> {
                 if (castCount == null) {
                     castCount = 0;
@@ -208,7 +206,7 @@ public class Knavis extends AbstractChallenger implements Challenger {
                 }
                 return ++castCount;
             });
-
+            return mark;
         }
 
 
@@ -260,18 +258,31 @@ public class Knavis extends AbstractChallenger implements Challenger {
                 if (challenger != Knavis.getInstance()) {
                     return;
                 }
-                //TODO call a mark given event so that runes can alter which slot the rune should go to.
+                final LocationMark mark = castAbilityAs(event.getPlayer());
+                //Now safe to call LME because the mark is now guaranteed to be created.
+                LocationMarkedEvent lme = new LocationMarkedEvent(player, 1);
+                if (lme.callEvent()) {
+                    //TODO give the player the mark itemstack.
+                }
             });
         }
 
         public static class LocationMarkedEvent extends AscendencyServerEvent {
 
-            private final Player player;
+            @NotNull private final Player player;
+            @NotNull private final LocationMark locationMark;
             private int markSlot;
 
-            public LocationMarkedEvent(final Player marker, final int markSlot) {
+            public LocationMarkedEvent(@NotNull final Player marker, final int markSlot) {
                 this.player = marker;
                 setMarkedSlot(markSlot);
+                this.locationMark = ShadowsRetreat.getInstance().getMarkFor(marker.getUniqueId())
+                    .orElseThrow(
+                        () -> new IllegalStateException("Location mark not found for player!"));
+            }
+
+            public @NotNull LocationMark getLocationMark() {
+                return locationMark;
             }
 
             public int getMarkedSlot() {
@@ -285,12 +296,12 @@ public class Knavis extends AbstractChallenger implements Challenger {
                 this.markSlot = markSlot;
             }
 
-            public Player getPlayer() {
+            @NotNull public Player getPlayer() {
                 return player;
             }
 
-            @Override public Cause getCause() {
-                return null;
+            @Override @NotNull public Cause getCause() {
+                return Cause.builder().named("Knavis", Knavis.getInstance()).build();
             }
         }
 
@@ -298,12 +309,13 @@ public class Knavis extends AbstractChallenger implements Challenger {
         private static class MarkTeleportationEvent extends AscendencyServerEvent
             implements Cancellable {
 
+            @NotNull private final Player player;
+            @NotNull private final Cause cause;
             private boolean cancel;
-            private final Player player;
-            private Location<World> location;
-            private final Cause cause;
+            @NotNull private Location<World> location;
 
-            public MarkTeleportationEvent(final Player player, final Location<World> toTeleport) {
+            public MarkTeleportationEvent(@NotNull final Player player,
+                @NotNull final Location<World> toTeleport) {
                 this.player = player;
                 this.location = toTeleport;
                 this.cause = Cause.builder().named("Knavis", Knavis.getInstance()).build();
@@ -321,7 +333,7 @@ public class Knavis extends AbstractChallenger implements Challenger {
                 return player;
             }
 
-            @Override public Cause getCause() {
+            @Override @NotNull public Cause getCause() {
                 return cause;
             }
 
@@ -341,9 +353,10 @@ public class Knavis extends AbstractChallenger implements Challenger {
      */
     public static class BlessingOfTeleportation extends AbstractRune {
 
-        private static final BlessingOfTeleportation instance = new BlessingOfTeleportation();
+        @NotNull private static final BlessingOfTeleportation instance =
+            new BlessingOfTeleportation();
         private static final long ticks = Common.toTicks(8, TimeUnit.SECONDS);
-        private final Collection<UUID> active = new HashSet<>();
+        @NotNull private final Collection<UUID> active = new HashSet<>();
 
         private BlessingOfTeleportation() {
             ShadowsRetreat.instance.setTickThresholdSupplier(
@@ -351,37 +364,34 @@ public class Knavis extends AbstractChallenger implements Challenger {
                 (UUID player, LocationMark mark) -> active.contains(player) ?
                     new Long[] {ticks, ticks} :
                     ShadowsRetreat.defaultTickThreshold);
-            ShadowsRetreat.instance.setOnMark((Player player, Integer slot) -> {
-                assert slot != null;
-                if (slot
-                    == 2) { //Don't need to care about 1 since it will be handled by Shadow's retreat.
-                    final Optional<LocationMark> mark =
-                        ShadowsRetreat.instance.getMarkFor(player.getUniqueId());
-                    assert mark.isPresent();
-                    final LocationMark locationMark = mark.get();
-                    locationMark.setSecondaryMark(player.getLocation());
-                    locationMark.resetSecondaryTick();
-                }
-            });
         }
 
-        public static BlessingOfTeleportation getInstance() {
+        @NotNull public static BlessingOfTeleportation getInstance() {
             return instance;
         }
 
-        @Override public void applyTo(final Player player) {
+        @Listener(order = Order.EARLY)
+        public void onMark(final ShadowsRetreat.LocationMarkedEvent event) {
+            final LocationMark locationMark = event.getLocationMark();
+            if (event.getMarkedSlot() == 2) {
+                locationMark.setSecondaryMark(event.getPlayer().getLocation());
+                locationMark.resetSecondaryTick();
+            }
+        }
+
+        @Override public void applyTo(@NotNull final Player player) {
             clearFrom(player);
             active.add(player.getUniqueId());
         }
 
-        @Override public void clearFrom(final Player player) {
+        @Override public void clearFrom(@NotNull final Player player) {
             active.remove(player.getUniqueId());
             final Optional<LocationMark> optional =
                 ShadowsRetreat.getInstance().getMarkFor(player.getUniqueId());
             optional.ifPresent(LocationMark::clear);
         }
 
-        @Override public String getName() {
+        @Override @NotNull public String getName() {
             return "Blessing Of Teleportation";
         }
 
@@ -393,7 +403,7 @@ public class Knavis extends AbstractChallenger implements Challenger {
             return 0;
         }
 
-        @Override public DataContainer toContainer() {
+        @Override @NotNull public DataContainer toContainer() {
             return null;
         }
     }
@@ -520,8 +530,8 @@ public class Knavis extends AbstractChallenger implements Challenger {
             return 0;
         }
 
-        @Override public DataContainer toContainer() {
-            return null;
+        @Override @NotNull public DataContainer toContainer() {
+            return null; //TODO
         }
 
         @Listener public void onPotionApplied(final ChangeEntityPotionEffectEvent.Gain event) {
@@ -551,7 +561,7 @@ public class Knavis extends AbstractChallenger implements Challenger {
         private final Map<UUID, Long> tickHistory = new HashMap<>();
 
         private ChosenOTEarth() {
-            Sponge.getEventManager().registerListeners(AscendencyServerPlugin.getInstance(), this);
+            Sponge.getEventManager().registerListeners(plugin, this);
         }
 
         public static ChosenOTEarth getInstance() {
@@ -591,7 +601,7 @@ public class Knavis extends AbstractChallenger implements Challenger {
             tickHistory.replace(playerObj.getUniqueId(), 0L);
             stacks.compute(playerObj.getUniqueId(), ((UUID player, Integer stack) -> {
                 final int stackVal =
-                    stack == null ? 0 : stack; //Unboxing here may throw nullpointer.
+                    stack == null ? 0 : stack; //Unboxing here may throw null pointer.
                 double health = 3;
                 for (int index = 1; index < stackVal; ) {
                     health += index++;

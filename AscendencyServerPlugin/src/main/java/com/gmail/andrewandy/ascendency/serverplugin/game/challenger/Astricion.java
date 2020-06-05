@@ -17,6 +17,7 @@ import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.engine.Gam
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyPressedEvent;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyReleasedEvent;
 import com.google.inject.Inject;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
@@ -61,14 +62,14 @@ public class Astricion extends AbstractChallenger {
     public static class ReleasedLimit extends AbstractRune {
         private static final ReleasedLimit instance = new ReleasedLimit();
 
-        @Override public void applyTo(final Player player) {
+        @Override public void applyTo(@NotNull final Player player) {
         }
 
-        @Override public void clearFrom(final Player player) {
+        @Override public void clearFrom(@NotNull final Player player) {
         }
 
-        @Override public String getName() {
-            return null;
+        @Override @NotNull public String getName() {
+            return "ReleasedLimit";
         }
 
         @Override public void tick() {
@@ -78,7 +79,7 @@ public class Astricion extends AbstractChallenger {
             return 0;
         }
 
-        @Override public DataContainer toContainer() {
+        @Override @NotNull public DataContainer toContainer() {
             return null;
         }
     }
@@ -95,7 +96,7 @@ public class Astricion extends AbstractChallenger {
         }
 
         @Override public String getName() {
-            return null;
+            return "DiabolicalResistance";
         }
 
         @Override public void tick() {
@@ -106,7 +107,7 @@ public class Astricion extends AbstractChallenger {
             return 0;
         }
 
-        @Override public DataContainer toContainer() {
+        @Override @NotNull public DataContainer toContainer() {
             return null;
         }
     }
@@ -124,7 +125,7 @@ public class Astricion extends AbstractChallenger {
         }
 
         @Override public String getName() {
-            return null;
+            return "EmpoweringRage";
         }
 
         @Override public void tick() {
@@ -135,7 +136,7 @@ public class Astricion extends AbstractChallenger {
             return 0;
         }
 
-        @Override public DataContainer toContainer() {
+        @Override @NotNull public DataContainer toContainer() {
             return null;
         }
     }
@@ -144,7 +145,6 @@ public class Astricion extends AbstractChallenger {
     private static class Suppression extends AbstractAbility {
 
         private static final Suppression instance = new Suppression();
-        private final Collection<UUID> active = new HashSet<>();
 
         private Suppression() {
             super("Suppression", true);
@@ -162,10 +162,10 @@ public class Astricion extends AbstractChallenger {
         //TODO use entangle & give resistance
         @Listener public void onEntityDamage(final DamageEntityEvent event) {
             final Entity entity = event.getTargetEntity();
-            if (!(entity instanceof Player) || active.contains(entity.getUniqueId())) {
+            if (!(entity instanceof Player) || !isRegistered(entity.getUniqueId())) {
                 return;
             }
-            final PotionEffect entanglement = (PotionEffect) (Object) new BuffEffectEntangled(4,
+            final PotionEffect entanglement = (PotionEffect) new BuffEffectEntangled(4,
                 1); //Safe cast as per forge's runtime changes
             event.setBaseDamage(
                 calculateIncomingDamage(event.getBaseDamage())); //Modifies the base damage directly
@@ -215,13 +215,14 @@ public class Astricion extends AbstractChallenger {
 
 
     private static class DemonicCapacity extends AbstractTickableAbility {
-        private static final DemonicCapacity instance = new DemonicCapacity();
+
+        @NotNull private static final DemonicCapacity instance = new DemonicCapacity();
 
         private DemonicCapacity() {
             super("Demonic Capacity", false);
         }
 
-        public static DemonicCapacity getInstance() {
+        @NotNull public static DemonicCapacity getInstance() {
             return instance;
         }
 
@@ -232,14 +233,10 @@ public class Astricion extends AbstractChallenger {
             }
             final int astricionHealth =
                 (int) Math.round(((Player) entity).getHealthData().health().get());
-            final Optional<PotionEffectData> optional = entity.getOrCreate(PotionEffectData.class);
-            if (!optional.isPresent()) {
-                throw new IllegalStateException(
+            final PotionEffectData data = entity.getOrCreate(PotionEffectData.class).orElseThrow(
+                () -> new IllegalStateException(
                     "Potion effect data could not be gathered for " + entity.getUniqueId()
-                        .toString());
-            }
-
-            final PotionEffectData data = optional.get();
+                        .toString()));
             final PotionEffect[] effects = new PotionEffect[] {PotionEffect.builder()
                 //Strength scaling on current health
                 .potionType(PotionEffectTypes.STRENGTH).duration(999999)

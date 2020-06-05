@@ -3,6 +3,7 @@ package com.gmail.andrewandy.ascendency.serverplugin.util;
 import am2.api.extensions.IEntityExtension;
 import am2.extensions.EntityExtension;
 import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
+import com.google.inject.Inject;
 import net.minecraft.entity.EntityLivingBase;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
@@ -27,12 +28,13 @@ import java.util.stream.Stream;
 
 public class Common {
 
+    @Inject private static AscendencyServerPlugin plugin;
     private static String prefix = "";
     private static ExecutorService executorService;
 
     public static void setup() {
         executorService =
-            Sponge.getScheduler().createSyncExecutor(AscendencyServerPlugin.getInstance());
+            Sponge.getScheduler().createSyncExecutor(plugin);
     }
 
     public static void setPrefix(final String prefix) {
@@ -48,7 +50,7 @@ public class Common {
     }
 
     public static void log(final Level level, final String... messages) {
-        final Logger logger = AscendencyServerPlugin.getInstance().getLogger();
+        final Logger logger = plugin.getLogger();
         for (String message : messages) {
             message = colorise(message.concat(prefix + " " + message));
             if (level == Level.INFO) {
