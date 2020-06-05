@@ -13,30 +13,30 @@ public enum SpellManager {
 
     INSTANCE;
 
-    private Collection<Spell> registeredSpells = new HashSet<>();
+    private final Collection<Spell> registeredSpells = new HashSet<>();
 
-    public void registerSpell(Spell spell) {
+    public void registerSpell(final Spell spell) {
         registeredSpells.remove(spell);
         registeredSpells.add(spell);
     }
 
-    public void unregisterSpell(Spell spell) {
+    public void unregisterSpell(final Spell spell) {
         registeredSpells.remove(spell);
     }
 
     @Listener
-    public void onClick(HandInteractEvent event) {
+    public void onClick(final HandInteractEvent event) {
         final Object root = event.getCause().root();
         if (!(root instanceof Player)) {
             return;
         }
         final Player player = (Player) root;
-        Optional<ItemStack> clicked = player.getItemInHand(event.getHandType());
+        final Optional<ItemStack> clicked = player.getItemInHand(event.getHandType());
         if (!clicked.isPresent()) {
             return;
         }
-        ItemStack itemStack = clicked.get();
-        for (Spell spell: registeredSpells) {
+        final ItemStack itemStack = clicked.get();
+        for (final Spell spell: registeredSpells) {
             if (spell.isSpell(itemStack)) {
                 spell.castAs(player);
                 break;

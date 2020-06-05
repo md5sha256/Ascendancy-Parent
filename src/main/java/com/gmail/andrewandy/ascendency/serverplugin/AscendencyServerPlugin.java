@@ -42,7 +42,6 @@ import java.util.logging.Level;
     "andrewandy", "resonabit"}) public class AscendencyServerPlugin {
 
     private static final String DEFAULT_NETWORK_CHANNEL_NAME = "ASCENDENCY_DEFAULT_CHANNEL";
-    private static AscendencyServerPlugin instance;
     private static Injector injector;
     private final AscendencyModule module;
     private DefaultMatchService matchMatchMakingService;
@@ -58,10 +57,6 @@ import java.util.logging.Level;
 
     @Inject public AscendencyServerPlugin() {
         module = new AscendencyModule();
-    }
-
-    public static AscendencyServerPlugin getInstance() {
-        return instance;
     }
 
     public File getDataFolder() {
@@ -85,9 +80,8 @@ import java.util.logging.Level;
     }
 
     @Listener(order = Order.DEFAULT) public void onServerStart(final GameStartedServerEvent event) {
-        instance = this;
         injector = Guice.createInjector(Stage.PRODUCTION, module);
-        final String load = Challengers.LOAD; //Load up S1 champions.
+        final String load = Challengers.LOAD; //Load up champions
         Common.setup();
         Common.setPrefix("[CustomServerMod]");
         loadSettings();
@@ -112,7 +106,6 @@ import java.util.logging.Level;
         if (matchMatchMakingService != null) {
             matchMatchMakingService.clearQueue();
         }
-        instance = null;
     }
 
     @Listener(order = Order.DEFAULT) public void onServerReload(final GameReloadEvent event) {
@@ -138,7 +131,7 @@ import java.util.logging.Level;
     private void loadKeybindHandlers() {
         Common.log(Level.INFO, "&b[Key Binds] Loading active key handler.");
         unregisterKeybindHandlers();
-        Sponge.getEventManager().registerListeners(instance, ActiveKeyHandler.INSTANCE);
+        Sponge.getEventManager().registerListeners(this, ActiveKeyHandler.INSTANCE);
     }
 
     private void unregisterKeybindHandlers() {

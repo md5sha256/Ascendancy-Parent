@@ -30,6 +30,7 @@ public enum GameRegistry {
     private final Map<UUID, Task> syncGuard = new HashMap<>();
     private final Collection<UUID> notUpdated = ConcurrentHashMap.newKeySet();
     @Inject private SpongeAscendencyPacketHandler handler;
+    @Inject private AscendencyServerPlugin plugin;
 
     public void mapChampion(final AscendencyChampions champion, final Challenger object,
         final boolean invalidate) {
@@ -163,7 +164,7 @@ public enum GameRegistry {
             for (final UUID uuid : players) {
                 resync(uuid, true);
             }
-        }).async().submit(AscendencyServerPlugin.getInstance());
+        }).async().submit(plugin);
     }
 
     /**

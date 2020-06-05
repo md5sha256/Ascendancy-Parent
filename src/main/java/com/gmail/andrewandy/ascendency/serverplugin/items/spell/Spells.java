@@ -24,7 +24,7 @@ public enum Spells implements Spell {
     private final SecondaryShape secondaryShape;
     private final Effect effect;
 
-    Spells(Shape shape, SecondaryShape secondaryShape, Effect effect, double effectValue, int manaCost, boolean willBounce) {
+    Spells(final Shape shape, final SecondaryShape secondaryShape, final Effect effect, final double effectValue, final int manaCost, final boolean willBounce) {
         this.shape = shape;
         this.secondaryShape = secondaryShape;
         this.effect = effect;
@@ -33,7 +33,7 @@ public enum Spells implements Spell {
         this.willBounce = willBounce;
     }
 
-    Spells(Shape shape, SecondaryShape secondaryShape, Effect effect, double effectValue, int manaCost) {
+    Spells(final Shape shape, final SecondaryShape secondaryShape, final Effect effect, final double effectValue, final int manaCost) {
         this(shape, secondaryShape, effect, effectValue, manaCost, false);
     }
 
@@ -73,18 +73,18 @@ public enum Spells implements Spell {
     }
 
     @Override
-    public boolean isSpell(ItemStack itemStack) {
-        Optional<?> name = itemStack.get(Keys.DISPLAY_NAME);
+    public boolean isSpell(final ItemStack itemStack) {
+        final Optional<?> name = itemStack.get(Keys.DISPLAY_NAME);
         return name.filter(o -> ((String) o).equalsIgnoreCase(getName())).isPresent();
     }
 
     @Override
-    public void castAs(Player player) {
-        Shape shape = this.getShape();
-        SecondaryShape secondaryShape = this.getSecondaryShape();
-        Effect effect = this.getEffect();
-        double effectValue = this.getEffectValue();
-        int manaCost = this.getManaCost();
+    public void castAs(final Player player) {
+        final Shape shape = this.getShape();
+        final SecondaryShape secondaryShape = this.getSecondaryShape();
+        final Effect effect = this.getEffect();
+        final double effectValue = this.getEffectValue();
+        final int manaCost = this.getManaCost();
 
         //define apply effect methods here
 

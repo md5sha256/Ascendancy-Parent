@@ -6,6 +6,7 @@ import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.Challenger;
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.Rune;
 import com.gmail.andrewandy.ascendency.serverplugin.util.game.TickHandler;
 import com.gmail.andrewandy.ascendency.serverplugin.util.game.Tickable;
+import com.google.inject.Inject;
 import net.minecraftforge.common.MinecraftForge;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
@@ -27,6 +28,7 @@ public enum Challengers {
     BELLA(Bella.getInstance());
 
     public static final String LOAD = null; //Invoke to force classloader to load this class
+    @Inject private static AscendencyServerPlugin plugin;
     private final Challenger challengerObject;
 
     Challengers(final Challenger challengerObject) {
@@ -35,7 +37,6 @@ public enum Challengers {
 
     public static void initHandlers() {
         final EventManager manager = Sponge.getEventManager();
-        final Object plugin = AscendencyServerPlugin.getInstance();
         for (final Challengers s1Challenger : values()) {
             final Challenger challenger = s1Challenger.challengerObject;
             if (challenger == null) {
@@ -63,7 +64,7 @@ public enum Challengers {
     }
 
     public static List<String> getLoreOf(final String name) {
-        ConfigurationNode node = AscendencyServerPlugin.getInstance().getSettings();
+        ConfigurationNode node = plugin.getSettings();
         node = node.getNode("Champions");
         final List<? extends ConfigurationNode> nodes =
             node.getNode(name).getNode("lore").getChildrenList();

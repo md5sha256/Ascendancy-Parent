@@ -4,7 +4,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 public interface Spell {
-
     ItemStack getAsItemStack();
 
     boolean isSpell(ItemStack itemStack);

@@ -3,6 +3,7 @@ package com.gmail.andrewandy.ascendency.serverplugin.io;
 import com.gmail.andrewandy.ascendency.lib.AscendencyPacket;
 import com.gmail.andrewandy.ascendency.lib.AscendencyPacketHandler;
 import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
@@ -23,6 +24,7 @@ import java.util.UUID;
     implements RawDataListener {
 
 
+    @Inject private static AscendencyServerPlugin plugin;
     private static final String CHANNEL_NAME = "ASCENDENCY_SPONGE";
     private ChannelBinding.RawDataChannel dataChannel;
 
@@ -31,7 +33,7 @@ import java.util.UUID;
 
     public void initSponge() {
         dataChannel = Sponge.getChannelRegistrar()
-            .getOrCreateRaw(AscendencyServerPlugin.getInstance(), CHANNEL_NAME);
+            .getOrCreateRaw(plugin, CHANNEL_NAME);
     }
 
     public void disable() {

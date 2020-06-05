@@ -1,17 +1,13 @@
 package com.gmail.andrewandy.ascendency.serverplugin.api.attributes;
 
 import com.google.common.reflect.TypeToken;
-import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.key.Key;
 import org.spongepowered.api.data.key.KeyFactory;
 import org.spongepowered.api.data.value.ValueFactory;
-import org.spongepowered.api.data.value.immutable.ImmutableBoundedValue;
 import org.spongepowered.api.data.value.mutable.MutableBoundedValue;
 import org.spongepowered.api.data.value.mutable.Value;
-
-import java.util.Map;
 
 public enum AscendencyAttribute {
 
@@ -25,7 +21,7 @@ public enum AscendencyAttribute {
             "Ascendency Attributes");
 
     private final int defaultValue, max, min;
-    private final Key<MutableBoundedValue<Integer>> key =KeyFactory.makeSingleKey(TypeToken.of(Integer.TYPE), new TypeToken<MutableBoundedValue<Integer>>() {
+    private final Key<MutableBoundedValue<Integer>> key = KeyFactory.makeSingleKey(TypeToken.of(Integer.TYPE), new TypeToken<MutableBoundedValue<Integer>>() {
     }, DataQuery.of(name()), "ascendencyserverplugin:asc_atr_" + name().toLowerCase(), name());
 
     AscendencyAttribute(final int def, final int min, final int max) {

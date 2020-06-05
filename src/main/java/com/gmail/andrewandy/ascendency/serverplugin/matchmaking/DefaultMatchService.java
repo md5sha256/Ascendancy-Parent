@@ -24,6 +24,8 @@ import java.util.*;
  */
 public class DefaultMatchService implements AscendancyMatchService {
 
+    @Inject private AscendencyServerPlugin plugin;
+
     private final Config config;
     private final LinkedList<Player> playerQueue = new LinkedList<>();
     private MatchMakingMode mode = MatchMakingMode.BALANCED; //The way server matches players.
@@ -86,7 +88,7 @@ public class DefaultMatchService implements AscendancyMatchService {
     public void registerListeners() {
         unregisterListeners();
         MinecraftForge.EVENT_BUS.register(this);
-        Sponge.getEventManager().registerListeners(AscendencyServerPlugin.getInstance(), this);
+        Sponge.getEventManager().registerListeners(plugin, this);
     }
 
     /**

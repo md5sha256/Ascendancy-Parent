@@ -3,6 +3,7 @@ package com.gmail.andrewandy.ascendency.serverplugin.util.keybind;
 import com.gmail.andrewandy.ascendency.lib.keybind.AscendencyKey;
 import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
 import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
+import com.google.inject.Inject;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scoreboard.critieria.Criteria;
@@ -18,15 +19,17 @@ public enum ActiveKeyHandler implements KeyBindHandler {
 
     INSTANCE;
 
+    @Inject private static AscendencyServerPlugin plugin;
+    private final Collection<UUID> pressed = new HashSet<>();
     private String scoreName;
     private Objective objective;
-    private final Collection<UUID> pressed = new HashSet<>();
 
     ActiveKeyHandler() {
+        loadSettings();
     }
 
     public void loadSettings() {
-        ConfigurationNode node = AscendencyServerPlugin.getInstance().getSettings();
+        ConfigurationNode node = plugin.getSettings();
         node = node.getNode("KeyBinding");
         if (node == null) {
             Common.log(Level.INFO, "&b[Key Binds] Unable to find settings for ActiveKeyHandler.");
