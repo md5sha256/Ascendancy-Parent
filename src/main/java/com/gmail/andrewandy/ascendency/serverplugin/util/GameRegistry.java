@@ -8,6 +8,8 @@ import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.Challenger;
 import com.gmail.andrewandy.ascendency.serverplugin.io.SpongeAscendencyPacketHandler;
 import com.google.inject.Inject;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -32,8 +34,8 @@ public enum GameRegistry {
     @Inject private SpongeAscendencyPacketHandler handler;
     @Inject private AscendencyServerPlugin plugin;
 
-    public void mapChampion(final AscendencyChampions champion, final Challenger object,
-        final boolean invalidate) {
+    public void mapChampion(@NotNull final AscendencyChampions champion,
+        @Nullable final Challenger object, final boolean invalidate) {
         championRegistry.remove(champion);
         championRegistry.put(champion, object);
         if (invalidate) {
@@ -56,11 +58,11 @@ public enum GameRegistry {
     }
 
 
-    public boolean isUpdated(final UUID uuid) {
+    public boolean isUpdated(@NotNull final UUID uuid) {
         return !notUpdated.contains(uuid);
     }
 
-    public void setUpdate(final UUID uuid, final boolean updated) {
+    public void setUpdate(@Nullable final UUID uuid, final boolean updated) {
         if (updated) {
             notUpdated.remove(uuid);
         } else {
@@ -74,7 +76,7 @@ public enum GameRegistry {
      * @param async Whether to update the players async.
      * @return Returns a {@link Task} if async is true, <code>null</code> if not.
      */
-    public Task updateNotUpdated(final boolean async) {
+    @Nullable public Task updateNotUpdated(final boolean async) {
         if (async) {
             return queueResync(notUpdated);
         } else {
@@ -88,7 +90,7 @@ public enum GameRegistry {
      *
      * @param uuid The UUID of the player.
      */
-    private void resync(final UUID uuid, final boolean async) {
+    private void resync(@NotNull final UUID uuid, final boolean async) {
         if (syncGuard.containsKey(uuid)) {
             return;
         }
@@ -101,10 +103,10 @@ public enum GameRegistry {
         packets.add(packet);
         final Optional<Player> optional;
         if (async) {
+
             final Future<Optional<Player>> future =
                 Common.getSyncExecutor().submit(() -> Sponge.getServer().getPlayer(uuid));
-            while (!future.isDone())
-                ;
+            while (!future.isDone()) {}
             try {
                 optional = future.get();
             } catch (final ExecutionException | InterruptedException ex) {
@@ -128,7 +130,7 @@ public enum GameRegistry {
      *
      * @param players The UUID of the player.
      */
-    public void forceResync(final UUID... players) {
+    public void forceResync(@NotNull final UUID... players) {
         Sponge.getScheduler().createTaskBuilder().async().execute(() -> {
             for (final UUID uuid : players) {
                 Common.getSyncExecutor().submit(() -> resync(uuid, false));
@@ -139,7 +141,7 @@ public enum GameRegistry {
     /**
      * @see #forceResync(UUID...)
      */
-    public void forceResync(final Collection<UUID> players) {
+    public void forceResync(@NotNull final Collection<UUID> players) {
         forceResync((UUID[]) players.toArray());
     }
 
@@ -159,7 +161,7 @@ public enum GameRegistry {
      * @param players The UUIDs of the players to resynchronise.
      * @return Returns an {@link Task} which represents the state of execution.
      */
-    public Task queueResync(final UUID... players) {
+    @NotNull public Task queueResync(final UUID... players) {
         return Sponge.getScheduler().createTaskBuilder().execute(task -> {
             for (final UUID uuid : players) {
                 resync(uuid, true);
@@ -170,14 +172,14 @@ public enum GameRegistry {
     /**
      * @see #queueResync(UUID...)
      */
-    public Task queueResync(final Collection<UUID> players) {
+    @NotNull public Task queueResync(final Collection<UUID> players) {
         return queueResync((UUID[]) players.toArray());
     }
 
     /**
      * Queues a resync of all online players.
      */
-    public Task queueResyncAll() {
+    @NotNull public Task queueResyncAll() {
         return queueResync(
             (UUID[]) Sponge.getServer().getOnlinePlayers().stream().map(Player::getUniqueId)
                 .toArray());

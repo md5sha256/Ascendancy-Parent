@@ -6,6 +6,11 @@ import org.spongepowered.api.data.value.mutable.MutableBoundedValue;
 
 public interface AttributeData extends DataManipulator<AttributeData, ImmutableAttributeData> {
 
-    @NotNull MutableBoundedValue<Integer> attribute(@NotNull AscendencyAttribute attribute);
+    @NotNull MutableBoundedValue<Integer> getAttribute(@NotNull AscendencyAttribute attribute);
+
+    default int getAttributePrimitive(@NotNull AscendencyAttribute attribute) {
+       MutableBoundedValue<Integer> boundedValue = getAttribute(attribute);
+       return boundedValue.exists() ? attribute.defaultValue() : boundedValue.get();
+    }
 
 }

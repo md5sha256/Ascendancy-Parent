@@ -3,6 +3,8 @@ package com.gmail.andrewandy.ascendency.serverplugin.module;
 import com.gmail.andrewandy.ascendency.serverplugin.configuration.Config;
 import com.gmail.andrewandy.ascendency.serverplugin.configuration.YamlConfig;
 import com.gmail.andrewandy.ascendency.serverplugin.io.SpongeAscendencyPacketHandler;
+import com.gmail.andrewandy.ascendency.serverplugin.items.spell.ISpellManager;
+import com.gmail.andrewandy.ascendency.serverplugin.items.spell.SpellManager;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.AscendancyMatch;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.AscendancyMatchService;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.DefaultMatchService;
@@ -29,5 +31,6 @@ import com.google.inject.TypeLiteral;
         bind(new TypeLiteral<MatchFactory<AscendancyMatch>>() {
         }).toInstance(matchFactory);
         bind(AscendancyMatchService.class).to(DefaultMatchService.class);
+        bind(ISpellManager.class).toInstance(SpellManager.INSTANCE);
     }
 }

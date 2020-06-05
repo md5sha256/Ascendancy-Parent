@@ -9,9 +9,16 @@ import org.spongepowered.api.data.value.ValueFactory;
 import org.spongepowered.api.data.value.mutable.MutableBoundedValue;
 import org.spongepowered.api.data.value.mutable.Value;
 
+@SuppressWarnings("UnstableApiUsage")
 public enum AscendencyAttribute {
 
-    MAGIC_RESISTANCE(0, 0, 30000);
+    ABILITY_POWER(0, 0, 30000),
+    MAGIC_RESISTANCE(0, 0, 30000),
+    MAGIC_PENETRATION(0, 0, 300000),
+
+    ATTACK_DAMAGE(0, 0, 30000),
+    ARMOR(0, 0, 30000),
+    ARMOR_PENETRATION(0, 0, 30000);
 
     private static final ValueFactory factory = Sponge.getRegistry().getValueFactory();
 
@@ -34,7 +41,7 @@ public enum AscendencyAttribute {
         return key;
     }
 
-    public int defualtValue() {
+    public int defaultValue() {
         return defaultValue;
     }
 

@@ -1,5 +1,6 @@
 package com.gmail.andrewandy.ascendency.serverplugin.util;
 
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
@@ -47,7 +48,7 @@ public enum CustomEvents {
             originalEvent.setCancelled(cancel);
         }
 
-        @Override public Cause getCause() {
+        @Override @NotNull public Cause getCause() {
             return originalEvent.getCause();
         }
     }
@@ -56,13 +57,13 @@ public enum CustomEvents {
      * Calls {@link PlayerJumpEvent}
      */
     @Listener(order = Order.FIRST)
-    public void onPlayerMove(MoveEntityEvent event) {
+    public void onPlayerMove(final MoveEntityEvent event) {
         if (!(event.getTargetEntity() instanceof Player)) {
             return;
         }
         final Player player = (Player) event.getTargetEntity();
-        Transform<World> from = event.getFromTransform();
-        Transform<World> to = event.getToTransform();
+        final Transform<World> from = event.getFromTransform();
+        final Transform<World> to = event.getToTransform();
         if (from.getLocation().getBlock().getType() == BlockTypes.AIR) {
             return;
         }
