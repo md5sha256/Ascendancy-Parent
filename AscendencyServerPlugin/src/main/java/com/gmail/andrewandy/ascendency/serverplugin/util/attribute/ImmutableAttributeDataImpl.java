@@ -35,7 +35,7 @@ public class ImmutableAttributeDataImpl
         this.attributeMap = ImmutableMap.copyOf(temp);
     }
 
-    @Override public @NotNull ImmutableBoundedValue<Integer> attribute(
+    @Override public @NotNull ImmutableBoundedValue<Integer> getAttribute(
         @NotNull final AscendencyAttribute attribute) {
         return attributeMap.get(attribute);
     }

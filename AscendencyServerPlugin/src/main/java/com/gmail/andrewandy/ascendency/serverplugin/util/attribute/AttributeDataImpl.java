@@ -86,7 +86,7 @@ public class AttributeDataImpl extends AbstractData<AttributeData, ImmutableAttr
     }
 
     @Override @NotNull
-    public MutableBoundedValue<Integer> attribute(@NotNull final AscendencyAttribute attribute) {
+    public MutableBoundedValue<Integer> getAttribute(@NotNull final AscendencyAttribute attribute) {
         return attributeMap.get(attribute);
     }
 }

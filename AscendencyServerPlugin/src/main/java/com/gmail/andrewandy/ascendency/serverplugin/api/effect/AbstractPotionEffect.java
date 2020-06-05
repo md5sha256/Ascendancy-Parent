@@ -1,5 +1,6 @@
 package com.gmail.andrewandy.ascendency.serverplugin.api.effect;
 
+import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
 import com.google.common.collect.ImmutableSet;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.data.Property;
@@ -63,4 +64,5 @@ public abstract class AbstractPotionEffect implements PotionEffect {
     @Override @NotNull public Collection<Property<?, ?>> getApplicableProperties() {
         return ImmutableSet.copyOf(propertyMap.values());
     }
+
 }

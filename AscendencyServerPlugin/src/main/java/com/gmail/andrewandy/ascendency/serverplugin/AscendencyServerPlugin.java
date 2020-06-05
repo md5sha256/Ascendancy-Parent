@@ -1,5 +1,8 @@
 package com.gmail.andrewandy.ascendency.serverplugin;
 
+import co.aikar.taskchain.SpongeTaskChainFactory;
+import co.aikar.taskchain.TaskChain;
+import co.aikar.taskchain.TaskChainFactory;
 import com.gmail.andrewandy.ascendency.lib.util.CommonUtils;
 import com.gmail.andrewandy.ascendency.serverplugin.configuration.Config;
 import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.Challengers;
@@ -22,6 +25,7 @@ import com.google.inject.Injector;
 import com.google.inject.Stage;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
@@ -47,6 +51,15 @@ import java.util.logging.Level;
     private DefaultMatchService matchMatchMakingService;
 
     private KeyBindHandler keyBindHandler;
+    private static TaskChainFactory factory;
+
+    @NotNull public static <T> TaskChain<T> newChain() {
+        return factory.newChain();
+    }
+
+    @NotNull public static <T> TaskChain<T> newSharedChain(@NotNull final String name) {
+        return factory.newSharedChain(name);
+    }
 
 
     @Inject @ConfigDir(sharedRoot = true) private File dataFolder;
@@ -81,6 +94,7 @@ import java.util.logging.Level;
 
     @Listener(order = Order.DEFAULT) public void onServerStart(final GameStartedServerEvent event) {
         injector = Guice.createInjector(Stage.PRODUCTION, module);
+        factory = SpongeTaskChainFactory.create(this);
         final String load = Challengers.LOAD; //Load up champions
         Common.setup();
         Common.setPrefix("[CustomServerMod]");

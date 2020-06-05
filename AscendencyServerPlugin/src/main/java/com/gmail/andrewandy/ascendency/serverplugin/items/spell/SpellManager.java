@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 
-public enum SpellManager {
+public enum SpellManager implements ISpellManager {
 
     INSTANCE;
 
