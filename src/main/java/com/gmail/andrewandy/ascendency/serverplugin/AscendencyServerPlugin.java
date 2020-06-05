@@ -44,11 +44,18 @@ import java.util.logging.Level;
 
     private static final String DEFAULT_NETWORK_CHANNEL_NAME = "ASCENDENCY_DEFAULT_CHANNEL";
     private static Injector injector;
+    private static TaskChainFactory factory;
     private final AscendencyModule module;
     private DefaultMatchService matchMatchMakingService;
-
     private KeyBindHandler keyBindHandler;
-    private static TaskChainFactory factory;
+    @Inject @ConfigDir(sharedRoot = true) private File dataFolder;
+    private YAMLConfigurationLoader configurationLoader;
+    @Inject private Logger logger;
+    private Config config;
+
+    @Inject public AscendencyServerPlugin() {
+        module = new AscendencyModule();
+    }
 
     @NotNull public static <T> TaskChain<T> newChain() {
         return factory.newChain();
@@ -56,17 +63,6 @@ import java.util.logging.Level;
 
     @NotNull public static <T> TaskChain<T> newSharedChain(@NotNull final String name) {
         return factory.newSharedChain(name);
-    }
-
-
-    @Inject @ConfigDir(sharedRoot = true) private File dataFolder;
-    private YAMLConfigurationLoader configurationLoader;
-
-    @Inject private Logger logger;
-    private Config config;
-
-    @Inject public AscendencyServerPlugin() {
-        module = new AscendencyModule();
     }
 
     public File getDataFolder() {
