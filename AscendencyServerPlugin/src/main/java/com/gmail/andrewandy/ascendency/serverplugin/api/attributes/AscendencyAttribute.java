@@ -12,11 +12,14 @@ import org.spongepowered.api.data.value.mutable.Value;
 @SuppressWarnings("UnstableApiUsage")
 public enum AscendencyAttribute {
 
-    ABILITY_POWER(0, 0, 30000),
+    ABILITY_POWER(10, 0, 30000),
     MAGIC_RESISTANCE(0, 0, 30000),
     MAGIC_PENETRATION(0, 0, 300000),
+    MANA_MAXIMUM(3000, 0, 30000),
+    MANA_REGENERATION(100, 0, 30000),
 
     ATTACK_DAMAGE(0, 0, 30000),
+    ATTACK_SPEED(100,0,30000), //100 is one attack per second
     ARMOR(0, 0, 30000),
     ARMOR_PENETRATION(0, 0, 30000);
 

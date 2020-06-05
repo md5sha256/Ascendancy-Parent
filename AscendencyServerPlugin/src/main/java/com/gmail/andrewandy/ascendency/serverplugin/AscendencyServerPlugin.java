@@ -13,10 +13,7 @@ import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.IMatchMakingServ
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.draftpick.DraftMatchFactory;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.SimplePlayerMatchManager;
 import com.gmail.andrewandy.ascendency.serverplugin.module.AscendencyModule;
-import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
-import com.gmail.andrewandy.ascendency.serverplugin.util.CustomEvents;
-import com.gmail.andrewandy.ascendency.serverplugin.util.ForceLoadChunks;
-import com.gmail.andrewandy.ascendency.serverplugin.util.YamlLoader;
+import com.gmail.andrewandy.ascendency.serverplugin.util.*;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyHandler;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.KeyBindHandler;
 import com.google.inject.Guice;
@@ -108,6 +105,7 @@ import java.util.logging.Level;
         SimplePlayerMatchManager.enableManager();
         Challengers.initHandlers();
         Sponge.getEventManager().registerListeners(this, CustomEvents.INSTANCE);
+        Sponge.getEventManager().registerListeners(this, new HitReset());
         loadMatchMaking(); //Load after the player match manager.
         Common.log(Level.INFO, "Plugin enabled!");
     }
