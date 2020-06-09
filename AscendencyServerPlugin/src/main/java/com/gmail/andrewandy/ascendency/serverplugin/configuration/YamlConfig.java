@@ -4,6 +4,7 @@ import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
 import com.gmail.andrewandy.ascendency.serverplugin.util.YamlLoader;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -18,7 +19,7 @@ public class YamlConfig implements Config {
 
     }
 
-    @Override public void loadFromFile(final Path path) throws IOException {
+    @Override public void loadFromFile(@NotNull final Path path) throws IOException {
         final YAMLConfigurationLoader loader;
         Common.log(Level.INFO, "&bLoading settings from disk...");
         final long time = System.currentTimeMillis();

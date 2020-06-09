@@ -1,4 +1,4 @@
-package com.gmail.andrewandy.ascendency.serverplugin;
+package com.gmail.andrewandy.ascendency.serverplugin.api.event;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.impl.AbstractEvent;

@@ -11,7 +11,7 @@ import am2.utils.SpellUtils;
 import com.flowpowered.math.vector.Vector3i;
 import com.gmail.andrewandy.ascendency.lib.game.data.IChallengerData;
 import com.gmail.andrewandy.ascendency.lib.game.data.game.ChallengerDataImpl;
-import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerEvent;
+import com.gmail.andrewandy.ascendency.serverplugin.api.event.AscendencyServerEvent;
 import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.Ability;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractCooldownAbility;
@@ -34,6 +34,7 @@ import javafx.util.Pair;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.DataContainer;
@@ -67,6 +68,7 @@ import java.util.function.Predicate;
  */
 public class Bella extends AbstractChallenger {
 
+    private static final int DEFAULT_RADIUS = 3;
     private static final Bella instance = new Bella();
     @Inject private static PlayerMatchManager matchManager;
     @Inject private static AscendencyServerPlugin plugin;
@@ -90,13 +92,14 @@ public class Bella extends AbstractChallenger {
      */
     public static Collection<Location<World>> generateCircleBlocks(final Location<World> centre,
         final int radius) {
-        final Collection<Location<World>> rawCircle = MathUtils.createCircle(centre, radius);
+        final Collection<Location<World>> rawCircle =
+            MathUtils.createCircleWithCentre(centre, radius);
         final Cause cause = Cause.builder().named("Bella", plugin).build();
         rawCircle.forEach((location -> location.setBlockType(BlockTypes.AIR, cause)));
         return rawCircle;
     }
 
-    @Override public IChallengerData toData() {
+    @Override @NotNull public IChallengerData toData() {
         try {
             return new ChallengerDataImpl(getName(), new File("Path to icon"), getLore());
         } catch (final IOException ex) {
@@ -137,9 +140,8 @@ public class Bella extends AbstractChallenger {
 
             resetCooldown(caster);
             final Player player = optionalPlayer.get();
-            final Collection<Entity> nearby = player.getNearbyEntities(
-                (entity) -> MathUtils.calculateDistance(entity.getLocation(), player.getLocation())
-                    <= 10D);
+            final Collection<Entity> nearby = player.getNearbyEntities((entity) ->
+                MathUtils.calculateDistance3D(entity.getLocation(), player.getLocation()) <= 10D);
             Player target = null;
             double leastDistance = Double.MAX_VALUE;
             final Location<World> location = player.getLocation();
@@ -147,7 +149,8 @@ public class Bella extends AbstractChallenger {
                 if (!(entity instanceof Player)) {
                     continue;
                 }
-                final double distance = MathUtils.calculateDistance(location, entity.getLocation());
+                final double distance =
+                    MathUtils.calculateDistance3D(location, entity.getLocation());
                 if (distance < leastDistance) {
                     target = (Player) entity;
                     leastDistance = distance;
@@ -159,7 +162,7 @@ public class Bella extends AbstractChallenger {
             registeredMap.compute(target.getUniqueId(), (playerUID, circletData) -> {
                 if (circletData == null) {
                     circletData = new CircletData(caster,
-                        radius); //Caster is the playerUID, default radius = 4
+                        radius); //Caster is the playerUID, default radius = 3
                 }
                 circletData.reset();
                 circletData.setRingBlocks(generateCircleBlocks(location, radius));
@@ -174,7 +177,7 @@ public class Bella extends AbstractChallenger {
          * @param player The player object to clear from.
          * @return Returns if the operation was successful.
          */
-        public boolean clearCirclet(final Player player) {
+        public boolean clearCirclet(@NotNull final Player player) {
             if (!registeredMap.containsKey(player.getUniqueId())) {
                 return false;
             }
@@ -190,7 +193,7 @@ public class Bella extends AbstractChallenger {
          * @return Returns an optional, populated if an circlet exists at a given
          * location checked using {@link CircletData#generateCircleTest()}.
          */
-        public Optional<CircletData> getCirecletAt(final Location<World> location) {
+        public Optional<CircletData> getCirecletAt(@NotNull final Location<World> location) {
             final Location<World> copy = location.copy();
             for (final CircletData circletData : registeredMap.values()) {
                 if (circletData.generateCircleTest().test(copy)) {
@@ -258,7 +261,7 @@ public class Bella extends AbstractChallenger {
                 .isKeyPressed(event.getPlayer())) { //If player was holding the key then skip.
                 return;
             }
-            final ProcEvent procEvent = new ProcEvent(event.getPlayer(), event.getPlayer(), 4);
+            final ProcEvent procEvent = new ProcEvent(event.getPlayer(), event.getPlayer(), 2);
             if (procEvent.callEvent()) { //If not cancelled
                 final Optional<ManagedMatch> match =
                     matchManager.getMatchOf(event.getPlayer().getUniqueId());
@@ -278,7 +281,6 @@ public class Bella extends AbstractChallenger {
             if (!(spellBase instanceof SpellBase)) {
                 return;
             }
-            System.out.println(spellBase.getClass().toString());
             final List<SpellComponent> component = SpellUtils.getComponentsForStage(spell, 1);
             boolean contains = false;
             for (final SpellComponent c : component) {
@@ -331,13 +333,14 @@ public class Bella extends AbstractChallenger {
          */
         private static class ProcEvent extends AscendencyServerEvent implements Cancellable {
 
-            private final Cause cause;
-            private final Player invoker;
+            @NotNull private final Cause cause;
+            @NotNull private final Player invoker;
             private boolean cancel;
             private int circletRadius;
-            private Player target;
+            @NotNull private Player target;
 
-            ProcEvent(final Player invoker, final Player target, final int circletRadius) {
+            ProcEvent(@NotNull final Player invoker, @NotNull final Player target,
+                final int circletRadius) {
                 this.cause = Cause.builder().named("Bella", invoker).build();
                 this.invoker = invoker;
                 this.target = target;
@@ -362,7 +365,7 @@ public class Bella extends AbstractChallenger {
                 this.circletRadius = radius;
             }
 
-            @Override public Cause getCause() {
+            @Override @NotNull public Cause getCause() {
                 return cause;
             }
 
@@ -391,7 +394,7 @@ public class Bella extends AbstractChallenger {
             private Location<World> ringCenter;
             private Collection<Location<World>> ringBlocks;
 
-            public CircletData(final UUID caster, final int radius) {
+            public CircletData(@NotNull final UUID caster, final int radius) {
                 this.caster = caster;
                 if (radius < 1) {
                     throw new IllegalArgumentException("Radius must be greater than 1");
@@ -407,7 +410,7 @@ public class Bella extends AbstractChallenger {
                 return caster;
             }
 
-            public void setCaster(final UUID caster) {
+            public void setCaster(@NotNull final UUID caster) {
                 this.caster = caster;
             }
 
@@ -437,7 +440,7 @@ public class Bella extends AbstractChallenger {
 
             public Predicate<Location<World>> generateCircleTest() {
                 if (ringCenter != null) {
-                    return MathUtils.isWithinSphere(ringCenter, 4);
+                    return MathUtils.isWithinSphere(ringCenter, DEFAULT_RADIUS);
                 }
                 return (unused) -> false;
             }
@@ -630,7 +633,7 @@ public class Bella extends AbstractChallenger {
                     final Location<World> current = entity.getLocation();
 
                     final double distanceToRadius =
-                        MathUtils.calculateDistance(current, circletData.getRingCenter());
+                        MathUtils.calculateDistance3D(current, circletData.getRingCenter());
                     if (Math.abs(distanceToRadius - circletData.radius) <= 1) { //If on border edge
                         ChallengerUtils.teleportPlayer(player, 1); //Teleport 1 block forward bella.
                     }

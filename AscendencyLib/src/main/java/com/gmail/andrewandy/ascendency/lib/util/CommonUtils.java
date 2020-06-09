@@ -1,5 +1,7 @@
 package com.gmail.andrewandy.ascendency.lib.util;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
@@ -23,7 +25,7 @@ public final class CommonUtils {
         return joiner.toString();
     }
 
-    public static byte[] readFromStream(final InputStream src) throws IOException {
+    @NotNull public static byte[] readFromStream(final InputStream src) throws IOException {
         Objects.requireNonNull(src);
         final byte[] data = new byte[src.available()];
         int index = 0;

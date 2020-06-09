@@ -23,6 +23,9 @@ public class Listeners {
         new IllegalStateException("Unable to get fall damage data!");
 
 
+    /**
+     * Handles nullifying fall damage.
+     */
     @Listener(order = Order.EARLY) @IsCancelled(value = Tristate.UNDEFINED)
     public void onMove(final MoveEntityEvent event) {
         final Entity player = event.getTargetEntity();

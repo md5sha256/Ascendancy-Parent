@@ -5,6 +5,7 @@ import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
 import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
 import com.google.inject.Inject;
 import ninja.leaping.configurate.ConfigurationNode;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scoreboard.critieria.Criteria;
 import org.spongepowered.api.scoreboard.objective.Objective;
@@ -39,18 +40,17 @@ public enum ActiveKeyHandler implements KeyBindHandler {
         scoreName = node.getNode("ScoreboardScore").getString();
         this.objective = Objective.builder().name(objectiveName).criterion(Criteria.DUMMY).build();
         this.objective.getOrCreateScore(Text.of(scoreName));
-
     }
 
-    @Override public AscendencyKey getTargetKey() {
+    @Override @NotNull public AscendencyKey getTargetKey() {
         return AscendencyKey.ACTIVE_KEY;
     }
 
-    @Override public boolean isKeyPressed(final Player player) {
+    @Override public boolean isKeyPressed(@NotNull final Player player) {
         return pressed.contains(player.getUniqueId());
     }
 
-    @Override public void onKeyPress(final Player player) {
+    @Override public void onKeyPress(@NotNull final Player player) {
         if (new ActiveKeyPressedEvent(player).callEvent()) {
             player.getScoreboard().addObjective(objective);
             objective.getOrCreateScore(Text.of(scoreName)).setScore(1);
@@ -59,7 +59,7 @@ public enum ActiveKeyHandler implements KeyBindHandler {
         new ActiveKeyPressedEvent(player).callEvent();
     }
 
-    @Override public void onKeyRelease(final Player player) {
+    @Override public void onKeyRelease(@NotNull final Player player) {
         player.getScoreboard().addObjective(objective);
         objective.getOrCreateScore(Text.of(scoreName)).setScore(0);
         pressed.remove(player.getUniqueId());

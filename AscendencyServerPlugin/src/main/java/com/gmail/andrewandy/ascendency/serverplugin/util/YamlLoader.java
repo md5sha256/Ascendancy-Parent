@@ -4,12 +4,14 @@ import com.gmail.andrewandy.ascendency.lib.util.CommonUtils;
 import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
 import com.google.inject.Inject;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 
 /**
  * A helper class for loading yaml files from the jar.
- * This class is NOT thread-safe.
+ * This class is NOT thread-safe; However, it is safe to
+ * instantiate new instances of this class away from the "Main" server thread.
  */
 public class YamlLoader {
 
@@ -25,7 +27,7 @@ public class YamlLoader {
      * @param fileName The name of the file.
      * @throws IllegalArgumentException if no file was found in this jar with the given name.
      */
-    public YamlLoader(final String fileName) {
+    public YamlLoader(@NotNull final String fileName) {
         final File folder = plugin.getDataFolder();
         final File file = new File(folder.getAbsolutePath(), fileName);
         final OutputStream os;
@@ -52,7 +54,7 @@ public class YamlLoader {
      *
      * @return Returns a YAMLConfiguration loader of this file.
      */
-    public YAMLConfigurationLoader getLoader() {
+    @NotNull public YAMLConfigurationLoader getLoader() {
         return loader;
     }
 

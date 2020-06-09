@@ -1,6 +1,7 @@
 package com.gmail.andrewandy.ascendency.serverplugin.util.keybind;
 
-import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerEvent;
+import com.gmail.andrewandy.ascendency.serverplugin.api.event.AscendencyServerEvent;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.cause.Cause;
@@ -9,16 +10,16 @@ import java.util.Objects;
 
 public class ActiveKeyPressedEvent extends AscendencyServerEvent implements Cancellable {
 
-    private final Player player;
+    @NotNull private final Player player;
+    @NotNull private final Cause cause;
     private boolean cancel;
-    private final Cause cause;
 
-    ActiveKeyPressedEvent(final Player player) {
+    ActiveKeyPressedEvent(@NotNull final Player player) {
         this.player = Objects.requireNonNull(player);
         this.cause = Cause.builder().named("Player", player).build();
     }
 
-    public Player getPlayer() {
+    @NotNull public Player getPlayer() {
         return player;
     }
 
@@ -30,7 +31,7 @@ public class ActiveKeyPressedEvent extends AscendencyServerEvent implements Canc
         this.cancel = cancel;
     }
 
-    @Override public Cause getCause() {
+    @Override @NotNull public Cause getCause() {
         return cause;
     }
 }

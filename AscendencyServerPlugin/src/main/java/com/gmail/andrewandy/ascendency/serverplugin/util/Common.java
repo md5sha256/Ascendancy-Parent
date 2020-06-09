@@ -2,9 +2,12 @@ package com.gmail.andrewandy.ascendency.serverplugin.util;
 
 import am2.api.extensions.IEntityExtension;
 import am2.extensions.EntityExtension;
+import co.aikar.taskchain.TaskChain;
+import co.aikar.taskchain.TaskChainFactory;
 import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
 import com.google.inject.Inject;
 import net.minecraft.entity.EntityLivingBase;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.manipulator.mutable.entity.HealthData;
@@ -30,19 +33,10 @@ public class Common {
 
     @Inject private static AscendencyServerPlugin plugin;
     private static String prefix = "";
-    private static ExecutorService executorService;
-
-    public static void setup() {
-        executorService =
-            Sponge.getScheduler().createSyncExecutor(plugin);
-    }
+    @Inject private static TaskChainFactory factory;
 
     public static void setPrefix(final String prefix) {
         Common.prefix = prefix;
-    }
-
-    public static ExecutorService getSyncExecutor() {
-        return executorService;
     }
 
     public static void tell(final MessageReceiver receiver, final String... messages) {
@@ -105,6 +99,14 @@ public class Common {
         return stripColor(Objects.requireNonNull(text).toString());
     }
 
+    @NotNull public static <T> TaskChain<T> newChain() {
+        return factory.newChain();
+    }
+
+    @NotNull public static <T> TaskChain<T> newSharedChain(@NotNull final String name) {
+        return factory.newSharedChain(name);
+    }
+
     public static IEntityExtension getExtensionFor(final Player player) {
         return EntityExtension.For((EntityLivingBase) player);
     }
@@ -138,8 +140,8 @@ public class Common {
      * @param location  The extent which to loop through
      * @param predicate The predicate to test, can be null.
      */
-    public static <T extends Entity> Collection<T> getEntities(final Class<T> type, final Extent location,
-        final Predicate<T> predicate) {
+    public static <T extends Entity> Collection<T> getEntities(final Class<T> type,
+        final Extent location, final Predicate<T> predicate) {
         Objects.requireNonNull(type);
         Objects.requireNonNull(location);
         Stream<T> stream = location.getEntities().stream().filter(type::isInstance).map(type::cast);
@@ -149,8 +151,8 @@ public class Common {
         return stream.collect(Collectors.toSet());
     }
 
-    public static <T extends Entity> List<T> getSortedEntities(final Class<T> type, final Extent location,
-        final Predicate<T> predicate, final Comparator<T> sorter) {
+    public static <T extends Entity> List<T> getSortedEntities(final Class<T> type,
+        final Extent location, final Predicate<T> predicate, final Comparator<T> sorter) {
         Objects.requireNonNull(type);
         Objects.requireNonNull(location);
         Stream<T> stream = location.getEntities().stream().filter(type::isInstance).map(type::cast);

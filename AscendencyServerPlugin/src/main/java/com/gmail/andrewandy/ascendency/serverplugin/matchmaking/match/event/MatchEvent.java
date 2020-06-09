@@ -1,6 +1,6 @@
 package com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.event;
 
-import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerEvent;
+import com.gmail.andrewandy.ascendency.serverplugin.api.event.AscendencyServerEvent;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.Match;
 import org.spongepowered.api.event.cause.Cause;
 

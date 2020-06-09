@@ -1,5 +1,6 @@
 package com.gmail.andrewandy.ascendency.serverplugin.util;
 
+import com.google.common.annotations.Beta;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
@@ -21,11 +22,15 @@ public enum CustomEvents {
     INSTANCE;
 
 
+    /**
+     * Represents a jump event. This class is untested and not production ready.
+     */
+    @Beta
     public static class PlayerJumpEvent extends AbstractEvent implements Cancellable {
 
         private final MoveEntityEvent originalEvent;
 
-        public PlayerJumpEvent(MoveEntityEvent original) {
+        public PlayerJumpEvent(final MoveEntityEvent original) {
             if (!(Objects.requireNonNull(original) instanceof Player)) {
                 throw new IllegalArgumentException("Entity must be a player!");
             }

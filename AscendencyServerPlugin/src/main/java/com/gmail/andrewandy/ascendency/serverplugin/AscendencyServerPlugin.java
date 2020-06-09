@@ -1,8 +1,5 @@
 package com.gmail.andrewandy.ascendency.serverplugin;
 
-import co.aikar.taskchain.SpongeTaskChainFactory;
-import co.aikar.taskchain.TaskChain;
-import co.aikar.taskchain.TaskChainFactory;
 import com.gmail.andrewandy.ascendency.lib.util.CommonUtils;
 import com.gmail.andrewandy.ascendency.serverplugin.configuration.Config;
 import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.Challengers;
@@ -44,7 +41,6 @@ import java.util.logging.Level;
 
     private static final String DEFAULT_NETWORK_CHANNEL_NAME = "ASCENDENCY_DEFAULT_CHANNEL";
     private static Injector injector;
-    private static TaskChainFactory factory;
     private final AscendencyModule module;
     private DefaultMatchService matchMatchMakingService;
     private KeyBindHandler keyBindHandler;
@@ -54,22 +50,14 @@ import java.util.logging.Level;
     private Config config;
 
     @Inject public AscendencyServerPlugin() {
-        module = new AscendencyModule();
-    }
-
-    @NotNull public static <T> TaskChain<T> newChain() {
-        return factory.newChain();
-    }
-
-    @NotNull public static <T> TaskChain<T> newSharedChain(@NotNull final String name) {
-        return factory.newSharedChain(name);
+        module = new AscendencyModule(this);
     }
 
     public File getDataFolder() {
         return dataFolder;
     }
 
-    public ConfigurationNode getSettings() {
+    @NotNull public ConfigurationNode getSettings() {
         try {
             return configurationLoader.load();
         } catch (final IOException ex) {
@@ -87,9 +75,7 @@ import java.util.logging.Level;
 
     @Listener(order = Order.DEFAULT) public void onServerStart(final GameStartedServerEvent event) {
         injector = Guice.createInjector(Stage.PRODUCTION, module);
-        factory = SpongeTaskChainFactory.create(this);
         final String load = Challengers.LOAD; //Load up champions
-        Common.setup();
         Common.setPrefix("[CustomServerMod]");
         loadSettings();
         setMatchFactory(new DraftMatchFactory(

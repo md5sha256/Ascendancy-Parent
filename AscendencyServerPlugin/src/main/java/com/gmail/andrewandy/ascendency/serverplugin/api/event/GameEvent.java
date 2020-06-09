@@ -1,6 +1,5 @@
 package com.gmail.andrewandy.ascendency.serverplugin.api.event;
 
-import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerEvent;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.Team;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;

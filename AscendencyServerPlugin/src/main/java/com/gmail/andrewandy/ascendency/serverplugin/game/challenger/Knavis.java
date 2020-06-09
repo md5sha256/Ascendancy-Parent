@@ -2,7 +2,7 @@ package com.gmail.andrewandy.ascendency.serverplugin.game.challenger;
 
 import com.gmail.andrewandy.ascendency.lib.game.data.IChallengerData;
 import com.gmail.andrewandy.ascendency.lib.game.data.game.ChallengerDataImpl;
-import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerEvent;
+import com.gmail.andrewandy.ascendency.serverplugin.api.event.AscendencyServerEvent;
 import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.Ability;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractAbility;
