@@ -101,7 +101,7 @@ import java.util.logging.Level;
         SimplePlayerMatchManager.enableManager();
         Challengers.initHandlers();
         Sponge.getEventManager().registerListeners(this, CustomEvents.INSTANCE);
-        Sponge.getEventManager().registerListeners(this, new HitReset());
+        Sponge.getEventManager().registerListeners(this, new Listeners());
         loadMatchMaking(); //Load after the player match manager.
         Common.log(Level.INFO, "Plugin enabled!");
     }

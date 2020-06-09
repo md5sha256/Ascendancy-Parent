@@ -1,12 +1,14 @@
 package com.gmail.andrewandy.ascendency.serverplugin.items.spell;
 
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 public interface Spell {
-    ItemStack getAsItemStack();
 
-    boolean isSpell(ItemStack itemStack);
+    @NotNull ItemStack getAsItemStack();
+
+    boolean isSpell(@NotNull ItemStack itemStack);
 
     boolean willBounce();
 
@@ -14,15 +16,15 @@ public interface Spell {
 
     int getManaCost();
 
-    SecondaryShape getSecondaryShape();
+    @NotNull SecondaryShape getSecondaryShape();
 
-    Shape getShape();
+    @NotNull Shape getShape();
 
-    Effect getEffect();
+    @NotNull Effect getEffect();
 
-    String getName();
+    @NotNull String getName();
 
-    void castAs(Player player);
+    void castAs(@NotNull Player player);
 
     enum Shape {
         AOE,

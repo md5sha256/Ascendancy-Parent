@@ -1,10 +1,12 @@
 package com.gmail.andrewandy.ascendency.serverplugin.items.spell;
 
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.entity.living.humanoid.HandInteractEvent;
 import org.spongepowered.api.item.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
@@ -15,17 +17,24 @@ public enum SpellManager implements ISpellManager {
 
     private final Collection<Spell> registeredSpells = new HashSet<>();
 
-    public void registerSpell(final Spell spell) {
+    @Override public void registerSpell(@NotNull final Spell spell) {
         registeredSpells.remove(spell);
         registeredSpells.add(spell);
     }
 
-    public void unregisterSpell(final Spell spell) {
+    @Override public void unregisterSpell(@NotNull final Spell spell) {
         registeredSpells.remove(spell);
     }
 
-    @Listener
-    public void onClick(final HandInteractEvent event) {
+    public boolean isRegistered(@NotNull final Spell spell) {
+        return registeredSpells.contains(spell);
+    }
+
+    @NotNull public Collection<Spell> getRegisteredSpells() {
+        return new ArrayList<>(registeredSpells);
+    }
+
+    @Listener public void onClick(final HandInteractEvent event) {
         final Object root = event.getCause().root();
         if (!(root instanceof Player)) {
             return;
@@ -36,7 +45,7 @@ public enum SpellManager implements ISpellManager {
             return;
         }
         final ItemStack itemStack = clicked.get();
-        for (final Spell spell: registeredSpells) {
+        for (final Spell spell : registeredSpells) {
             if (spell.isSpell(itemStack)) {
                 spell.castAs(player);
                 break;
