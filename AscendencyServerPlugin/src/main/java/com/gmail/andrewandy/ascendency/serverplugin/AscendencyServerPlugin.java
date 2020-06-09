@@ -1,6 +1,7 @@
 package com.gmail.andrewandy.ascendency.serverplugin;
 
 import com.gmail.andrewandy.ascendency.lib.util.CommonUtils;
+import com.gmail.andrewandy.ascendency.serverplugin.command.AscendancyCommandManager;
 import com.gmail.andrewandy.ascendency.serverplugin.configuration.Config;
 import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.Challengers;
 import com.gmail.andrewandy.ascendency.serverplugin.io.SpongeAscendencyPacketHandler;
@@ -86,6 +87,7 @@ import java.util.logging.Level;
         ForceLoadChunks.getInstance().loadSettings(); //Register the force event handler.
         SimplePlayerMatchManager.enableManager();
         Challengers.initHandlers();
+        new AscendancyCommandManager();
         Sponge.getEventManager().registerListeners(this, CustomEvents.INSTANCE);
         Sponge.getEventManager().registerListeners(this, new Listeners());
         loadMatchMaking(); //Load after the player match manager.
