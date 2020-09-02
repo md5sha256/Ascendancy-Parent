@@ -3,7 +3,6 @@ package com.gmail.andrewandy.ascendency.serverplugin.util;
 import com.google.common.annotations.Beta;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
@@ -23,10 +22,28 @@ public enum CustomEvents {
 
 
     /**
+     * Calls {@link PlayerJumpEvent}
+     */
+    @Listener(order = Order.FIRST) public void onPlayerMove(final MoveEntityEvent event) {
+        if (!(event.getTargetEntity() instanceof Player)) {
+            return;
+        }
+        final Player player = (Player) event.getTargetEntity();
+        final Transform<World> from = event.getFromTransform();
+        final Transform<World> to = event.getToTransform();
+        if (from.getLocation().getBlock().getType() == BlockTypes.AIR) {
+            return;
+        }
+        if (to.getLocation().getBlock().getType() == BlockTypes.AIR && player.isOnGround()) {
+            new PlayerJumpEvent(event).callEvent();
+        }
+    }
+
+
+    /**
      * Represents a jump event. This class is untested and not production ready.
      */
-    @Beta
-    public static class PlayerJumpEvent extends AbstractEvent implements Cancellable {
+    @Beta public static class PlayerJumpEvent extends AbstractEvent implements Cancellable {
 
         private final MoveEntityEvent originalEvent;
 
@@ -55,25 +72,6 @@ public enum CustomEvents {
 
         @Override @NotNull public Cause getCause() {
             return originalEvent.getCause();
-        }
-    }
-
-    /**
-     * Calls {@link PlayerJumpEvent}
-     */
-    @Listener(order = Order.FIRST)
-    public void onPlayerMove(final MoveEntityEvent event) {
-        if (!(event.getTargetEntity() instanceof Player)) {
-            return;
-        }
-        final Player player = (Player) event.getTargetEntity();
-        final Transform<World> from = event.getFromTransform();
-        final Transform<World> to = event.getToTransform();
-        if (from.getLocation().getBlock().getType() == BlockTypes.AIR) {
-            return;
-        }
-        if (to.getLocation().getBlock().getType() == BlockTypes.AIR && player.isOnGround()) {
-            new PlayerJumpEvent(event).callEvent();
         }
     }
 }

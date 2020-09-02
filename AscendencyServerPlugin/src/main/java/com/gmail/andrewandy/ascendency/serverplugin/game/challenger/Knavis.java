@@ -2,7 +2,6 @@ package com.gmail.andrewandy.ascendency.serverplugin.game.challenger;
 
 import com.gmail.andrewandy.ascendency.lib.game.data.IChallengerData;
 import com.gmail.andrewandy.ascendency.lib.game.data.game.ChallengerDataImpl;
-import com.gmail.andrewandy.ascendency.serverplugin.api.event.AscendencyServerEvent;
 import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.Ability;
 import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractAbility;
@@ -10,13 +9,13 @@ import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractTickable
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.AbstractChallenger;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.Challenger;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.ChallengerUtils;
+import com.gmail.andrewandy.ascendency.serverplugin.api.event.AscendencyServerEvent;
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.AbstractRune;
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.PlayerSpecificRune;
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.Rune;
 import com.gmail.andrewandy.ascendency.serverplugin.game.util.LocationMark;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.ManagedMatch;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.PlayerMatchManager;
-import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.SimplePlayerMatchManager;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.engine.GameEngine;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.engine.GamePlayer;
 import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
@@ -47,7 +46,12 @@ import org.spongepowered.api.world.World;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -64,9 +68,9 @@ public class Knavis extends AbstractChallenger implements Challenger {
 
     private Knavis() {
         super("Knavis", new Ability[] {ShadowsRetreat.instance, LivingGift.instance}, //Abilities
-            new PlayerSpecificRune[] {ChosenOTEarth.instance, HeartOfTheDryad.instance,
-                BlessingOfTeleportation.instance}, //Runes
-            Challengers.getLoreOf("Knavis")); //Lore
+              new PlayerSpecificRune[] {ChosenOTEarth.instance, HeartOfTheDryad.instance,
+                  BlessingOfTeleportation.instance}, //Runes
+              ChallengerModule.getLoreOf("Knavis")); //Lore
     }
 
     public static Knavis getInstance() {
@@ -113,7 +117,7 @@ public class Knavis extends AbstractChallenger implements Challenger {
             if (hits++ == 3) {
                 final HealthData data = player.getHealthData();
                 data.set(data.health()
-                    .transform((Double val) -> val + 3.0)); //Add 3 health or 1.5 hearts.
+                             .transform((Double val) -> val + 3.0)); //Add 3 health or 1.5 hearts.
                 player.offer(data); //Update the player object.
                 hits = 0;
                 new LivingGiftUseEvent(player).callEvent();
@@ -191,7 +195,9 @@ public class Knavis extends AbstractChallenger implements Challenger {
 
         private @NotNull LocationMark castAbilityAs(@NotNull final Player player) {
             final LocationMark mark = dataMap.compute(player.getUniqueId(),
-                (key, value) -> value == null ? new LocationMark() : value);
+                                                      (key, value) -> value == null ?
+                                                          new LocationMark() :
+                                                          value);
             castCounter.compute(player.getUniqueId(), (uuid, castCount) -> {
                 if (castCount == null) {
                     castCount = 0;
@@ -248,7 +254,7 @@ public class Knavis extends AbstractChallenger implements Challenger {
         public void onActiveKeyPress(final ActiveKeyPressedEvent event) {
             final Player player = event.getPlayer();
             final Optional<ManagedMatch> managedMatch =
-             matchManager.getMatchOf(player.getUniqueId());
+                matchManager.getMatchOf(player.getUniqueId());
             if (!managedMatch.isPresent()) {
                 return;
             }
@@ -262,7 +268,7 @@ public class Knavis extends AbstractChallenger implements Challenger {
                 }
                 final LocationMark mark = castAbilityAs(event.getPlayer());
                 //Now safe to call LME because the mark is now guaranteed to be created.
-                LocationMarkedEvent lme = new LocationMarkedEvent(player, 1);
+                final LocationMarkedEvent lme = new LocationMarkedEvent(player, 1);
                 if (lme.callEvent()) {
                     //TODO give the player the mark itemstack.
                 }
@@ -317,7 +323,7 @@ public class Knavis extends AbstractChallenger implements Challenger {
             @NotNull private Location<World> location;
 
             public MarkTeleportationEvent(@NotNull final Player player,
-                @NotNull final Location<World> toTeleport) {
+                                          @NotNull final Location<World> toTeleport) {
                 this.player = player;
                 this.location = toTeleport;
                 this.cause = Cause.builder().named("Knavis", Knavis.getInstance()).build();
@@ -524,7 +530,7 @@ public class Knavis extends AbstractChallenger implements Challenger {
                 .removeIf(ChallengerUtils.mapTickPredicate(4L, TimeUnit.SECONDS, (UUID uuid) -> {
                     cooldownMap.put(uuid, 0L);
                     registered.compute(uuid,
-                        (unused, unused1) -> new PotionEffect[0]); //If player is no longer active, remove his effects
+                                       (unused, unused1) -> new PotionEffect[0]); //If player is no longer active, remove his effects
                 }));
         }
 

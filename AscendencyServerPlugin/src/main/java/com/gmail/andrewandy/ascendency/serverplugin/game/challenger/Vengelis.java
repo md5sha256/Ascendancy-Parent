@@ -30,7 +30,12 @@ import org.spongepowered.api.world.World;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
@@ -42,7 +47,7 @@ public class Vengelis extends AbstractChallenger {
 
     private Vengelis() {
         super("Vengelis", new Ability[] {Gyration.instance, HauntingFury.instance},
-            new PlayerSpecificRune[0], Challengers.getLoreOf("Vengelis"));
+              new PlayerSpecificRune[0], ChallengerModule.getLoreOf("Vengelis"));
     }
 
     public static Vengelis getInstance() {
@@ -119,7 +124,7 @@ public class Vengelis extends AbstractChallenger {
             final Collection<Player> nearbyPlayers =
                 Common.getEntities(Player.class, player.getLocation().getExtent(), predicate);
             final PotionEffect effect = (PotionEffect) new BuffEffectEntangled(1,
-                0); //Entanglement 1 | Raw cast is fine because of sponge mixins
+                                                                               0); //Entanglement 1 | Raw cast is fine because of sponge mixins
             for (final Player nearby : nearbyPlayers) {
                 final PotionEffectData data = nearby.get(PotionEffectData.class)
                     .orElseThrow(() -> new IllegalStateException("Unable to get potion data!"));
@@ -143,18 +148,17 @@ public class Vengelis extends AbstractChallenger {
     public static class HauntingFury extends AbstractCooldownAbility {
 
         private static final HauntingFury instance = new HauntingFury();
+        private final Map<UUID, Integer> hitMap = new HashMap<>();
+
+        private HauntingFury() {
+            super("HauntingFury", false, 6, TimeUnit.SECONDS);
+            super.setTickHandler(ChallengerUtils.mapTickPredicate(6, TimeUnit.SECONDS,
+                                                                  this::scheduleUnregisterNextTick));
+        }
 
         public static HauntingFury getInstance() {
             return instance;
         }
-
-        private HauntingFury() {
-            super("HauntingFury", false, 6, TimeUnit.SECONDS);
-            super.setTickHandler(ChallengerUtils
-                .mapTickPredicate(6, TimeUnit.SECONDS, this::scheduleUnregisterNextTick));
-        }
-
-        private Map<UUID, Integer> hitMap = new HashMap<>();
 
         @Override public void register(final UUID player) {
             if (hitMap.containsKey(player)) {
@@ -198,13 +202,13 @@ public class Vengelis extends AbstractChallenger {
             final ManagedMatch managedMatch = optionalManagedMatch.get();
             //Get all knavises in the current match
             final Collection<Player> knavises = managedMatch.getGameEngine()
-                .getPlayersOfChallenger(Challengers.KNAVIS.asChallenger());
+                .getPlayersOfChallenger(ChallengerModule.KNAVIS.asChallenger());
             //Give them fury for 1second
             for (final Player knavis : knavises) {
                 final PotionEffectData data = knavis.get(PotionEffectData.class).orElseThrow(
                     () -> new IllegalArgumentException("Unable to get potion effect data!"));
                 data.addElement((PotionEffect) new BuffEffectFury(1,
-                    0)); //1 Second of fury to all knavises | Safe cast because of mixins.
+                                                                  0)); //1 Second of fury to all knavises | Safe cast because of mixins.
                 knavis.offer(data);
             }
         }

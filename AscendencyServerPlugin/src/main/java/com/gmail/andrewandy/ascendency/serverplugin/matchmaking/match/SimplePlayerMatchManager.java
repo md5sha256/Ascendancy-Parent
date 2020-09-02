@@ -14,7 +14,11 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Represents the Player-MatchManager which ascendency will ALWAYS default to.
@@ -23,12 +27,12 @@ import java.util.*;
  */
 @Singleton public class SimplePlayerMatchManager implements PlayerMatchManager {
 
+    private final Collection<ManagedMatch> matches = new HashSet<>();
     @Inject private AscendencyServerPlugin plugin;
-
-    SimplePlayerMatchManager() { }
-
     private Location<World> resetCoordinate;
-    private final Collection<ManagedMatch> matches = new HashSet<>(); //Holds all the registered matches.
+    SimplePlayerMatchManager() {
+    }
+        //Holds all the registered matches.
 
     public void enableManager() {
         disableManager();
@@ -116,7 +120,8 @@ import java.util.*;
         return Optional.empty();
     }
 
-    @Override public boolean addPlayerToMatch(final UUID player, final Team team, final ManagedMatch match)
+    @Override
+    public boolean addPlayerToMatch(final UUID player, final Team team, final ManagedMatch match)
         throws IllegalArgumentException {
         final Optional<ManagedMatch> optionalCurrentMatch = getMatchOf(player);
         if (!canPlayerBeAddedToMatch(player, match)) {
@@ -137,7 +142,8 @@ import java.util.*;
         return optional.map(match -> match.removePlayer(player)).orElse(false);
     }
 
-    @Override public boolean canPlayerBeAddedToMatch(final UUID player, final ManagedMatch newMatch) {
+    @Override
+    public boolean canPlayerBeAddedToMatch(final UUID player, final ManagedMatch newMatch) {
         if (newMatch == null) {
             return false;
         }
@@ -157,15 +163,6 @@ import java.util.*;
         return Objects.requireNonNull(newMatch).acceptsNewPlayers();
     }
 
-    @Override public void registerMatch(final ManagedMatch managedMatch) {
-        unregisterMatch(managedMatch);
-        matches.add(managedMatch);
-    }
-
-    @Override public void unregisterMatch(final ManagedMatch managedMatch) {
-        matches.remove(managedMatch);
-    }
-
     @Override public boolean startMatch(final ManagedMatch managedMatch) {
         Objects.requireNonNull(managedMatch);
         if (managedMatch.canStart() || managedMatch.getState() != Match.MatchState.LOBBY) {
@@ -178,5 +175,14 @@ import java.util.*;
         }
         registerMatch(managedMatch);
         return managedMatch.start(this);
+    }
+
+    @Override public void registerMatch(final ManagedMatch managedMatch) {
+        unregisterMatch(managedMatch);
+        matches.add(managedMatch);
+    }
+
+    @Override public void unregisterMatch(final ManagedMatch managedMatch) {
+        matches.remove(managedMatch);
     }
 }

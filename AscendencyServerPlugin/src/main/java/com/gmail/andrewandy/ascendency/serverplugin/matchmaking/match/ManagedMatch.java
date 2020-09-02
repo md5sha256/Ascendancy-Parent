@@ -3,7 +3,6 @@ package com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.Team;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.engine.GameEngine;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.engine.GamePlayer;
-import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.Collection;
 import java.util.Optional;

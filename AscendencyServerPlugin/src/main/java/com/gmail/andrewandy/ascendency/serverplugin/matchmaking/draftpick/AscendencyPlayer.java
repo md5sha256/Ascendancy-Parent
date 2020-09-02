@@ -18,15 +18,19 @@ import java.util.UUID;
  */
 public class AscendencyPlayer implements GamePlayer {
 
+    private final UUID player;
     int relativeID;
     Collection<Rune> runes = new HashSet<>();
     Collection<PotionEffect> statusEffects = new HashSet<>();
     Challenger challenger;
-    private final UUID player;
 
     AscendencyPlayer(final UUID player, final int relativeID) {
         this.player = player;
         this.relativeID = relativeID;
+    }
+
+    @Override public UUID getPlayerUUID() {
+        return player;
     }
 
     @Override public Collection<Rune> getRunes() {
@@ -55,12 +59,16 @@ public class AscendencyPlayer implements GamePlayer {
         return challenger;
     }
 
-    @Override public UUID getPlayerUUID() {
-        return player;
-    }
-
     public boolean uuidMatches(final UUID other) {
         return other.equals(player);
+    }
+
+    @Override public int hashCode() {
+        int result = relativeID;
+        result = 31 * result + (runes != null ? runes.hashCode() : 0);
+        result = 31 * result + (challenger != null ? challenger.hashCode() : 0);
+        result = 31 * result + (player != null ? player.hashCode() : 0);
+        return result;
     }
 
     @Override public boolean equals(final Object o) {
@@ -78,13 +86,5 @@ public class AscendencyPlayer implements GamePlayer {
         if (!Objects.equals(challenger, that.challenger))
             return false;
         return Objects.equals(player, that.player);
-    }
-
-    @Override public int hashCode() {
-        int result = relativeID;
-        result = 31 * result + (runes != null ? runes.hashCode() : 0);
-        result = 31 * result + (challenger != null ? challenger.hashCode() : 0);
-        result = 31 * result + (player != null ? player.hashCode() : 0);
-        return result;
     }
 }

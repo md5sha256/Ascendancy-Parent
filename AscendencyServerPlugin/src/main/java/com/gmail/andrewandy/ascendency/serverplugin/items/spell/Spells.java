@@ -10,9 +10,7 @@ import java.util.Optional;
 public enum Spells implements Spell {
 
     ENIGMATIC_BOLT(Shape.PROJECTILE, SecondaryShape.NONE, Effect.AP, 0.5, 300) {
-
-        @Override
-        public ItemStack getAsItemStack() {
+        @Override public ItemStack getAsItemStack() {
             return null;
         }
     };
@@ -24,7 +22,8 @@ public enum Spells implements Spell {
     private final SecondaryShape secondaryShape;
     private final Effect effect;
 
-    Spells(final Shape shape, final SecondaryShape secondaryShape, final Effect effect, final double effectValue, final int manaCost, final boolean willBounce) {
+    Spells(final Shape shape, final SecondaryShape secondaryShape, final Effect effect,
+           final double effectValue, final int manaCost, final boolean willBounce) {
         this.shape = shape;
         this.secondaryShape = secondaryShape;
         this.effect = effect;
@@ -33,53 +32,45 @@ public enum Spells implements Spell {
         this.willBounce = willBounce;
     }
 
-    Spells(final Shape shape, final SecondaryShape secondaryShape, final Effect effect, final double effectValue, final int manaCost) {
+    Spells(final Shape shape, final SecondaryShape secondaryShape, final Effect effect,
+           final double effectValue, final int manaCost) {
         this(shape, secondaryShape, effect, effectValue, manaCost, false);
     }
 
-    @Override
-    public boolean willBounce() {
-        return this.willBounce;
-    }
-
-    @Override
-    public double getEffectValue() {
-        return this.effectValue;
-    }
-
-    @Override
-    public int getManaCost() {
-        return this.manaCost;
-    }
-
-    @Override
-    public String getName() {
-        return CommonUtils.capitalise(name().toLowerCase()).replace("_"," ");
-    }
-
-    @Override
-    public Effect getEffect() {
-        return this.effect;
-    }
-
-    @Override
-    public Shape getShape() {
-        return this.shape;
-    }
-
-    @Override
-    public SecondaryShape getSecondaryShape() {
-        return this.secondaryShape;
-    }
-
-    @Override
-    public boolean isSpell(final ItemStack itemStack) {
+    @Override public boolean isSpell(final ItemStack itemStack) {
         final Optional<?> name = itemStack.get(Keys.DISPLAY_NAME);
         return name.filter(o -> ((String) o).equalsIgnoreCase(getName())).isPresent();
     }
 
-    @Override
-    public void castAs(final Player player) {
+    @Override public boolean willBounce() {
+        return this.willBounce;
+    }
+
+    @Override public double getEffectValue() {
+        return this.effectValue;
+    }
+
+    @Override public int getManaCost() {
+        return this.manaCost;
+    }
+
+    @Override public SecondaryShape getSecondaryShape() {
+        return this.secondaryShape;
+    }
+
+    @Override public Shape getShape() {
+        return this.shape;
+    }
+
+    @Override public Effect getEffect() {
+        return this.effect;
+    }
+
+    @Override public String getName() {
+        return CommonUtils.capitalise(name().toLowerCase()).replace("_", " ");
+    }
+
+    @Override public void castAs(final Player player) {
         final Shape shape = this.getShape();
         final SecondaryShape secondaryShape = this.getSecondaryShape();
         final Effect effect = this.getEffect();

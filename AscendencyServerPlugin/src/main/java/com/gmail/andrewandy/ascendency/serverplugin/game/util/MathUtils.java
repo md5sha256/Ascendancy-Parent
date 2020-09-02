@@ -13,13 +13,13 @@ public class MathUtils {
 
     /**
      * Create a circle with a radius of the provided radius.
+     *
      * @param centre The centre of the circle.
      * @param radius The base radius of the circle.
      * @return Returns a collection of blocks within the circle.
      */
-    @NotNull
-    public static Collection<Location<World>> createCircle(@NotNull final Location<World> centre,
-        int radius) {
+    @NotNull public static Collection<Location<World>> createCircle(
+        @NotNull final Location<World> centre, int radius) {
         if (radius == 0) {
             throw new UnsupportedOperationException();
         }
@@ -45,6 +45,7 @@ public class MathUtils {
 
     /**
      * Create a circle with a radius of the base radius + 0.5.
+     *
      * @param centre The centre of the circle.
      * @param radius The base radius of the circle.
      * @return Returns a collection of blocks within the circle.
@@ -76,7 +77,7 @@ public class MathUtils {
     }
 
     public static boolean isWithinCircle(@NotNull final Location<World> centre, final int radius,
-        @NotNull final Location<World> test) {
+                                         @NotNull final Location<World> test) {
         if (centre.getExtent() != test.getExtent()) {
             throw new UnsupportedOperationException(
                 "Cannot calculate distances for different worlds!");
@@ -154,38 +155,39 @@ public class MathUtils {
 
     @NotNull
     public static Predicate<Location<World>> isWithinSphere(@NotNull final Location<World> centre,
-        final int radius) {
+                                                            final int radius) {
         return (Location<World> location) -> calculateDistance3D(centre, location) <= radius;
     }
 
     public static <E extends Extent> boolean isWithinSphere(@NotNull final Location<E> centre,
-        final double radius, @NotNull final Location<E> test) {
+                                                            final double radius,
+                                                            @NotNull final Location<E> test) {
         return Math.abs(calculateDistance3D(centre, test)) <= radius;
     }
 
     public static double calculateDistance2D(final double x1, final double z1, final double x2,
-        final double z2) {
+                                             final double z2) {
         return Math.sqrt((x1 - x2) * (x1 - x2) + (z1 - z2) * (z1 - z2));
     }
 
     public static <E extends Extent> double calculateDistance2D(@NotNull final Location<E> primary,
-        final Location<E> secondary) {
+                                                                final Location<E> secondary) {
         if (primary.getExtent() != secondary.getExtent()) {
             throw new UnsupportedOperationException(
                 "Cannot calculate distances for different worlds!");
         }
         return calculateDistance2D(primary.getX(), secondary.getX(), primary.getZ(),
-            secondary.getZ());
+                                   secondary.getZ());
     }
 
     public static double calculateDistance3D(final double x1, final double y1, final double z1,
-        final double x2, final double y2, final double z2) {
+                                             final double x2, final double y2, final double z2) {
         return Math.sqrt((x1 - x2) * (x1 - x2) + (z1 - z2) * (z1 - z2) + (y1 - y2) * (y1
             - y2)); //Find  3D distance
     }
 
     public static <E extends Extent> double calculateDistance3D(@NotNull final Location<E> primary,
-        final Location<E> secondary) {
+                                                                final Location<E> secondary) {
         if (primary.getExtent() != secondary.getExtent()) {
             throw new UnsupportedOperationException(
                 "Cannot calculate distances for different worlds!");

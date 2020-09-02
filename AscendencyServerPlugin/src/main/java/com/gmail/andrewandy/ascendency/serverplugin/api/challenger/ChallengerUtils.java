@@ -22,8 +22,9 @@ public class ChallengerUtils {
      * @param onRemove    An action to be done when an element is removed, can be null.
      * @return Returns a predicate to be used in {@link java.util.Collection#removeIf(Predicate)}
      */
-    public static Predicate<Map.Entry<UUID, Long>> mapTickPredicate(final long removeAfter, final TimeUnit unit,
-        final Consumer<UUID> onRemove) {
+    public static Predicate<Map.Entry<UUID, Long>> mapTickPredicate(final long removeAfter,
+                                                                    final TimeUnit unit,
+                                                                    final Consumer<UUID> onRemove) {
         return mapTickPredicate(Common.toTicks(removeAfter, unit), onRemove);
     }
 
@@ -35,7 +36,7 @@ public class ChallengerUtils {
      * @return Returns a predicate to be used in {@link java.util.Collection#removeIf(Predicate)}
      */
     public static Predicate<Map.Entry<UUID, Long>> mapTickPredicate(final long removeAfter,
-        final Consumer<UUID> onRemove) {
+                                                                    final Consumer<UUID> onRemove) {
         return (Map.Entry<UUID, Long> entry) -> {
             entry.setValue(entry.getValue() + 1); //Increment tick count
             if (entry.getValue() >= removeAfter) {
@@ -57,7 +58,7 @@ public class ChallengerUtils {
         z = distance * Math.sin(theta);
         player.setLocationSafely(
             new Location<>(location.getExtent(), x + location.getX(), location.getY(),
-                z + location.getZ()));
+                           z + location.getZ()));
     }
 
     /**

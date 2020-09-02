@@ -1,5 +1,6 @@
 package com.gmail.andrewandy.ascendency.serverplugin.api.ability;
 
+import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.Challenger;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.ChallengerUtils;
 import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
 
@@ -15,27 +16,27 @@ import java.util.function.Predicate;
  */
 public abstract class AbstractCooldownAbility extends AbstractTickableAbility {
 
-    protected Map<UUID, Long> cooldownMap = new HashMap<>();
     private final long cooldown;
+    protected Map<UUID, Long> cooldownMap = new HashMap<>();
     private Predicate<Map.Entry<UUID, Long>> tickHandler;
 
     public AbstractCooldownAbility(final String name, final boolean isActive, final long cooldown,
-        final TimeUnit timeUnit) {
-        super(name, isActive);
+                                   final TimeUnit timeUnit, final Challenger bound) {
+        super(name, isActive, bound);
         this.cooldown = Common.toTicks(cooldown, timeUnit);
         this.tickHandler = ChallengerUtils.mapTickPredicate(this.cooldown, null);
-    }
-
-    public void setTickHandler(final Predicate<Map.Entry<UUID, Long>> mapTickPredicate) {
-        this.tickHandler = Objects.requireNonNull(mapTickPredicate);
     }
 
     public Predicate<Map.Entry<UUID, Long>> getTickHandler() {
         return tickHandler;
     }
 
+    public void setTickHandler(final Predicate<Map.Entry<UUID, Long>> mapTickPredicate) {
+        this.tickHandler = Objects.requireNonNull(mapTickPredicate);
+    }
+
     public Map<UUID, Long> getCooldowns() {
-        return new HashMap<>(cooldownMap);
+        return cooldownMap;
     }
 
     /**

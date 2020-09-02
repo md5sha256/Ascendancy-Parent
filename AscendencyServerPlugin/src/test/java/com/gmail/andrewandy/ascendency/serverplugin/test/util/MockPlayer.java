@@ -3,7 +3,11 @@ package com.gmail.andrewandy.ascendency.serverplugin.test.util;
 import com.flowpowered.math.vector.Vector3d;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.data.*;
+import org.spongepowered.api.data.DataContainer;
+import org.spongepowered.api.data.DataHolder;
+import org.spongepowered.api.data.DataTransactionResult;
+import org.spongepowered.api.data.DataView;
+import org.spongepowered.api.data.Property;
 import org.spongepowered.api.data.key.Key;
 import org.spongepowered.api.data.manipulator.DataManipulator;
 import org.spongepowered.api.data.merge.MergeFunction;
@@ -15,7 +19,11 @@ import org.spongepowered.api.data.value.immutable.ImmutableValue;
 import org.spongepowered.api.effect.particle.ParticleEffect;
 import org.spongepowered.api.effect.sound.SoundCategory;
 import org.spongepowered.api.effect.sound.SoundType;
-import org.spongepowered.api.entity.*;
+import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.entity.EntityArchetype;
+import org.spongepowered.api.entity.EntitySnapshot;
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.tab.TabList;
 import org.spongepowered.api.entity.projectile.Projectile;
@@ -50,7 +58,13 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 
 public class MockPlayer implements Player {
 
@@ -155,19 +169,19 @@ public class MockPlayer implements Player {
     }
 
     @Override public void playSound(SoundType sound, SoundCategory category, Vector3d position,
-        double volume) {
+                                    double volume) {
 
     }
 
     @Override
     public void playSound(SoundType sound, SoundCategory category, Vector3d position, double volume,
-        double pitch) {
+                          double pitch) {
 
     }
 
     @Override
     public void playSound(SoundType sound, SoundCategory category, Vector3d position, double volume,
-        double pitch, double minVolume) {
+                          double pitch, double minVolume) {
 
     }
 
@@ -264,7 +278,7 @@ public class MockPlayer implements Player {
     }
 
     @Override public boolean setLocationAndRotation(Location<World> location, Vector3d rotation,
-        EnumSet<RelativePositions> relativePositions) {
+                                                    EnumSet<RelativePositions> relativePositions) {
         return false;
     }
 
@@ -419,13 +433,13 @@ public class MockPlayer implements Player {
     }
 
     @Override public DataTransactionResult offer(DataManipulator<?, ?> valueContainer,
-        MergeFunction function) {
+                                                 MergeFunction function) {
         return null;
     }
 
     @Override
     public DataTransactionResult offer(DataManipulator<?, ?> valueContainer, MergeFunction function,
-        Cause cause) {
+                                       Cause cause) {
         return null;
     }
 
@@ -499,7 +513,7 @@ public class MockPlayer implements Player {
     }
 
     @Override public <T extends Projectile> Optional<T> launchProjectile(Class<T> projectileClass,
-        Vector3d velocity) {
+                                                                         Vector3d velocity) {
         return Optional.empty();
     }
 

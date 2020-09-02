@@ -10,7 +10,6 @@ import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.ChallengerUti
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.PlayerSpecificRune;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.PlayerMatchManager;
 import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
-import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyHandler;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyPressedEvent;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.KeyBindHandler;
 import com.google.inject.Inject;
@@ -39,7 +38,7 @@ public class Solace extends AbstractChallenger {
 
     private Solace() {
         super("Solace", new Ability[] {CallbackOfTheAfterlife.instance, UndiminishedSoul.instance},
-            new PlayerSpecificRune[0], Challengers.getLoreOf("Solace"));
+              new PlayerSpecificRune[0], ChallengerModule.getLoreOf("Solace"));
     }
 
     public static Solace getInstance() {
@@ -83,10 +82,10 @@ public class Solace extends AbstractChallenger {
                 return;
             }
             final Player lowest = lowestHealth.get();
-            soulMap.put(event.getPlayer().getUniqueId(),
-                lowest.getUniqueId()); //Map the invoker (solace) to the person with the soul.
+            soulMap.put(event.getPlayer().getUniqueId(), lowest
+                .getUniqueId()); //Map the invoker (solace) to the person with the soul.
             soulRegister.put(lowest.getUniqueId(),
-                getCooldownDuration()); //Add the target to the registered soul map.
+                             getCooldownDuration()); //Add the target to the registered soul map.
         }
 
 
@@ -167,7 +166,7 @@ public class Solace extends AbstractChallenger {
                     final PotionEffectData peData = player.get(PotionEffectData.class).orElseThrow(
                         () -> new IllegalStateException("Unable to get potion effect data!"));
                     peData.addElement((PotionEffect) new BuffEffectManaRegen(1,
-                        2)); //Mana regen 2 | Safe cast as per sponge mixins.
+                                                                             2)); //Mana regen 2 | Safe cast as per sponge mixins.
                     player.offer(peData);
                 });
             }

@@ -40,16 +40,19 @@ repositories {
         name = 'aikar'
         url = "https://repo.aikar.co/content/groups/aikar/"
     }
+    mavenCentral()
 }
 
 dependencies {
+    compile( 'com.google.inject.extensions:guice-assistedinject:4.0') {
+        exclude group: 'com.google.inject', module: 'guice'
+    }
     compile 'org.spongepowered:spongeapi:5.1.0' //SpongeAPI
     compile "co.aikar:acf-sponge:0.5.0-SNAPSHOT"
     compile "co.aikar:taskchain-sponge:3.7.2"
     implementation project(':AscendencyLib') //AscendencyLib
-    compileOnly 'org.jetbrains:annotations:16.0.2'
+    compileOnly 'org.jetbrains:annotations:19.0.0'
     compile project(':AscendencyLib') //AscendencyLib
-    compile 'am2:arsmagica2:1.5.0-21' //AM2 Dependency
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'

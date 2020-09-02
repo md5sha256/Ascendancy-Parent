@@ -9,11 +9,11 @@ public interface PlayerSpecificRune extends EntityRune {
 
     void clearFrom(Player player);
 
-    @Override default void clearFrom(final Object object) {
-        if (!canApplyTo(object)) {
-            return;
+    @Override default void applyTo(final Entity entity) {
+        if (!canApplyTo(entity)) {
+            throw new UnsupportedOperationException();
         }
-        clearFrom((Player) object);
+        applyTo((Player) entity);
     }
 
     default void clearFrom(final Entity entity) {
@@ -22,11 +22,11 @@ public interface PlayerSpecificRune extends EntityRune {
         }
     }
 
-    @Override default void applyTo(final Entity entity) {
-        if (!canApplyTo(entity)) {
-            throw new UnsupportedOperationException();
+    @Override default void clearFrom(final Object object) {
+        if (!canApplyTo(object)) {
+            return;
         }
-        applyTo((Player) entity);
+        clearFrom((Player) object);
     }
 
     @Override default boolean canApplyTo(final Object object) {

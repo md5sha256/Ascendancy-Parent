@@ -2,9 +2,9 @@ package com.gmail.andrewandy.ascendency.serverplugin.matchmaking.draftpick;
 
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.PlayerSpecificRune;
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.Rune;
-import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.AbstractMatch;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.AscendancyMatch;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.Team;
+import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.AbstractMatch;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 
@@ -72,7 +72,8 @@ public class DraftPickMatch extends AbstractMatch implements AscendancyMatch {
         }
 
         public void clearRunes(final UUID player) {
-            final Optional<AscendencyPlayer> ascendencyPlayer = ((DraftPickMatchEngine) engine).getGamePlayerOf(player);
+            final Optional<AscendencyPlayer> ascendencyPlayer =
+                ((DraftPickMatchEngine) engine).getGamePlayerOf(player);
             assert ascendencyPlayer.isPresent();
             final AscendencyPlayer actual = ascendencyPlayer.get();
             final Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(player);

@@ -14,19 +14,20 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.plugin.PluginContainer;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
-@CommandAlias("ascendencydebug|ascdebug")
-@SuppressWarnings("unused") public class DebugMatchCommand extends BaseCommand {
+@CommandAlias("ascendencydebug|ascdebug") @SuppressWarnings("unused") public class DebugMatchCommand
+    extends BaseCommand {
 
-    @Inject private PlayerMatchManager matchManager;
     private final SpongeCommandManager commandManager;
+    @Inject private PlayerMatchManager matchManager;
     private DebugMatch current;
-
-    private static Collection<Team> generateTeams() {
-        return Arrays.asList(new Team("1", 1), new Team("2", 1));
-    }
 
     public DebugMatchCommand() {
         Optional<PluginContainer> container =
@@ -62,6 +63,10 @@ import java.util.stream.Collectors;
             }
             return players;
         });
+    }
+
+    private static Collection<Team> generateTeams() {
+        return Arrays.asList(new Team("1", 1), new Team("2", 1));
     }
 
     @Subcommand("start") public void startMatch() {

@@ -11,7 +11,11 @@ import org.spongepowered.api.world.ChunkTicketManager;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 
 /**
@@ -20,8 +24,8 @@ import java.util.logging.Level;
  */
 public class ForceLoadChunks {
 
-    @Inject private static AscendencyServerPlugin plugin;
     private static final ForceLoadChunks instance = new ForceLoadChunks();
+    @Inject private static AscendencyServerPlugin plugin;
     private static boolean init = false;
     private Map<World, ChunkTicketManager.LoadingTicket> ticketMap = new HashMap<>();
     private Collection<Location<? extends World>> locations = new HashSet<>();
@@ -29,8 +33,7 @@ public class ForceLoadChunks {
     public static ForceLoadChunks getInstance() {
         if (!init && Sponge.getGame().isServerAvailable()) {
             Sponge.getEventManager().unregisterListeners(instance);
-            Sponge.getEventManager()
-                .registerListeners(plugin, instance);
+            Sponge.getEventManager().registerListeners(plugin, instance);
             init = true;
         }
         return instance;
@@ -126,9 +129,10 @@ public class ForceLoadChunks {
         for (Location<? extends World> location : locations) {
             ChunkTicketManager.LoadingTicket ticket = ticketMap
                 .computeIfAbsent(location.getExtent(),
-                    (world) -> Sponge.getServer().getChunkTicketManager()
-                        .createTicket(plugin, world).orElseThrow(
-                            () -> new IllegalStateException("Unable to create chunk ticket!")));
+                                 (world) -> Sponge.getServer().getChunkTicketManager()
+                                     .createTicket(plugin, world).orElseThrow(
+                                         () -> new IllegalStateException(
+                                             "Unable to create chunk ticket!")));
             if (!ticket.getChunkList().contains(location.getChunkPosition())) {
                 ticket.forceChunk(location.getChunkPosition());
             }

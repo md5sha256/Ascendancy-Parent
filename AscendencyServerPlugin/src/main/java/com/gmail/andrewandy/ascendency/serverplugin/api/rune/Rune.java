@@ -1,5 +1,6 @@
 package com.gmail.andrewandy.ascendency.serverplugin.api.rune;
 
+import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.Challenger;
 import com.gmail.andrewandy.ascendency.serverplugin.util.game.Tickable;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.data.DataSerializable;
@@ -9,6 +10,7 @@ import org.spongepowered.api.data.DataSerializable;
  */
 public interface Rune extends DataSerializable, Tickable {
 
+    Challenger getBoundChallenger();
 
     /**
      * Get the name of this rune.

@@ -6,14 +6,19 @@ import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 public abstract class AbstractMatch implements ManagedMatch {
 
 
     public final UUID matchID = UUID.randomUUID();
-    protected GameEngine engine;
     private final Collection<Team> teams = new HashSet<>();
+    protected GameEngine engine;
     private Match.MatchState matchState = Match.MatchState.LOBBY;
 
     protected AbstractMatch() {
@@ -27,13 +32,40 @@ public abstract class AbstractMatch implements ManagedMatch {
         this.engine = engine;
     }
 
-    public Optional<Team> getTeamByName(final String name) {
-        return teams.stream().filter((Team team) -> team.getName().equalsIgnoreCase(name))
-            .findAny();
+    public Collection<Team> getTeams() {
+        final Collection<Team> ret = new HashSet<>();
+        for (final Team team : teams) {
+            ret.add(team.clone());
+        }
+        return ret;
     }
 
-    public GameEngine getGameEngine() {
-        return engine;
+    public void rejoinPlayer(final UUID player) throws IllegalArgumentException {
+        engine.rejoin(player);
+    }
+
+    public Collection<UUID> getPlayers() {
+        final Collection<UUID> collection = new HashSet<>();
+        for (final Team team : teams) {
+            collection.addAll(team.getPlayers());
+        }
+        return collection;
+    }
+
+    public Match.MatchState getState() {
+        return matchState;
+    }
+
+    private void onLoading() {
+        //TODO Add the draft picker task here!
+    }
+
+    private void onEnd() {
+        engine.end();
+    }
+
+    public UUID getMatchID() {
+        return matchID;
     }
 
     public boolean addPlayer(final Team team, final UUID player) {
@@ -65,6 +97,22 @@ public abstract class AbstractMatch implements ManagedMatch {
         newTeam.addPlayers(player);
     }
 
+    public void addAndAssignPlayersTeams(final Collection<UUID> players) {
+        final Iterator<UUID> iterator = players.iterator();
+        //FIll the minimum requirements;
+        final int playersPerTeam = players.size() / teams.size();
+        for (final Team team : teams) {
+            if (!iterator.hasNext()) {
+                break;
+            }
+            int index = 0;
+            while (index < playersPerTeam) {
+                team.addPlayers(iterator.next());
+                index++;
+            }
+        }
+    }
+
     public Team getTeamOf(final UUID player) throws IllegalArgumentException {
         for (final Team team : teams) {
             if (team.containsPlayer(player)) {
@@ -72,6 +120,11 @@ public abstract class AbstractMatch implements ManagedMatch {
             }
         }
         return null;
+    }
+
+    public Optional<Team> getTeamByName(final String name) {
+        return teams.stream().filter((Team team) -> team.getName().equalsIgnoreCase(name))
+            .findAny();
     }
 
     public void pause(final String pauseMessage) {
@@ -94,10 +147,6 @@ public abstract class AbstractMatch implements ManagedMatch {
         //Todo Implement resumption code here.
     }
 
-    public boolean canStart() {
-        return !isLobby();
-    }
-
     public boolean start(final PlayerMatchManager manager) {
         if (!manager.verifyMatch(this)) {
             return false;
@@ -106,56 +155,16 @@ public abstract class AbstractMatch implements ManagedMatch {
         return true;
     }
 
-    public Collection<Team> getTeams() {
-        final Collection<Team> ret = new HashSet<>();
-        for (final Team team : teams) {
-            ret.add(team.clone());
-        }
-        return ret;
+    public boolean canStart() {
+        return !isLobby();
     }
 
-    public void rejoinPlayer(final UUID player) throws IllegalArgumentException {
-        engine.rejoin(player);
+    public GameEngine getGameEngine() {
+        return engine;
     }
 
-    private void onLoading() {
-        //TODO Add the draft picker task here!
-    }
-
-    private void onEnd() {
-        engine.end();
-    }
-
-    public void addAndAssignPlayersTeams(final Collection<UUID> players) {
-        final Iterator<UUID> iterator = players.iterator();
-        //FIll the minimum requirements;
-        final int playersPerTeam = players.size() / teams.size();
-        for (final Team team : teams) {
-            if (!iterator.hasNext()) {
-                break;
-            }
-            int index = 0;
-            while (index < playersPerTeam) {
-                team.addPlayers(iterator.next());
-                index++;
-            }
-        }
-    }
-
-    public Collection<UUID> getPlayers() {
-        final Collection<UUID> collection = new HashSet<>();
-        for (final Team team : teams) {
-            collection.addAll(team.getPlayers());
-        }
-        return collection;
-    }
-
-    public Match.MatchState getState() {
-        return matchState;
-    }
-
-    public UUID getMatchID() {
-        return matchID;
+    @Override public int hashCode() {
+        return Objects.hash(matchID, teams, matchState);
     }
 
     @Override public boolean equals(final Object o) {
@@ -166,9 +175,5 @@ public abstract class AbstractMatch implements ManagedMatch {
         final AbstractMatch that = (AbstractMatch) o;
         return Objects.equals(matchID, that.matchID) && Objects.equals(teams, that.teams)
             && matchState == that.matchState;
-    }
-
-    @Override public int hashCode() {
-        return Objects.hash(matchID, teams, matchState);
     }
 }

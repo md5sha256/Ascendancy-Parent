@@ -34,8 +34,8 @@ public class AttributeDataBuilder extends AbstractDataBuilder<AttributeData>
 
         final AttributeData data = new AttributeDataImpl();
         for (final AscendencyAttribute attribute : AscendencyAttribute.values()) {
-            final Integer value =
-                container.getInt(attribute.getKey().getQuery()).orElseThrow(() -> new InvalidDataException("Missing: " + attribute.getKey().getName()));
+            final Integer value = container.getInt(attribute.getKey().getQuery()).orElseThrow(
+                () -> new InvalidDataException("Missing: " + attribute.getKey().getName()));
             data.getAttribute(attribute).set(value);
         }
         return Optional.of(data);

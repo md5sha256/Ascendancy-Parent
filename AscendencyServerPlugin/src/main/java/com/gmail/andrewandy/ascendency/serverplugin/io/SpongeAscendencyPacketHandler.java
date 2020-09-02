@@ -24,16 +24,15 @@ import java.util.UUID;
     implements RawDataListener {
 
 
-    @Inject private static AscendencyServerPlugin plugin;
     private static final String CHANNEL_NAME = "ASCENDENCY_SPONGE";
+    @Inject private static AscendencyServerPlugin plugin;
     private ChannelBinding.RawDataChannel dataChannel;
 
     public SpongeAscendencyPacketHandler() {
     }
 
     public void initSponge() {
-        dataChannel = Sponge.getChannelRegistrar()
-            .getOrCreateRaw(plugin, CHANNEL_NAME);
+        dataChannel = Sponge.getChannelRegistrar().getOrCreateRaw(plugin, CHANNEL_NAME);
     }
 
     public void disable() {
@@ -47,8 +46,8 @@ import java.util.UUID;
             .sendTo(player, (channelBuf) -> channelBuf.writeBytes(packet.getFormattedData()));
     }
 
-    @Override
-    public void handlePayload(final ChannelBuf data, final RemoteConnection connection, final Platform.Type side) {
+    @Override public void handlePayload(final ChannelBuf data, final RemoteConnection connection,
+                                        final Platform.Type side) {
         if (dataChannel == null) {
             throw new IllegalStateException("Data channel has not be initialised!");
         }
@@ -59,7 +58,8 @@ import java.util.UUID;
             if (!AscendencyPacket.class.isAssignableFrom(clazz)) {
                 return;
             }
-            final Class<? extends AscendencyPacket> casted = clazz.asSubclass(AscendencyPacket.class);
+            final Class<? extends AscendencyPacket> casted =
+                clazz.asSubclass(AscendencyPacket.class);
             final AscendencyPacket packet;
             packet = casted.getDeclaredConstructor().newInstance();
             packet.fromBytes(data.readByteArray());
@@ -68,8 +68,9 @@ import java.util.UUID;
             final UUID uuid = response.getTargetPlayer();
             final Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(uuid);
             optionalPlayer.ifPresent((Player player) -> dataChannel.sendTo(player,
-                (ChannelBuf channel) -> channel
-                    .writeBytes(response.getFormattedData()))); //Send data to player.
+                                                                           (ChannelBuf channel) -> channel
+                                                                               .writeBytes(response
+                                                                                               .getFormattedData()))); //Send data to player.
         } catch (final ReflectiveOperationException e) {
             throw new IllegalStateException("Unable to interact with packet!", e);
         }

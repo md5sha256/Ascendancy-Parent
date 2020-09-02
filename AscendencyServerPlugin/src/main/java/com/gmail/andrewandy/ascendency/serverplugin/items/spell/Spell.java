@@ -27,40 +27,17 @@ public interface Spell {
     void castAs(@NotNull Player player);
 
     enum Shape {
-        AOE,
-        CONE,
-        MELEE,
-        PROJECTILE,
-        SELF,
-        ZONE
+        AOE, CONE, MELEE, PROJECTILE, SELF, ZONE
     }
+
 
     enum SecondaryShape {
-        NONE,
-        ZONE
+        NONE, ZONE
     }
 
+
     enum Effect {
-        AD,
-        AP,
-        BLIND,
-        BLINDING_GRACE,
-        WARRIORS_POISE,
-        CHRONO_ANCHOR,
-        DISARM,
-        DISPEL,
-        FURY,
-        GOP,
-        HEAL,
-        LIFE_TAP,
-        MANA_DRAIN,
-        PHASER,
-        ROOT,
-        SHIELD,
-        SILENCE,
-        SLOW,
-        SPEED,
-        TRANSPLACE
+        AD, AP, BLIND, BLINDING_GRACE, WARRIORS_POISE, CHRONO_ANCHOR, DISARM, DISPEL, FURY, GOP, HEAL, LIFE_TAP, MANA_DRAIN, PHASER, ROOT, SHIELD, SILENCE, SLOW, SPEED, TRANSPLACE
     }
 
 }

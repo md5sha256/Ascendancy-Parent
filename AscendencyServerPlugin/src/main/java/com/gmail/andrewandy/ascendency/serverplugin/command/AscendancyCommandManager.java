@@ -29,7 +29,8 @@ public class AscendancyCommandManager extends BaseCommand {
     }
 
     @CommandAlias("readinventory|readinv") public void showInventory(final Player player,
-        @co.aikar.commands.annotation.Optional final String targetPlayer) {
+                                                                     @co.aikar.commands.annotation.Optional
+                                                                     final String targetPlayer) {
         final Player other;
         if (targetPlayer != null) {
             final Optional<Player> optional = Sponge.getServer().getPlayer(targetPlayer);
@@ -46,8 +47,8 @@ public class AscendancyCommandManager extends BaseCommand {
                     .map(entityHit -> (Player) entityHit.getEntity()).min((e1, e2) -> Doubles
                     .compare(Math.abs(
                         MathUtils.calculateDistance3D(e1.getLocation(), player.getLocation())),
-                        Math.abs(MathUtils.calculateDistance3D(e2.getLocation(),
-                            player.getLocation())))); //Get closest player in sender's vision.
+                             Math.abs(MathUtils.calculateDistance3D(e2.getLocation(), player
+                                 .getLocation())))); //Get closest player in sender's vision.
 
             if (!optionalPlayer.isPresent()) {
                 Common.tell(player, "&cYou must be looking at a player within 10 blocks!");

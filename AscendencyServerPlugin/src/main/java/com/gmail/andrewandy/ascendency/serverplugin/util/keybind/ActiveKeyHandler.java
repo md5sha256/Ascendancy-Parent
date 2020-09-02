@@ -18,8 +18,8 @@ import java.util.logging.Level;
 
 public class ActiveKeyHandler implements KeyBindHandler {
 
-    @Inject private AscendencyServerPlugin plugin;
     private final Collection<UUID> pressed = new HashSet<>();
+    @Inject private AscendencyServerPlugin plugin;
     private String scoreName;
     private Objective objective;
 
@@ -43,10 +43,6 @@ public class ActiveKeyHandler implements KeyBindHandler {
         return AscendencyKey.ACTIVE_KEY;
     }
 
-    @Override public boolean isKeyPressed(@NotNull final Player player) {
-        return pressed.contains(player.getUniqueId());
-    }
-
     @Override public void onKeyPress(@NotNull final Player player) {
         if (new ActiveKeyPressedEvent(player).callEvent()) {
             player.getScoreboard().addObjective(objective);
@@ -61,5 +57,9 @@ public class ActiveKeyHandler implements KeyBindHandler {
         objective.getOrCreateScore(Text.of(scoreName)).setScore(0);
         pressed.remove(player.getUniqueId());
         new ActiveKeyReleasedEvent(player).callEvent();
+    }
+
+    @Override public boolean isKeyPressed(@NotNull final Player player) {
+        return pressed.contains(player.getUniqueId());
     }
 }

@@ -3,17 +3,19 @@ package com.gmail.andrewandy.ascendency.serverplugin;
 import com.gmail.andrewandy.ascendency.lib.util.CommonUtils;
 import com.gmail.andrewandy.ascendency.serverplugin.command.AscendancyCommandManager;
 import com.gmail.andrewandy.ascendency.serverplugin.configuration.Config;
-import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.Challengers;
+import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.ChallengerModule;
 import com.gmail.andrewandy.ascendency.serverplugin.io.SpongeAscendencyPacketHandler;
-import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.AscendancyMatchFactory;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.DefaultMatchService;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.IMatchMakingService;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.draftpick.DraftMatchFactory;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.PlayerMatchManager;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.SimplePlayerMatchManager;
 import com.gmail.andrewandy.ascendency.serverplugin.module.AscendencyModule;
-import com.gmail.andrewandy.ascendency.serverplugin.util.*;
-import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyHandler;
+import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
+import com.gmail.andrewandy.ascendency.serverplugin.util.CustomEvents;
+import com.gmail.andrewandy.ascendency.serverplugin.util.ForceLoadChunks;
+import com.gmail.andrewandy.ascendency.serverplugin.util.Listeners;
+import com.gmail.andrewandy.ascendency.serverplugin.util.YamlLoader;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.KeyBindHandler;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -43,7 +45,8 @@ import java.util.logging.Level;
 
     private static final String DEFAULT_NETWORK_CHANNEL_NAME = "ASCENDENCY_DEFAULT_CHANNEL";
     private static Injector injector;
-    private final AscendencyModule module;
+    private final AscendencyModule ascModule;
+    private final ChallengerModule challengerModule = new ChallengerModule();
     private DefaultMatchService matchMatchMakingService;
     private KeyBindHandler keyBindHandler;
     @Inject @ConfigDir(sharedRoot = true) private File dataFolder;
@@ -52,7 +55,7 @@ import java.util.logging.Level;
     private Config config;
 
     @Inject public AscendencyServerPlugin() {
-        module = new AscendencyModule(this);
+        ascModule = new AscendencyModule(this);
     }
 
     public File getDataFolder() {
@@ -72,8 +75,7 @@ import java.util.logging.Level;
     }
 
     @Listener(order = Order.DEFAULT) public void onServerStart(final GameStartedServerEvent event) {
-        injector = Guice.createInjector(Stage.PRODUCTION, module);
-        final String load = Challengers.LOAD; //Load up champions
+        injector = Guice.createInjector(Stage.PRODUCTION, ascModule, challengerModule);
         Common.setPrefix("[CustomServerMod]");
         loadSettings();
         config = injector.getInstance(Config.class);
@@ -82,7 +84,6 @@ import java.util.logging.Level;
         ForceLoadChunks.getInstance().loadSettings(); //Register the force event handler.
         PlayerMatchManager matchManager = injector.getInstance(PlayerMatchManager.class);
         ((SimplePlayerMatchManager) matchManager).enableManager();
-        Challengers.initHandlers();
         new AscendancyCommandManager();
         Sponge.getEventManager().registerListeners(this, CustomEvents.INSTANCE);
         Sponge.getEventManager().registerListeners(this, new Listeners());
@@ -91,7 +92,8 @@ import java.util.logging.Level;
     }
 
     @Listener(order = Order.DEFAULT) public void onServerStop(final GameStoppedServerEvent event) {
-        ((SimplePlayerMatchManager) injector.getInstance(PlayerMatchManager.class)).disableManager();
+        ((SimplePlayerMatchManager) injector.getInstance(PlayerMatchManager.class))
+            .disableManager();
         unregisterIO();
         unregisterKeybindHandlers();
         Common.log(Level.INFO, "Goodbye! Plugin has been disabled.");
@@ -110,7 +112,7 @@ import java.util.logging.Level;
         final long time = System.currentTimeMillis();
         configurationLoader = new YamlLoader("settings.yml").getLoader();
         Common.log(Level.INFO,
-            "&aLoad complete! Took " + (System.currentTimeMillis() - time) + "ms.");
+                   "&aLoad complete! Took " + (System.currentTimeMillis() - time) + "ms.");
         try {
             injector.getInstance(Config.class).loadFromFile(Paths.get(
                 getDataFolder().getAbsolutePath().concat(File.separator).concat("Config.yml")));
@@ -166,8 +168,8 @@ import java.util.logging.Level;
             }
         }
         Common.log(Level.INFO,
-            "7a[Matchmaking] Loaded: Max-Players = " + max + ", Min-Players = " + min + ", Mode = "
-                + CommonUtils.capitalise(mode.name().toLowerCase()));
+                   "7a[Matchmaking] Loaded: Max-Players = " + max + ", Min-Players = " + min
+                       + ", Mode = " + CommonUtils.capitalise(mode.name().toLowerCase()));
         matchMatchMakingService = service;
     }
 }

@@ -4,7 +4,6 @@ import com.gmail.andrewandy.ascendency.serverplugin.configuration.Config;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.AscendancyMatch;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.AscendancyMatchFactory;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.Teams;
-import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import ninja.leaping.configurate.ConfigurationNode;
 
@@ -31,16 +30,16 @@ import ninja.leaping.configurate.ConfigurationNode;
         maxPlayersPerGame = max;
     }
 
-    @Override public int getMaxPlayersPerGame() {
-        return maxPlayersPerGame;
+    @Override public AscendancyMatch generateNewMatch() {
+        return new DraftPickMatch(Teams.createTeamList());
     }
 
     @Override public int getMinPlayersPerGame() {
         return minPlayersPerGame;
     }
 
-    @Override public AscendancyMatch generateNewMatch() {
-        return new DraftPickMatch(Teams.createTeamList());
+    @Override public int getMaxPlayersPerGame() {
+        return maxPlayersPerGame;
     }
 
 

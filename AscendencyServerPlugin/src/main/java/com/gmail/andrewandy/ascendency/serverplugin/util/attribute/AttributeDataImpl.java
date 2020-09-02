@@ -46,7 +46,7 @@ public class AttributeDataImpl extends AbstractData<AttributeData, ImmutableAttr
     }
 
     @Override @NotNull public Optional<AttributeData> fill(@NotNull final DataHolder dataHolder,
-        @NotNull final MergeFunction overlap) {
+                                                           @NotNull final MergeFunction overlap) {
         overlap.merge(this, dataHolder.get(AttributeData.class).orElse(null));
         return Optional.of(this);
     }

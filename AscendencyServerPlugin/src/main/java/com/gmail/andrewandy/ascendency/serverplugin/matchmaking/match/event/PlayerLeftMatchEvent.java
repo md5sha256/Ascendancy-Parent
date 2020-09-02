@@ -19,7 +19,8 @@ public class PlayerLeftMatchEvent extends MatchEvent {
         this.player = player;
     }
 
-    public PlayerLeftMatchEvent(final Match match, final UUID player, final String name, final Object cause) {
+    public PlayerLeftMatchEvent(final Match match, final UUID player, final String name,
+                                final Object cause) {
         super(match, name, cause);
         this.player = player;
     }

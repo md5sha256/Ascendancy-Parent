@@ -12,7 +12,8 @@ public enum AscendencyDamageTypes implements DamageType {
     ATTACK_DAMAGE {
         //AD final damage = AD x baseDamage x (1-(0.05 x |Armor-APen|))
         @Override public double calculateDamageFor(final @NotNull Player victim,
-            final @NotNull Player attacker, final double baseDamage) {
+                                                   final @NotNull Player attacker,
+                                                   final double baseDamage) {
             final AttributeData victimData = victim.getOrCreate(AttributeData.class)
                 .orElseThrow(() -> unableToFindAttributeData);
             final AttributeData attackerData = victim.getOrCreate(AttributeData.class)
@@ -27,7 +28,8 @@ public enum AscendencyDamageTypes implements DamageType {
     }, MAGIC {
         //AP final damage = AP x baseDamage x (1-(0.05 x |MR-MPen|))
         @Override public double calculateDamageFor(@NotNull final Player victim,
-            @NotNull final Player attacker, final double baseDamage) {
+                                                   @NotNull final Player attacker,
+                                                   final double baseDamage) {
 
             final AttributeData victimData = victim.getOrCreate(AttributeData.class)
                 .orElseThrow(() -> unableToFindAttributeData);
@@ -66,7 +68,7 @@ public enum AscendencyDamageTypes implements DamageType {
      * @return Returns the modified damage to deal to the player.
      */
     public double calculateDamageFor(@NotNull final Player victim, @NotNull final Player attacker,
-        double baseDamage) {
+                                     double baseDamage) {
         return baseDamage;
     }
 }

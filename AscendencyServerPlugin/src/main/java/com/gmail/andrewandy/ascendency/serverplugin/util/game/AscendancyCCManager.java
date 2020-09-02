@@ -10,18 +10,22 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.ChangeEntityPotionEffectEvent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Singleton public class AscendancyCCManager implements CCImmunityManager {
 
-    AscendancyCCManager() {
-
-    }
-
     private final UUID uuid = UUID.randomUUID();
     private final Collection<PotionEffectType> registeredCC = new HashSet<>();
     private final Map<UUID, Long> immunityMap = new HashMap<>();
+    AscendancyCCManager() {
+
+    }
 
     @Override public UUID getUniqueID() {
         return uuid;
@@ -64,14 +68,14 @@ import java.util.concurrent.TimeUnit;
     }
 
     @Override public long getImmunityDuration(@NotNull final Entity entity,
-        @NotNull final TimeUnit timeUnit) {
+                                              @NotNull final TimeUnit timeUnit) {
         return !immunityMap.containsKey(entity.getUniqueId()) ?
             0 :
             Common.fromTicks(immunityMap.get(entity.getUniqueId()), timeUnit);
     }
 
     @Override public void setImmune(@NotNull final Entity entity, final long duration,
-        @NotNull final TimeUnit timeUnit) {
+                                    @NotNull final TimeUnit timeUnit) {
         if (duration <= 0) {
             throw new IllegalArgumentException("Duration must be greater than 0!");
         }

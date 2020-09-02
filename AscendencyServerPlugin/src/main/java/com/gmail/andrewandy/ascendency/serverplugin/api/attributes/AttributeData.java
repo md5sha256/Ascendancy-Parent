@@ -9,8 +9,8 @@ public interface AttributeData extends DataManipulator<AttributeData, ImmutableA
     @NotNull MutableBoundedValue<Integer> getAttribute(@NotNull AscendencyAttribute attribute);
 
     default int getAttributePrimitive(@NotNull AscendencyAttribute attribute) {
-       MutableBoundedValue<Integer> boundedValue = getAttribute(attribute);
-       return boundedValue.exists() ? attribute.defaultValue() : boundedValue.get();
+        MutableBoundedValue<Integer> boundedValue = getAttribute(attribute);
+        return boundedValue.exists() ? attribute.defaultValue() : boundedValue.get();
     }
 
 }

@@ -1,5 +1,6 @@
 package com.gmail.andrewandy.ascendency.serverplugin.api.ability;
 
+import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.Challenger;
 import com.gmail.andrewandy.ascendency.serverplugin.util.game.Tickable;
 
 import java.util.UUID;
@@ -11,8 +12,9 @@ public abstract class AbstractTickableAbility extends AbstractAbility implements
 
     private final UUID uuid = UUID.randomUUID();
 
-    public AbstractTickableAbility(final String name, final boolean isActive) {
-        super(name, isActive);
+    public AbstractTickableAbility(final String name, final boolean isActive,
+                                   final Challenger bound) {
+        super(name, isActive, bound);
     }
 
     @Override public UUID getUniqueID() {

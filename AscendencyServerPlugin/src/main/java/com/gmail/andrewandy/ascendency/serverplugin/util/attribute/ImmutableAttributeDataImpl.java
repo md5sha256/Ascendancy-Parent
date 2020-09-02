@@ -6,12 +6,10 @@ import com.gmail.andrewandy.ascendency.serverplugin.api.attributes.ImmutableAttr
 import com.google.common.collect.ImmutableMap;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.data.key.Key;
 import org.spongepowered.api.data.manipulator.immutable.common.AbstractImmutableData;
 import org.spongepowered.api.data.value.BoundedValue;
 import org.spongepowered.api.data.value.ValueFactory;
 import org.spongepowered.api.data.value.immutable.ImmutableBoundedValue;
-import org.spongepowered.api.data.value.mutable.MutableBoundedValue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +28,7 @@ public class ImmutableAttributeDataImpl
         for (final Map.Entry<AscendencyAttribute, ? extends BoundedValue<Integer>> entry : values
             .entrySet()) {
             temp.put(entry.getKey(),
-                entry.getKey().createBlankValue(entry.getValue().get()).asImmutable());
+                     entry.getKey().createBlankValue(entry.getValue().get()).asImmutable());
         }
         this.attributeMap = ImmutableMap.copyOf(temp);
     }
@@ -40,7 +38,8 @@ public class ImmutableAttributeDataImpl
         return attributeMap.get(attribute);
     }
 
-    @Override protected void registerGetters() {}
+    @Override protected void registerGetters() {
+    }
 
     @Override @NotNull public AttributeData asMutable() {
         return new AttributeDataImpl(attributeMap);

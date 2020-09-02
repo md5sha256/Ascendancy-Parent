@@ -19,7 +19,11 @@ import org.spongepowered.api.scoreboard.objective.Objective;
 import org.spongepowered.api.text.Text;
 
 import java.lang.ref.WeakReference;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Represents the engine in which will execute logic for the main sequence of the
@@ -58,15 +62,26 @@ public class DraftPickMatchEngine implements GameEngine {
         return new HashSet<>(ascendencyPlayers);
     }
 
-    @Override public Collection<Player> getPlayersOfChallenger(final Challenger challenger) {
-        final Collection<Player> collection = new HashSet<>(ascendencyPlayers.size());
-        for (final AscendencyPlayer ascendencyPlayer : ascendencyPlayers) {
-            if (ascendencyPlayer.getChallenger().equals(challenger)) {
-                final Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(ascendencyPlayer.getPlayerUUID());
-                optionalPlayer.ifPresent(collection::add);
-            }
+    public void start() {
+        init();
+        postInit();
+    }
+
+    public void end() {
+        if (!matchReference.isEnqueued()) {
+            matchReference.enqueue();
         }
-        return collection;
+        disable();
+    }
+
+    public void resume() {
+
+    }
+
+    public void rejoin(final UUID player) throws IllegalArgumentException {
+        final AscendencyPlayer ascendencyPlayer = getGamePlayerOf(player)
+            .orElseThrow(() -> new IllegalArgumentException("Player is not in this match!"));
+        preInitPlayer(ascendencyPlayer);
     }
 
     /**
@@ -84,24 +99,20 @@ public class DraftPickMatchEngine implements GameEngine {
         return Optional.empty();
     }
 
-    public void start() {
-        init();
-        postInit();
+    @Override public Collection<Player> getPlayersOfChallenger(final Challenger challenger) {
+        final Collection<Player> collection = new HashSet<>(ascendencyPlayers.size());
+        for (final AscendencyPlayer ascendencyPlayer : ascendencyPlayers) {
+            if (ascendencyPlayer.getChallenger().equals(challenger)) {
+                final Optional<Player> optionalPlayer =
+                    Sponge.getServer().getPlayer(ascendencyPlayer.getPlayerUUID());
+                optionalPlayer.ifPresent(collection::add);
+            }
+        }
+        return collection;
     }
 
     public void pause() {
 
-    }
-
-    public void resume() {
-
-    }
-
-    public void end() {
-        if (!matchReference.isEnqueued()) {
-            matchReference.enqueue();
-        }
-        disable();
     }
 
     private void disable() {
@@ -143,13 +154,6 @@ public class DraftPickMatchEngine implements GameEngine {
             //team.getScoreboardTeam().addMember(playerObj.getTeamRepresentation());
         });
     }
-
-    public void rejoin(final UUID player) throws IllegalArgumentException {
-        final AscendencyPlayer ascendencyPlayer = getGamePlayerOf(player)
-            .orElseThrow(() -> new IllegalArgumentException("Player is not in this match!"));
-        preInitPlayer(ascendencyPlayer);
-    }
-
 
     /**
      * Internal method, intilaises the scoreboard to synchronise data with
@@ -195,7 +199,8 @@ public class DraftPickMatchEngine implements GameEngine {
         if (!(victim instanceof Player)) {
             return;
         }
-        final Optional<AscendencyPlayer> optionalVictimObject = getGamePlayerOf(victim.getUniqueId());
+        final Optional<AscendencyPlayer> optionalVictimObject =
+            getGamePlayerOf(victim.getUniqueId());
         if (!optionalVictimObject.isPresent()) {
             return;
         }
@@ -206,7 +211,8 @@ public class DraftPickMatchEngine implements GameEngine {
             return;
         }
         final Player player = optionalPlayer.get();
-        final Optional<AscendencyPlayer> optional = getGamePlayerOf(player.getUniqueId()); //Player object
+        final Optional<AscendencyPlayer> optional =
+            getGamePlayerOf(player.getUniqueId()); //Player object
         if (!optional.isPresent()) {
             return;
         }

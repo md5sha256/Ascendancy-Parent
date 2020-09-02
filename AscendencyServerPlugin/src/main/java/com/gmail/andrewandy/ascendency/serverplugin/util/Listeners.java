@@ -26,8 +26,8 @@ public class Listeners {
     /**
      * Handles nullifying fall damage.
      */
-    @Listener(order = Order.EARLY) @IsCancelled(value = Tristate.UNDEFINED)
-    public void onMove(final MoveEntityEvent event) {
+    @Listener(order = Order.EARLY) @IsCancelled(value = Tristate.UNDEFINED) public void onMove(
+        final MoveEntityEvent event) {
         final Entity player = event.getTargetEntity();
         if (!(player instanceof Player)) {
             return;

@@ -6,7 +6,7 @@ plugins {
 sourceCompatibility = 1.8
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.3.11'
+    //compile 'org.codehaus.groovy:groovy-all:2.3.11'
     compile project(":AscendencyLib")
     compile project(":AscendencyCustomMod")
     compile project(":AscendencyServerPlugin")

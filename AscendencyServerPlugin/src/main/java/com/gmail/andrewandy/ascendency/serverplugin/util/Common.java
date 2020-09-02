@@ -9,7 +9,6 @@ import com.google.inject.Inject;
 import net.minecraft.entity.EntityLivingBase;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.manipulator.mutable.entity.HealthData;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
@@ -22,7 +21,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.logging.Level;
@@ -141,7 +139,8 @@ public class Common {
      * @param predicate The predicate to test, can be null.
      */
     public static <T extends Entity> Collection<T> getEntities(final Class<T> type,
-        final Extent location, final Predicate<T> predicate) {
+                                                               final Extent location,
+                                                               final Predicate<T> predicate) {
         Objects.requireNonNull(type);
         Objects.requireNonNull(location);
         Stream<T> stream = location.getEntities().stream().filter(type::isInstance).map(type::cast);
@@ -152,7 +151,9 @@ public class Common {
     }
 
     public static <T extends Entity> List<T> getSortedEntities(final Class<T> type,
-        final Extent location, final Predicate<T> predicate, final Comparator<T> sorter) {
+                                                               final Extent location,
+                                                               final Predicate<T> predicate,
+                                                               final Comparator<T> sorter) {
         Objects.requireNonNull(type);
         Objects.requireNonNull(location);
         Stream<T> stream = location.getEntities().stream().filter(type::isInstance).map(type::cast);

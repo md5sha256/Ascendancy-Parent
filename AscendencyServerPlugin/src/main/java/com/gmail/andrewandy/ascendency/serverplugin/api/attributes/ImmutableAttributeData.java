@@ -4,7 +4,6 @@ import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.data.manipulator.ImmutableDataManipulator;
 import org.spongepowered.api.data.value.BoundedValue;
 import org.spongepowered.api.data.value.immutable.ImmutableBoundedValue;
-import org.spongepowered.api.data.value.mutable.MutableBoundedValue;
 
 public interface ImmutableAttributeData
     extends ImmutableDataManipulator<ImmutableAttributeData, AttributeData> {

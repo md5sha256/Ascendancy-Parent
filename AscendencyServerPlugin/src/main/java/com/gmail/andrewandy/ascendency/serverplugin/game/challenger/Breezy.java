@@ -44,7 +44,7 @@ public class Breezy extends AbstractChallenger {
 
     private Breezy() {
         super("Breezy", new Ability[] {Oops.instance}, new PlayerSpecificRune[0],
-            Challengers.getLoreOf("Breezy"));
+              ChallengerModule.getLoreOf("Breezy"));
     }
 
     public static Breezy getInstance() {
@@ -54,7 +54,7 @@ public class Breezy extends AbstractChallenger {
     @Override public IChallengerData toData() {
         try {
             return new ChallengerDataImpl(getName(), new File("Some Path"),
-                Challengers.getLoreOf(getName()));
+                                          ChallengerModule.getLoreOf(getName()));
         } catch (final IOException ex) {
             throw new IllegalStateException(ex);
         }
@@ -64,12 +64,12 @@ public class Breezy extends AbstractChallenger {
 
         private static final Oops instance = new Oops();
 
-        public static Oops getInstance() {
-            return instance;
-        }
-
         private Oops() {
             super("Oops", true, 6, TimeUnit.SECONDS);
+        }
+
+        public static Oops getInstance() {
+            return instance;
         }
 
         @Listener(order = Order.LAST)
@@ -104,7 +104,7 @@ public class Breezy extends AbstractChallenger {
             for (final Player p : players) {
                 final FallingBlock fallingBlock = (FallingBlock) world
                     .createEntity(EntityTypes.FALLING_BLOCK,
-                        p.getLocation().getPosition().add(0, 3f, 0));
+                                  p.getLocation().getPosition().add(0, 3f, 0));
                 final FallingBlockData fallingBlockData = fallingBlock.getFallingBlockData();
                 //Make sure anvil can't be placed (i.e self destructs on place)
                 fallingBlockData.set(Keys.CAN_PLACE_AS_BLOCK, false);
@@ -116,7 +116,7 @@ public class Breezy extends AbstractChallenger {
                 final PotionEffectData potionEffectData = p.get(PotionEffectData.class)
                     .orElseThrow(() -> new IllegalStateException("Unable to get potion data!"));
                 potionEffectData.addElement((PotionEffect) new BuffEffectEntangled(1,
-                    0)); //Entanglement 1 | Safe cast due to sponge mixins.
+                                                                                   0)); //Entanglement 1 | Safe cast due to sponge mixins.
                 p.offer(potionEffectData);
             }
             resetCooldown(player.getUniqueId()); //Reset the cooldown ticker to 0.
@@ -143,12 +143,13 @@ public class Breezy extends AbstractChallenger {
         }
     }
 
+
     public static class RuneBoom extends AbstractAbility {
 
         private RuneBoom() {
             super("RuneBoom", false);
         }
-        
+
 
     }
 }

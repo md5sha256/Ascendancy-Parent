@@ -27,7 +27,7 @@ public class YamlConfig implements Config {
         this.loader = loader;
         root = loader.load();
         Common.log(Level.INFO,
-            "&aLoad complete! Took " + (System.currentTimeMillis() - time) + "ms.");
+                   "&aLoad complete! Took " + (System.currentTimeMillis() - time) + "ms.");
     }
 
     @Override public void save() throws IOException {

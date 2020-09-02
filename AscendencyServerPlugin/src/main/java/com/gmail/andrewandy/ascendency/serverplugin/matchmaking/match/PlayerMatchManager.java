@@ -3,7 +3,13 @@ package com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.Team;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.engine.GamePlayer;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Represents a manager which manages {@link ManagedMatch}s
@@ -93,7 +99,7 @@ public interface PlayerMatchManager {
      * @return Returns whether the operation was successful.
      */
     default boolean movePlayerToMatch(final UUID player, final Team team,
-        final ManagedMatch managedMatch, final boolean removeIfFailed)
+                                      final ManagedMatch managedMatch, final boolean removeIfFailed)
         throws IllegalStateException {
         Objects.requireNonNull(managedMatch);
         final Optional<ManagedMatch> previous = getMatchOf(player);
@@ -123,7 +129,7 @@ public interface PlayerMatchManager {
      * @return Returns whether the operation was successful.
      */
     default boolean moveWaitingPlayerToMatch(final UUID player, final Team team,
-        final ManagedMatch managedMatch) {
+                                             final ManagedMatch managedMatch) {
         Objects.requireNonNull(managedMatch);
         final Optional<ManagedMatch> previous = getMatchOf(player);
         if (previous.isPresent() && previous.get().getState() != Match.MatchState.LOBBY) {
@@ -131,7 +137,7 @@ public interface PlayerMatchManager {
             return false;
         }
         return canPlayerBeAddedToMatch(player, managedMatch) && addPlayerToMatch(player, team,
-            managedMatch);
+                                                                                 managedMatch);
     }
 
     /**
@@ -149,7 +155,6 @@ public interface PlayerMatchManager {
 
 
     /**
-     *
      * @param player
      * @param managedMatch
      * @return

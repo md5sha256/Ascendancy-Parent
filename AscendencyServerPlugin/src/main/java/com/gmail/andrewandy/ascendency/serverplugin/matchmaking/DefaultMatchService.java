@@ -16,18 +16,23 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Queue;
+import java.util.UUID;
 
 /**
  * Represents a service which automatically tries so make matches based on current player queues.
  */
 public class DefaultMatchService implements AscendancyMatchService {
 
-    @Inject private AscendencyServerPlugin plugin;
-    @Inject private PlayerMatchManager matchManager;
-
     private final Config config;
     private final LinkedList<Player> playerQueue = new LinkedList<>();
+    @Inject private AscendencyServerPlugin plugin;
+    @Inject private PlayerMatchManager matchManager;
     private MatchMakingMode mode = MatchMakingMode.BALANCED; //The way server matches players.
     private MatchFactory<AscendancyMatch> matchFactory;
 
@@ -38,7 +43,8 @@ public class DefaultMatchService implements AscendancyMatchService {
      *                           be created with the correct teams AND these should be empty.
      * @param config             The config file.
      */
-    @Inject public DefaultMatchService(final AscendancyMatchFactory matchMakingFactory, final Config config) {
+    @Inject public DefaultMatchService(final AscendancyMatchFactory matchMakingFactory,
+                                       final Config config) {
         this.matchFactory = matchMakingFactory;
         this.config = Objects.requireNonNull(config);
         registerListeners();
@@ -60,11 +66,6 @@ public class DefaultMatchService implements AscendancyMatchService {
         return this;
     }
 
-    private boolean isInvalidPlayerCount(final int min, final int max) {
-        return min <= 0 || min >= max;
-    }
-
-
     @Override public MatchMakingMode getMatchMakingMode() {
         return mode;
     }
@@ -78,25 +79,6 @@ public class DefaultMatchService implements AscendancyMatchService {
         mode = mode == null ? MatchMakingMode.BALANCED : mode;
         this.mode = mode;
         return this;
-    }
-
-    /**
-     * Register this service's listeners with forge and sponge.
-     * If the listeners are not registered, some functionality
-     * may not work as intended and may cause memory leaks!
-     */
-    public void registerListeners() {
-        unregisterListeners();
-        MinecraftForge.EVENT_BUS.register(this);
-        Sponge.getEventManager().registerListeners(plugin, this);
-    }
-
-    /**
-     * Unregisters the listeners with forge and sponge.
-     */
-    public void unregisterListeners() {
-        MinecraftForge.EVENT_BUS.unregister(this);
-        Sponge.getEventManager().unregisterListeners(this);
     }
 
     /**
@@ -161,10 +143,6 @@ public class DefaultMatchService implements AscendancyMatchService {
         }
     }
 
-    @SuppressWarnings("unchecked") @Override public int getQueuePosition(final Player player) {
-        return playerQueue.indexOf(player);
-    }
-
     @Override public boolean addToQueue(final Player player) {
         if (matchManager.getMatchOf(player.getUniqueId()).isPresent()) {
             playerQueue.remove(player);
@@ -174,6 +152,10 @@ public class DefaultMatchService implements AscendancyMatchService {
             return true;
         }
         return playerQueue.add(player);
+    }
+
+    @SuppressWarnings("unchecked") @Override public int getQueuePosition(final Player player) {
+        return playerQueue.indexOf(player);
     }
 
     @Override public void removeFromQueue(final UUID uuid) {
@@ -190,6 +172,28 @@ public class DefaultMatchService implements AscendancyMatchService {
         }
     }
 
+    private boolean isInvalidPlayerCount(final int min, final int max) {
+        return min <= 0 || min >= max;
+    }
+
+    /**
+     * Register this service's listeners with forge and sponge.
+     * If the listeners are not registered, some functionality
+     * may not work as intended and may cause memory leaks!
+     */
+    public void registerListeners() {
+        unregisterListeners();
+        MinecraftForge.EVENT_BUS.register(this);
+        Sponge.getEventManager().registerListeners(plugin, this);
+    }
+
+    /**
+     * Unregisters the listeners with forge and sponge.
+     */
+    public void unregisterListeners() {
+        MinecraftForge.EVENT_BUS.unregister(this);
+        Sponge.getEventManager().unregisterListeners(this);
+    }
 
     @Listener(order = Order.LAST) public void onPlayerJoin(final ClientConnectionEvent.Join event) {
         final Optional<ManagedMatch> current =
