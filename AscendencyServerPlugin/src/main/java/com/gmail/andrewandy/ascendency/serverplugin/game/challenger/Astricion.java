@@ -195,7 +195,7 @@ public class Astricion extends AbstractChallenger {
 
         @Listener public void onActiveKeyRelease(final ActiveKeyReleasedEvent event) {
             final Optional<ManagedMatch> match =
-                SimplePlayerMatchManager.INSTANCE.getMatchOf(event.getPlayer().getUniqueId());
+                matchManager.getMatchOf(event.getPlayer().getUniqueId());
             match.ifPresent((managedMatch -> {
                 final Optional<? extends GamePlayer> optionalGamePlayer =
                     managedMatch.getGamePlayerOf(event.getPlayer().getUniqueId());

@@ -16,17 +16,14 @@ import java.util.HashSet;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public enum ActiveKeyHandler implements KeyBindHandler {
+public class ActiveKeyHandler implements KeyBindHandler {
 
-    INSTANCE;
-
-    @Inject private static AscendencyServerPlugin plugin;
+    @Inject private AscendencyServerPlugin plugin;
     private final Collection<UUID> pressed = new HashSet<>();
     private String scoreName;
     private Objective objective;
 
     ActiveKeyHandler() {
-        loadSettings();
     }
 
     public void loadSettings() {

@@ -8,9 +8,12 @@ import com.gmail.andrewandy.ascendency.serverplugin.api.ability.AbstractCooldown
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.AbstractChallenger;
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.ChallengerUtils;
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.PlayerSpecificRune;
+import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.PlayerMatchManager;
 import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyHandler;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyPressedEvent;
+import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.KeyBindHandler;
+import com.google.inject.Inject;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
 import org.spongepowered.api.data.manipulator.mutable.entity.HealthData;
@@ -31,6 +34,8 @@ import java.util.concurrent.TimeUnit;
 public class Solace extends AbstractChallenger {
 
     private static final Solace instance = new Solace();
+    @Inject private static KeyBindHandler keyBindHandler;
+    @Inject private static PlayerMatchManager matchManager;
 
     private Solace() {
         super("Solace", new Ability[] {CallbackOfTheAfterlife.instance, UndiminishedSoul.instance},
@@ -61,7 +66,7 @@ public class Solace extends AbstractChallenger {
 
         @Listener(order = Order.LAST)
         public void onActiveKeyPress(final ActiveKeyPressedEvent event) {
-            if (ActiveKeyHandler.INSTANCE
+            if (keyBindHandler
                 .isKeyPressed(event.getPlayer())) { //If active key was already pressed, skip.
                 return;
             }

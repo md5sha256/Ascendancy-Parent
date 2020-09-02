@@ -13,7 +13,7 @@ import ninja.leaping.configurate.ConfigurationNode;
     private final Config config;
     private int minPlayersPerGame, maxPlayersPerGame;
 
-    @Inject public DraftMatchFactory(final Config config) {
+    public DraftMatchFactory(final Config config) {
         this.config = config;
         reloadConfiguration();
     }

@@ -5,6 +5,7 @@ import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.Team;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.event.MatchEndedEvent;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.event.MatchStartEvent;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -20,22 +21,22 @@ import java.util.*;
  * This manager will also track all {@link MatchStartEvent} events to check for conflicts,
  * however this manager will default to ignoring conflicts and will only log a warning to console.
  */
-public enum SimplePlayerMatchManager implements PlayerMatchManager {
+@Singleton public class SimplePlayerMatchManager implements PlayerMatchManager {
 
-    INSTANCE;
+    @Inject private AscendencyServerPlugin plugin;
 
-    @Inject private static AscendencyServerPlugin plugin;
+    SimplePlayerMatchManager() { }
 
     private Location<World> resetCoordinate;
     private final Collection<ManagedMatch> matches = new HashSet<>(); //Holds all the registered matches.
 
-    public static void enableManager() {
+    public void enableManager() {
         disableManager();
-        Sponge.getEventManager().registerListeners(plugin, INSTANCE);
+        Sponge.getEventManager().registerListeners(plugin, this);
     }
 
-    public static void disableManager() {
-        Sponge.getEventManager().unregisterListeners(INSTANCE);
+    public void disableManager() {
+        Sponge.getEventManager().unregisterListeners(this);
     }
 
     public void setResetCoordinate(final Location<World> location) {

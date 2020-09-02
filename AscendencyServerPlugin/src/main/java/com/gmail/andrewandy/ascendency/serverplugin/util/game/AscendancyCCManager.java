@@ -2,6 +2,7 @@ package com.gmail.andrewandy.ascendency.serverplugin.util.game;
 
 import com.gmail.andrewandy.ascendency.serverplugin.api.challenger.CCImmunityManager;
 import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
+import com.google.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.effect.potion.PotionEffectType;
 import org.spongepowered.api.entity.Entity;
@@ -12,9 +13,11 @@ import org.spongepowered.api.event.entity.ChangeEntityPotionEffectEvent;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-public enum AscendancyCCManager implements CCImmunityManager {
+@Singleton public class AscendancyCCManager implements CCImmunityManager {
 
-    INSTANCE;
+    AscendancyCCManager() {
+
+    }
 
     private final UUID uuid = UUID.randomUUID();
     private final Collection<PotionEffectType> registeredCC = new HashSet<>();

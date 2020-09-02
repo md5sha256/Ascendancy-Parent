@@ -9,6 +9,7 @@ import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.AscendancyMatchF
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.DefaultMatchService;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.IMatchMakingService;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.draftpick.DraftMatchFactory;
+import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.PlayerMatchManager;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.SimplePlayerMatchManager;
 import com.gmail.andrewandy.ascendency.serverplugin.module.AscendencyModule;
 import com.gmail.andrewandy.ascendency.serverplugin.util.*;
@@ -66,10 +67,6 @@ import java.util.logging.Level;
         }
     }
 
-    public void setMatchFactory(final AscendancyMatchFactory ascendancyMatchFactory) {
-        module.setMatchFactory(ascendancyMatchFactory);
-    }
-
     public Logger getLogger() {
         return logger;
     }
@@ -79,13 +76,12 @@ import java.util.logging.Level;
         final String load = Challengers.LOAD; //Load up champions
         Common.setPrefix("[CustomServerMod]");
         loadSettings();
-        setMatchFactory(new DraftMatchFactory(
-            injector.getInstance(Config.class))); //Set the match factory here.
         config = injector.getInstance(Config.class);
         setupIO();
         loadKeybindHandlers();
         ForceLoadChunks.getInstance().loadSettings(); //Register the force event handler.
-        SimplePlayerMatchManager.enableManager();
+        PlayerMatchManager matchManager = injector.getInstance(PlayerMatchManager.class);
+        ((SimplePlayerMatchManager) matchManager).enableManager();
         Challengers.initHandlers();
         new AscendancyCommandManager();
         Sponge.getEventManager().registerListeners(this, CustomEvents.INSTANCE);
@@ -95,7 +91,7 @@ import java.util.logging.Level;
     }
 
     @Listener(order = Order.DEFAULT) public void onServerStop(final GameStoppedServerEvent event) {
-        SimplePlayerMatchManager.disableManager();
+        ((SimplePlayerMatchManager) injector.getInstance(PlayerMatchManager.class)).disableManager();
         unregisterIO();
         unregisterKeybindHandlers();
         Common.log(Level.INFO, "Goodbye! Plugin has been disabled.");
@@ -126,12 +122,15 @@ import java.util.logging.Level;
 
     private void loadKeybindHandlers() {
         Common.log(Level.INFO, "&b[Key Binds] Loading active key handler.");
-        unregisterKeybindHandlers();
-        Sponge.getEventManager().registerListeners(this, ActiveKeyHandler.INSTANCE);
+        if (this.keyBindHandler != null) {
+            unregisterKeybindHandlers();
+        }
+        this.keyBindHandler = injector.getInstance(KeyBindHandler.class);
+        Sponge.getEventManager().registerListeners(this, keyBindHandler);
     }
 
     private void unregisterKeybindHandlers() {
-        Sponge.getEventManager().unregisterListeners(ActiveKeyHandler.INSTANCE);
+        Sponge.getEventManager().unregisterListeners(keyBindHandler);
     }
 
     private void setupIO() {

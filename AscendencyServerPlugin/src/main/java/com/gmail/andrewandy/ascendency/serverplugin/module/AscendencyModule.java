@@ -8,6 +8,7 @@ import com.gmail.andrewandy.ascendency.serverplugin.configuration.Config;
 import com.gmail.andrewandy.ascendency.serverplugin.configuration.YamlConfig;
 import com.gmail.andrewandy.ascendency.serverplugin.io.SpongeAscendencyPacketHandler;
 import com.gmail.andrewandy.ascendency.serverplugin.items.spell.ISpellManager;
+import com.gmail.andrewandy.ascendency.serverplugin.items.spell.Spell;
 import com.gmail.andrewandy.ascendency.serverplugin.items.spell.SpellManager;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.AscendancyMatch;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.AscendancyMatchService;
@@ -21,27 +22,19 @@ import org.jetbrains.annotations.NotNull;
 @Singleton public class AscendencyModule extends AbstractModule {
 
     @NotNull private final AscendencyServerPlugin plugin;
-    private MatchFactory<AscendancyMatch> matchFactory;
-
     public AscendencyModule(@NotNull final AscendencyServerPlugin ascendencyServerPlugin) {
         this.plugin = ascendencyServerPlugin;
     }
 
-    public void setMatchFactory(final MatchFactory<AscendancyMatch> matchFactory) {
-        this.matchFactory = matchFactory;
-    }
-
     @Override protected void configure() {
-        bind(SpongeAscendencyPacketHandler.class).toInstance(new SpongeAscendencyPacketHandler());
-        bind(AscendencyModule.class).toInstance(this);
+        bind(SpongeAscendencyPacketHandler.class).in(Singleton.class);
         final Config config = new YamlConfig();
         bind(Config.class).toInstance(config);
-        matchFactory = new DraftMatchFactory(config);
         bind(new TypeLiteral<MatchFactory<AscendancyMatch>>() {
-        }).toInstance(matchFactory);
+        }).toInstance(new DraftMatchFactory(config));
         bind(AscendancyMatchService.class).to(DefaultMatchService.class);
-        bind(ISpellManager.class).toInstance(SpellManager.INSTANCE);
-        bind(CCImmunityManager.class).toInstance(AscendancyCCManager.INSTANCE);
+        bind(ISpellManager.class).to(SpellManager.class).in(Singleton.class);
+        bind(CCImmunityManager.class).to(AscendancyCCManager.class).in(Singleton.class);
         bind(TaskChainFactory.class).toInstance(SpongeTaskChainFactory.create(plugin));
     }
 }

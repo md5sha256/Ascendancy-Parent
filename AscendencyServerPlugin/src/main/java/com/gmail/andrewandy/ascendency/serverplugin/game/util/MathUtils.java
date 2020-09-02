@@ -35,7 +35,7 @@ public class MathUtils {
         final Collection<Location<World>> locations = new HashSet<>();
         for (int xCoord = xMin; xCoord < xMax; xCoord++) {
             for (int zCoord = zMin; zCoord < zMax; zCoord++) {
-                if (Math.abs(calculateDistance2D(xCoord, zCoord, x, z)) <= radius) {
+                if (calculateDistance2D(xCoord, zCoord, x, z) <= radius) {
                     locations.add(new Location<>(world, xCoord, y, zCoord));
                 }
             }
@@ -193,11 +193,6 @@ public class MathUtils {
         final double x1 = primary.getX(), x2 = secondary.getX(), y1 = primary.getY(), y2 =
             secondary.getY(), z1 = primary.getZ(), z2 = secondary.getZ();
         return calculateDistance3D(x1, y1, z1, x2, y2, z2);
-    }
-
-    public boolean isWithinSpehere(@NotNull final Location<World> centre, final double radius,
-        @NotNull final Location<World> test) {
-        return Math.abs(calculateDistance3D(test, centre)) <= radius;
     }
 
 }

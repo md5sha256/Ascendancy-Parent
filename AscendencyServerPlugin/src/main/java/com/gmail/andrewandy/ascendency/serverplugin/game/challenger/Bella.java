@@ -29,6 +29,7 @@ import com.gmail.andrewandy.ascendency.serverplugin.util.Common;
 import com.gmail.andrewandy.ascendency.serverplugin.util.CustomEvents;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyHandler;
 import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.ActiveKeyPressedEvent;
+import com.gmail.andrewandy.ascendency.serverplugin.util.keybind.KeyBindHandler;
 import com.google.inject.Inject;
 import javafx.util.Pair;
 import net.minecraft.item.Item;
@@ -71,6 +72,7 @@ public class Bella extends AbstractChallenger {
     private static final int DEFAULT_RADIUS = 3;
     private static final Bella instance = new Bella();
     @Inject private static PlayerMatchManager matchManager;
+    @Inject private static KeyBindHandler keyBindHandler;
     @Inject private static AscendencyServerPlugin plugin;
 
     private Bella() {
@@ -218,20 +220,20 @@ public class Bella extends AbstractChallenger {
 
 
                 final Optional<ManagedMatch> match =
-                    SimplePlayerMatchManager.INSTANCE.getMatchOf(key);
+                    matchManager.getMatchOf(key);
                 match.ifPresent(managedMatch -> {
                     final Team team = managedMatch.getTeamOf(key);
                     final Collection<Player> players = Common
                         .getEntities(Player.class, CoupDEclat.getInstance().getExtentViewFor(data),
                             (Player player) -> {
-                                final Optional<Team> optional = SimplePlayerMatchManager.INSTANCE
+                                final Optional<Team> optional = matchManager
                                     .getTeamOf(player.getUniqueId());
                                 return optional.isPresent() && optional.get() != team && data
                                     .generateCircleTest().test(player.getLocation());
                             });
                     players.forEach((Player player) -> {
                         final Optional<Team> optionalTeam =
-                            SimplePlayerMatchManager.INSTANCE.getTeamOf(key);
+                            matchManager.getTeamOf(key);
                         if (!optionalTeam.isPresent()) {
                             return;
                         }
@@ -257,7 +259,7 @@ public class Bella extends AbstractChallenger {
 
 
         @Listener public void onActiveKeyPress(final ActiveKeyPressedEvent event) {
-            if (ActiveKeyHandler.INSTANCE
+            if (keyBindHandler
                 .isKeyPressed(event.getPlayer())) { //If player was holding the key then skip.
                 return;
             }
@@ -557,7 +559,7 @@ public class Bella extends AbstractChallenger {
             for (final CircletOfTheAccused.CircletData data : CircletOfTheAccused
                 .getInstance().registeredMap.values()) {
                 Optional<Team> optional =
-                    SimplePlayerMatchManager.INSTANCE.getTeamOf(data.getCaster());
+                    matchManager.getTeamOf(data.getCaster());
                 if (!optional.isPresent()) {
                     return;
                 }
@@ -567,7 +569,7 @@ public class Bella extends AbstractChallenger {
                         (player -> data.generateCircleTest().test(player.getLocation())));
                 int stacks = 0;
                 for (final Player player : players) { //Loop through all nearby entities.
-                    optional = SimplePlayerMatchManager.INSTANCE.getTeamOf(player.getUniqueId());
+                    optional = matchManager.getTeamOf(player.getUniqueId());
                     if (!optional.isPresent() || team == optional
                         .get()) { //Continue if no team or allied.
                         continue;
@@ -738,7 +740,7 @@ public class Bella extends AbstractChallenger {
                 }
                 final Player player = optionalPlayer.get();
                 final Optional<Team> optionalTeam =
-                    SimplePlayerMatchManager.INSTANCE.getTeamOf(player.getUniqueId());
+                    matchManager.getTeamOf(player.getUniqueId());
                 if (!optionalTeam.isPresent()) {
                     return;
                 }
@@ -747,7 +749,7 @@ public class Bella extends AbstractChallenger {
                     .getEntities(Player.class, CoupDEclat.instance.getExtentViewFor(data),
                         (Player p) -> {
                             final Optional<Team> optional =
-                                SimplePlayerMatchManager.INSTANCE.getTeamOf(p.getUniqueId());
+                                matchManager.getTeamOf(p.getUniqueId());
                             return optional.isPresent() && optional.get() == team && data
                                 .generateCircleTest()
                                 .test(p.getLocation()); //If in circle and ifallied
@@ -818,7 +820,7 @@ public class Bella extends AbstractChallenger {
                     continue;
                 }
                 final Optional<Team> optionalTeam =
-                    SimplePlayerMatchManager.INSTANCE.getTeamOf(uuid);
+                    matchManager.getTeamOf(uuid);
                 if (!optionalTeam.isPresent()) {
                     return;
                 }
@@ -827,7 +829,7 @@ public class Bella extends AbstractChallenger {
                     .getEntities(Player.class, CoupDEclat.instance.getExtentViewFor(data),
                         (Player p) -> {
                             final Optional<Team> optional =
-                                SimplePlayerMatchManager.INSTANCE.getTeamOf(p.getUniqueId());
+                                matchManager.getTeamOf(p.getUniqueId());
                             return optional.isPresent() && optional.get() != team && data
                                 .generateCircleTest().test(p.getLocation());
                         });

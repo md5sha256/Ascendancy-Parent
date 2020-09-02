@@ -15,6 +15,7 @@ import com.gmail.andrewandy.ascendency.serverplugin.api.rune.PlayerSpecificRune;
 import com.gmail.andrewandy.ascendency.serverplugin.api.rune.Rune;
 import com.gmail.andrewandy.ascendency.serverplugin.game.util.LocationMark;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.ManagedMatch;
+import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.PlayerMatchManager;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.SimplePlayerMatchManager;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.engine.GameEngine;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.engine.GamePlayer;
@@ -59,6 +60,7 @@ public class Knavis extends AbstractChallenger implements Challenger {
 
     private static final Knavis instance = new Knavis();
     @Inject private static AscendencyServerPlugin plugin;
+    @Inject private static PlayerMatchManager matchManager;
 
     private Knavis() {
         super("Knavis", new Ability[] {ShadowsRetreat.instance, LivingGift.instance}, //Abilities
@@ -246,7 +248,7 @@ public class Knavis extends AbstractChallenger implements Challenger {
         public void onActiveKeyPress(final ActiveKeyPressedEvent event) {
             final Player player = event.getPlayer();
             final Optional<ManagedMatch> managedMatch =
-                SimplePlayerMatchManager.INSTANCE.getMatchOf(player.getUniqueId());
+             matchManager.getMatchOf(player.getUniqueId());
             if (!managedMatch.isPresent()) {
                 return;
             }
@@ -450,7 +452,7 @@ public class Knavis extends AbstractChallenger implements Challenger {
             player.offer(data);
             registered.put(player.getUniqueId(), effects);
             final Optional<ManagedMatch> optionalMatch =
-                SimplePlayerMatchManager.INSTANCE.getMatchOf(player.getUniqueId());
+                matchManager.getMatchOf(player.getUniqueId());
             optionalMatch.ifPresent(managedMatch -> {
                 final GameEngine engine = managedMatch.getGameEngine();
                 final Optional<? extends GamePlayer> optionalPlayer =
@@ -485,7 +487,7 @@ public class Knavis extends AbstractChallenger implements Challenger {
             registered.replace(player.getUniqueId(), new PotionEffect[0]);
             //If player is in a match, update the GamePlayer object
             final Optional<ManagedMatch> optionalMatch =
-                SimplePlayerMatchManager.INSTANCE.getMatchOf(player.getUniqueId());
+                matchManager.getMatchOf(player.getUniqueId());
             optionalMatch.ifPresent(managedMatch -> {
                 final GameEngine engine = managedMatch.getGameEngine();
                 final Optional<? extends GamePlayer> optionalPlayer =

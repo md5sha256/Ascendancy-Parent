@@ -4,7 +4,6 @@ import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
 import com.gmail.andrewandy.ascendency.serverplugin.configuration.Config;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.ManagedMatch;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.PlayerMatchManager;
-import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.SimplePlayerMatchManager;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.event.MatchStartEvent;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.event.PlayerJoinMatchEvent;
 import com.gmail.andrewandy.ascendency.serverplugin.matchmaking.match.event.PlayerLeftMatchEvent;
@@ -25,6 +24,7 @@ import java.util.*;
 public class DefaultMatchService implements AscendancyMatchService {
 
     @Inject private AscendencyServerPlugin plugin;
+    @Inject private PlayerMatchManager matchManager;
 
     private final Config config;
     private final LinkedList<Player> playerQueue = new LinkedList<>();
@@ -153,7 +153,7 @@ public class DefaultMatchService implements AscendancyMatchService {
             match.addAndAssignPlayersTeams(players);
             if (new MatchStartEvent(match).callEvent()) { //If event was not cancelled.
                 playerQueue.removeIf((Player player) -> players.contains(player.getUniqueId()));
-                SimplePlayerMatchManager.INSTANCE.startMatch(match);
+                matchManager.startMatch(match);
                 optimizedMatchCount--;
             } else {
                 break;
@@ -166,7 +166,6 @@ public class DefaultMatchService implements AscendancyMatchService {
     }
 
     @Override public boolean addToQueue(final Player player) {
-        final PlayerMatchManager matchManager = SimplePlayerMatchManager.INSTANCE;
         if (matchManager.getMatchOf(player.getUniqueId()).isPresent()) {
             playerQueue.remove(player);
             return false;
@@ -194,7 +193,7 @@ public class DefaultMatchService implements AscendancyMatchService {
 
     @Listener(order = Order.LAST) public void onPlayerJoin(final ClientConnectionEvent.Join event) {
         final Optional<ManagedMatch> current =
-            SimplePlayerMatchManager.INSTANCE.getMatchOf(event.getTargetEntity().getUniqueId());
+            matchManager.getMatchOf(event.getTargetEntity().getUniqueId());
         if (!current.isPresent()) {
             //If not in previous match, then try to load them into the matchmaking queue.
             addToQueueAndTryMatch(event.getTargetEntity());

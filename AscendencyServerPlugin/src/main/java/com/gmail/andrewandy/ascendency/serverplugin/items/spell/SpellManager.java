@@ -1,5 +1,6 @@
 package com.gmail.andrewandy.ascendency.serverplugin.items.spell;
 
+import com.google.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -11,11 +12,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 
-public enum SpellManager implements ISpellManager {
-
-    INSTANCE;
+@Singleton public class SpellManager implements ISpellManager {
 
     private final Collection<Spell> registeredSpells = new HashSet<>();
+
+    SpellManager() {
+
+    }
 
     @Override public void registerSpell(@NotNull final Spell spell) {
         registeredSpells.remove(spell);
