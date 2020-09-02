@@ -28,7 +28,7 @@ public class AscendancyCommandManager extends BaseCommand {
         commandManager.registerCommand(this);
     }
 
-    @CommandAlias("readinv") public void showInventory(final Player player,
+    @CommandAlias("readinventory|readinv") public void showInventory(final Player player,
         @co.aikar.commands.annotation.Optional final String targetPlayer) {
         final Player other;
         if (targetPlayer != null) {
