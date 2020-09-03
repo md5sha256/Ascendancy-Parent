@@ -25,6 +25,10 @@ import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.knavis.compo
 import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.knavis.components.RuneBlessingOfTeleportation;
 import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.knavis.components.RuneChosenOTEarth;
 import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.knavis.components.RuneHeartOfTheDryad;
+import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.vengelis.Vengelis;
+import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.vengelis.VengelisComponentFactory;
+import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.vengelis.components.AbilityGyration;
+import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.vengelis.components.AbilityHauntingFury;
 import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import org.jetbrains.annotations.NotNull;
@@ -67,11 +71,16 @@ public final class ChallengerModule extends AbstractModule {
                 .implement(MarkTeleportationEvent.class, MarkTeleportationEvent.class)
                 .build(KnavisComponentFactory.class));
 
+        install(new FactoryModuleBuilder().implement(AbilityGyration.class, AbilityGyration.class)
+                    .implement(AbilityHauntingFury.class, AbilityHauntingFury.class)
+                    .build(VengelisComponentFactory.class));
+
         bind(Astricion.class).asEagerSingleton();
         bind(Bella.class).asEagerSingleton();
         requestStaticInjection(Bella.class);
         bind(Breezy.class).asEagerSingleton();
         bind(Knavis.class).asEagerSingleton();
+        bind(Vengelis.class).asEagerSingleton(); // Vengelis depends on the instance of Knavis!
 
     }
 
