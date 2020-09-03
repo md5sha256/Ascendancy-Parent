@@ -40,8 +40,13 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.logging.Level;
 
-@Plugin(id = "ascendencyserverplugin", name = "AscendencyServerPlugin", version = "0.1-ALPHA", description = "Ascendency Server Plugin", authors = {
-    "andrewandy", "resonabit"}) public class AscendencyServerPlugin {
+@Plugin(id = "ascendencyserverplugin",
+        name = "AscendencyServerPlugin",
+        version = "0.1-ALPHA",
+        description = "Ascendency Server Plugin",
+        authors = {"andrewandy", "resonabit"})
+
+public class AscendencyServerPlugin {
 
     private static final String DEFAULT_NETWORK_CHANNEL_NAME = "ASCENDENCY_DEFAULT_CHANNEL";
     private static Injector injector;
@@ -52,6 +57,7 @@ import java.util.logging.Level;
     @Inject @ConfigDir(sharedRoot = true) private File dataFolder;
     private YAMLConfigurationLoader configurationLoader;
     @Inject private Logger logger;
+    @Inject private Injector parent;
     private Config config;
 
     @Inject public AscendencyServerPlugin() {
@@ -75,7 +81,7 @@ import java.util.logging.Level;
     }
 
     @Listener(order = Order.DEFAULT) public void onServerStart(final GameStartedServerEvent event) {
-        injector = Guice.createInjector(Stage.PRODUCTION, ascModule, challengerModule);
+        injector = parent.createChildInjector(ascModule, challengerModule);
         Common.setPrefix("[CustomServerMod]");
         loadSettings();
         config = injector.getInstance(Config.class);

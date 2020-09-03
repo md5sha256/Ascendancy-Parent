@@ -12,6 +12,19 @@ import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.bella.compon
 import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.bella.components.RuneCoupDEclat;
 import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.bella.components.RuneDivineCrown;
 import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.bella.components.RuneExpandingAgony;
+import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.breezy.Breezy;
+import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.breezy.BreezyComponentFactory;
+import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.breezy.components.AbilityOops;
+import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.breezy.components.AbilityRuneBoom;
+import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.knavis.Knavis;
+import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.knavis.KnavisComponentFactory;
+import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.knavis.LocationMarkedEvent;
+import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.knavis.MarkTeleportationEvent;
+import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.knavis.components.AbilityLivingGift;
+import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.knavis.components.AbilityShadowsRetreat;
+import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.knavis.components.RuneBlessingOfTeleportation;
+import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.knavis.components.RuneChosenOTEarth;
+import com.gmail.andrewandy.ascendency.serverplugin.game.challenger.knavis.components.RuneHeartOfTheDryad;
 import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import org.jetbrains.annotations.NotNull;
@@ -40,11 +53,25 @@ public final class ChallengerModule extends AbstractModule {
                     .implement(RuneExpandingAgony.class, RuneExpandingAgony.class)
                     .build(BellaComponentFactory.class));
 
+        install(new FactoryModuleBuilder().implement(AbilityOops.class, AbilityOops.class)
+                    .implement(AbilityRuneBoom.class, AbilityRuneBoom.class)
+                    .build(BreezyComponentFactory.class));
+
+        install(
+            new FactoryModuleBuilder().implement(AbilityLivingGift.class, AbilityLivingGift.class)
+                .implement(AbilityShadowsRetreat.class, AbilityShadowsRetreat.class)
+                .implement(RuneBlessingOfTeleportation.class, RuneBlessingOfTeleportation.class)
+                .implement(RuneChosenOTEarth.class, RuneChosenOTEarth.class)
+                .implement(RuneHeartOfTheDryad.class, RuneHeartOfTheDryad.class)
+                .implement(LocationMarkedEvent.class, LocationMarkedEvent.class)
+                .implement(MarkTeleportationEvent.class, MarkTeleportationEvent.class)
+                .build(KnavisComponentFactory.class));
+
         bind(Astricion.class).asEagerSingleton();
-
-
         bind(Bella.class).asEagerSingleton();
         requestStaticInjection(Bella.class);
+        bind(Breezy.class).asEagerSingleton();
+        bind(Knavis.class).asEagerSingleton();
 
     }
 
