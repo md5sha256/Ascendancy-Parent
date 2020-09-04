@@ -25,10 +25,10 @@ import java.util.UUID;
 
 
     private static final String CHANNEL_NAME = "ASCENDENCY_SPONGE";
-    @Inject private static AscendencyServerPlugin plugin;
+    @Inject private AscendencyServerPlugin plugin;
     private ChannelBinding.RawDataChannel dataChannel;
 
-    public SpongeAscendencyPacketHandler() {
+    SpongeAscendencyPacketHandler() {
     }
 
     public void initSponge() {

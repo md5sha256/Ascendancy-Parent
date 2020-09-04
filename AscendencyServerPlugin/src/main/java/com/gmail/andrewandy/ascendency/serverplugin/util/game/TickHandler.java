@@ -2,25 +2,21 @@ package com.gmail.andrewandy.ascendency.serverplugin.util.game;
 
 import com.gmail.andrewandy.ascendency.serverplugin.AscendencyServerPlugin;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.spongepowered.api.Sponge;
 
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 
-public class TickHandler {
+@Singleton public class TickHandler {
 
-    private static final TickHandler instance = new TickHandler();
-    @Inject private static AscendencyServerPlugin plugin;
-    private final Collection<TickData> toTick = new HashSet<>();
+    private final Map<Tickable, TickData> toTick = new HashMap<>();
 
-    private TickHandler() {
+    @Inject TickHandler(AscendencyServerPlugin plugin) {
         Sponge.getScheduler().createTaskBuilder().execute(this::run).intervalTicks(1)
             .submit(plugin);
     }
 
-    public static TickHandler getInstance() {
-        return instance;
-    }
 
     public void submitTickable(final Tickable tickable) {
         removeTickable(tickable);
@@ -28,16 +24,16 @@ public class TickHandler {
     }
 
     public void removeTickable(final Tickable tickable) {
-        toTick.removeIf((tickData) -> tickData.getTickable() == tickable);
+        toTick.remove(tickable);
     }
 
     public void submitTickable(final Tickable tickable, final int ticks) {
-        removeTickable(tickable);
-        toTick.add(new TickData(tickable, ticks));
+        toTick.remove(tickable);
+        toTick.put(tickable, new TickData(tickable, ticks));
     }
 
     public void run() {
-        toTick.removeIf(TickData::failedTick);
+        toTick.values().removeIf(TickData::failedTick);
     }
 
     private static class TickData {

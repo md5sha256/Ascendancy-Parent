@@ -19,9 +19,9 @@ import java.util.Set;
 
 public class AscendancyCommandManager extends BaseCommand {
 
-    @Inject private static AscendencyServerPlugin plugin;
+    @Inject private AscendencyServerPlugin plugin;
 
-    public AscendancyCommandManager() {
+    @Inject AscendancyCommandManager() {
         final SpongeCommandManager commandManager = new SpongeCommandManager(
             Sponge.getPluginManager().getPlugin("ascendencyserverplugin")
                 .orElseThrow(() -> new IllegalStateException("Unable to find plugin container!")));

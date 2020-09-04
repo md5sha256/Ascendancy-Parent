@@ -90,7 +90,6 @@ public class AscendencyServerPlugin {
         ForceLoadChunks.getInstance().loadSettings(); //Register the force event handler.
         PlayerMatchManager matchManager = injector.getInstance(PlayerMatchManager.class);
         ((SimplePlayerMatchManager) matchManager).enableManager();
-        new AscendancyCommandManager();
         Sponge.getEventManager().registerListeners(this, CustomEvents.INSTANCE);
         Sponge.getEventManager().registerListeners(this, new Listeners());
         loadMatchMaking(); //Load after the player match manager.

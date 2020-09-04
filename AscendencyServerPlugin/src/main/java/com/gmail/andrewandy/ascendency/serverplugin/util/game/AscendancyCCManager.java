@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -23,6 +24,7 @@ import java.util.concurrent.TimeUnit;
     private final UUID uuid = UUID.randomUUID();
     private final Collection<PotionEffectType> registeredCC = new HashSet<>();
     private final Map<UUID, Long> immunityMap = new HashMap<>();
+
     AscendancyCCManager() {
 
     }
@@ -32,18 +34,19 @@ import java.util.concurrent.TimeUnit;
     }
 
     @Override public void tick() {
-        immunityMap.entrySet().removeIf((entry) -> {
+        Iterator<Map.Entry<UUID, Long>> iterator = immunityMap.entrySet().iterator();
+        while (iterator.hasNext()) {
+            final Map.Entry<UUID, Long> entry = iterator.next();
             final long modifiedValue = entry.getValue() - 1; //Take one tick off.
             if (modifiedValue < 1) { //If 0 ticks left, remove.
-                return true;
+                iterator.remove();
             }
             entry.setValue(modifiedValue); //Mutate the entry.
-            return false; //Don't remove.
-        });
+        }
     }
 
 
-    @Override public @NotNull Collection<PotionEffectType> getRegisteredEffects() {
+    @Override @NotNull public Collection<PotionEffectType> getRegisteredEffects() {
         return new ArrayList<>(registeredCC);
     }
 
@@ -69,9 +72,7 @@ import java.util.concurrent.TimeUnit;
 
     @Override public long getImmunityDuration(@NotNull final Entity entity,
                                               @NotNull final TimeUnit timeUnit) {
-        return !immunityMap.containsKey(entity.getUniqueId()) ?
-            0 :
-            Common.fromTicks(immunityMap.get(entity.getUniqueId()), timeUnit);
+        return Common.fromTicks(immunityMap.getOrDefault(entity.getUniqueId(), 0L), timeUnit);
     }
 
     @Override public void setImmune(@NotNull final Entity entity, final long duration,
