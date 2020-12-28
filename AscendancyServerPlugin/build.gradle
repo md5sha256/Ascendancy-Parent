@@ -1,0 +1,85 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            name = "forge"
+            url = "https://files.minecraftforge.net/maven"
+        }
+        maven {
+            name = 'sponge'
+            url = 'https://repo.spongepowered.org/maven'
+        }
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.2'
+        classpath "net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT"
+    }
+}
+
+plugins {
+    id 'org.spongepowered.plugin' version '0.8.1'
+}
+
+apply plugin: "net.minecraftforge.gradle.forge"
+apply plugin: "java-library"
+apply plugin: 'com.github.johnrengelman.shadow'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+compileJava {
+    options.compilerArgs += ["-parameters"]
+    options.fork = true
+    options.forkOptions.executable = 'javac'
+}
+
+repositories {
+    maven {
+        name = 'aikar'
+        url = 'https://repo.aikar.co/content/groups/aikar/'
+    }
+}
+
+dependencies {
+
+    compileOnly 'org.jetbrains:annotations:19.0.0'
+
+    compileOnly ('com.google.inject.extensions:guice-assistedinject:4.0') {
+        exclude group: 'com.google.inject', module: 'guice'
+    }
+    compile 'org.spongepowered:spongeapi:5.1.0' //SpongeAPI
+    compile 'co.aikar:acf-sponge:0.5.0-SNAPSHOT'
+    compile 'co.aikar:taskchain-sponge:3.7.2'
+    implementation project(':AscendancyLib') //AscendancyLib
+    compile project(':AscendancyLib') //AscendancyLib
+
+}
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+
+minecraft {
+    // TODO: Configure Forge build here
+    forgeVersion = "1.10.2-12.18.3.2511"
+    // TODO: Replace with your mappings version, e.g. stable_39 or snapshot_20180814
+    mappings = project.properties.mcpVersion
+}
+
+assemble {
+    dependsOn(project.shadowJar)
+}
+
+shadowJar {
+    baseName = archivesBaseName
+    version = "0.1-ALPHA"
+    classifier = null
+    dependencies {
+        include(dependency(":AscendencyLib"))
+        include(dependency("co.aikar:acf-sponge"))
+        include(dependency("co.aikar:taskchain-sponge"))
+    }
+    relocate 'co.aikar.taskchain', 'com.gmail.andrewandy.taskchain'
+    relocate 'co.aikar.commands', 'com.gmail.andrewandy.acf'
+    relocate 'co.aikar.locales', 'com.gmail.andrewandy.locales'
+}

@@ -1,3 +1,3 @@
-include ':AscendencyLib'
-include ':AscendencyCustomMod'
-include ':AscendencyServerPlugin'
+include ':AscendancyLib'
+include ':AscendancyCustomMod'
+include ':AscendancyServerPlugin'

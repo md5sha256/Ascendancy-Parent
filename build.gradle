@@ -7,8 +7,20 @@ sourceCompatibility = 1.8
 
 dependencies {
     //compile 'org.codehaus.groovy:groovy-all:2.3.11'
-    compile project(":AscendencyLib")
-    compile project(":AscendencyCustomMod")
-    compile project(":AscendencyServerPlugin")
+    compile project(":AscendancyLib")
+    compile project(":AscendancyCustomMod")
+    compile project(":AscendancyServerPlugin")
     //testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'sponge'
+        url = 'https://repo.spongepowered.org/maven'
+    }
+    maven {
+        name = 'aikar'
+        url = 'https://repo.aikar.co/content/groups/aikar/'
+    }
 }
