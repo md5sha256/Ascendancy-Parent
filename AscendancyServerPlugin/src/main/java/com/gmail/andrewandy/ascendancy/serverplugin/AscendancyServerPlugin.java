@@ -50,14 +50,18 @@ public class AscendancyServerPlugin {
     private final ChallengerModule challengerModule = new ChallengerModule();
     private DefaultMatchService matchMatchMakingService;
     private KeyBindHandler keyBindHandler;
+    private YAMLConfigurationLoader configurationLoader;
+
     @Inject
     @ConfigDir(sharedRoot = true)
     private File dataFolder;
-    private YAMLConfigurationLoader configurationLoader;
+
     @Inject
     private Logger logger;
+
     @Inject
     private Injector parent;
+
     private Config config;
 
     @Inject

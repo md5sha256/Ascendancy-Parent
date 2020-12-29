@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.UUID;
 
 public abstract class AbstractAbility implements Ability {
+
     protected final Challenger bound;
     private final String name;
     private final boolean isActive;

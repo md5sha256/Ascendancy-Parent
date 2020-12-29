@@ -3,6 +3,7 @@ package com.gmail.andrewandy.ascendancy.serverplugin.api.ability;
 import com.gmail.andrewandy.ascendancy.serverplugin.api.challenger.Challenger;
 import com.gmail.andrewandy.ascendancy.serverplugin.api.challenger.ChallengerUtils;
 import com.gmail.andrewandy.ascendancy.serverplugin.util.Common;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,7 +47,7 @@ public abstract class AbstractCooldownAbility extends AbstractTickableAbility {
      * @return Returns whether the player is currenltly on cooldown.
      */
     public boolean isOnCooldown(final UUID player) {
-        return getCooldownDuration(TimeUnit.MILLISECONDS) != 0L;
+        return getCooldownFor(player) != 0;
     }
 
     /**
@@ -62,11 +63,11 @@ public abstract class AbstractCooldownAbility extends AbstractTickableAbility {
         return cooldownMap.get(player);
     }
 
-    public void setCooldownFor(final UUID player, final long cooldown, final TimeUnit timeUnit) {
+    public void setCooldownFor(@NotNull final UUID player, final long cooldown, @NotNull final TimeUnit timeUnit) {
         setCooldownFor(player, Common.toTicks(cooldown, timeUnit));
     }
 
-    public void setCooldownFor(final UUID player, final long cooldown) {
+    public void setCooldownFor(@NotNull final UUID player, final long cooldown) {
         cooldownMap.remove(player);
         if (cooldown != 0) {
             cooldownMap.put(player, cooldown);
@@ -76,7 +77,7 @@ public abstract class AbstractCooldownAbility extends AbstractTickableAbility {
     /**
      * Clears this player's cooldown. This will only take effect in the next tick!
      */
-    public void clearCooldown(final UUID player) {
+    public void clearCooldown(@NotNull final UUID player) {
         cooldownMap.put(player, getCooldownDuration());
     }
 
@@ -85,7 +86,7 @@ public abstract class AbstractCooldownAbility extends AbstractTickableAbility {
      *
      * @param player
      */
-    public void resetCooldown(final UUID player) {
+    public void resetCooldown(@NotNull final UUID player) {
         setCooldownFor(player, 0);
     }
 

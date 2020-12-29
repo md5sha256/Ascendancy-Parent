@@ -10,7 +10,6 @@ import org.spongepowered.api.entity.living.player.Player;
 
 public class AbilityMirrorOfResolution extends AbstractTickableAbility {
 
-
     @AssistedInject
     AbilityMirrorOfResolution(@Assisted final Challenger challenger) {
         super("Mirror Of Resolution", true, challenger);
