@@ -22,9 +22,9 @@ public class ChallengerUtils {
      * @param onRemove    An action to be done when an element is removed, can be null.
      * @return Returns a predicate to be used in {@link java.util.Collection#removeIf(Predicate)}
      */
-    public static Predicate<Map.Entry<UUID, Long>> mapTickPredicate(final long removeAfter,
+    public static <T> Predicate<Map.Entry<T, Long>> mapTickPredicate(final long removeAfter,
                                                                     final TimeUnit unit,
-                                                                    final Consumer<UUID> onRemove) {
+                                                                    final Consumer<T> onRemove) {
         return mapTickPredicate(Common.toTicks(removeAfter, unit), onRemove);
     }
 
@@ -35,9 +35,9 @@ public class ChallengerUtils {
      * @param onRemove    An action to be done when an element is removed, can be null/
      * @return Returns a predicate to be used in {@link java.util.Collection#removeIf(Predicate)}
      */
-    public static Predicate<Map.Entry<UUID, Long>> mapTickPredicate(final long removeAfter,
-                                                                    final Consumer<UUID> onRemove) {
-        return (Map.Entry<UUID, Long> entry) -> {
+    public static <T> Predicate<Map.Entry<T, Long>> mapTickPredicate(final long removeAfter,
+                                                                    final Consumer<T> onRemove) {
+        return (Map.Entry<T, Long> entry) -> {
             entry.setValue(entry.getValue() + 1); //Increment tick count
             if (entry.getValue() >= removeAfter) {
                 if (onRemove != null)

@@ -2,20 +2,22 @@ package com.gmail.andrewandy.ascendancy.serverplugin.items.spell;
 
 import com.google.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.HandInteractEvent;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 @Singleton
 public class SpellEngine implements ISpellEngine {
 
     private final Set<Spell> registeredSpells = new HashSet<>();
-    private final Map<SpellCondition, Set<Consumer<Spell>>> conditionHandlerMap = new HashMap<>();
+    private final Map<SpellCondition, Set<SpellCondition.Handler>> conditionHandlerMap = new HashMap<>();
 
     // Use a WeakHashMap to ensure that 'dead' projectiles get properly GC'ed.
     private final Map<Projectile, Spell> castedSpellMap = new WeakHashMap<>();
@@ -50,8 +52,8 @@ public class SpellEngine implements ISpellEngine {
     }
 
     @Override
-    public @NotNull Set<@NotNull Consumer<@NotNull Spell>> getHandlers(@NotNull SpellCondition condition) {
-        final Set<Consumer<Spell>> handlers = conditionHandlerMap.get(condition);
+    public @NotNull Set<SpellCondition.@NotNull Handler> getHandlers(@NotNull SpellCondition condition) {
+        final Set<SpellCondition.Handler> handlers = conditionHandlerMap.get(condition);
         return handlers == null ? Collections.emptySet() : new HashSet<>(handlers);
     }
 
@@ -66,15 +68,15 @@ public class SpellEngine implements ISpellEngine {
     }
 
     @Override
-    public void registerSpellConditionHandler(@NotNull SpellCondition condition, @NotNull Consumer<@NotNull Spell> handler) {
+    public void registerSpellConditionHandler(@NotNull SpellCondition condition, @NotNull SpellCondition.Handler handler) {
         conditionHandlerMap.computeIfAbsent(condition, (unused) -> new HashSet<>()).add(handler);
     }
 
     @Override
-    public void removeSpellConditionHandler(SpellCondition condition, Consumer<@NotNull Spell> consumer) {
-        final Collection<Consumer<Spell>> handlers = conditionHandlerMap.get(condition);
+    public void removeSpellConditionHandler(@NotNull SpellCondition condition, @NotNull SpellCondition.Handler handler) {
+        final Collection<SpellCondition.Handler> handlers = conditionHandlerMap.get(condition);
         if (handlers != null) {
-            handlers.remove(consumer);
+            handlers.remove(handler);
         }
     }
 
@@ -116,6 +118,24 @@ public class SpellEngine implements ISpellEngine {
             if (spell.isSpell(itemStack)) {
                 castSpell(spell, player);
                 break;
+            }
+        }
+    }
+
+    @Listener(order = Order.EARLY)
+    public void onProjectileMove(final MoveEntityEvent event) {
+        final Entity entity = event.getTargetEntity();
+        if (!(entity instanceof Projectile)) {
+            return;
+        }
+        final Projectile projectile = (Projectile) entity;
+        final Spell spell = castedSpellMap.get(projectile);
+        if (spell == null) {
+            return;
+        }
+        for (Map.Entry<SpellCondition, Set<SpellCondition.Handler>> entry : conditionHandlerMap.entrySet()) {
+            if (entry.getKey().isConditionMet(spell, projectile)) {
+                entry.getValue().forEach(handler -> handler.onSpellProjectileMove(spell, event));
             }
         }
     }

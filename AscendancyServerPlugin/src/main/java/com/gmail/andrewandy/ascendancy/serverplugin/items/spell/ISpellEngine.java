@@ -6,7 +6,6 @@ import org.spongepowered.api.entity.projectile.Projectile;
 
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 
 public interface ISpellEngine {
 
@@ -26,15 +25,15 @@ public interface ISpellEngine {
 
     @NotNull Set<@NotNull SpellCondition> getSpellConditions();
 
-    @NotNull Set<@NotNull Consumer<@NotNull Spell>> getHandlers(@NotNull SpellCondition condition);
+    @NotNull Set<SpellCondition.@NotNull Handler> getHandlers(@NotNull SpellCondition condition);
 
     void registerSpellCondition(@NotNull SpellCondition condition);
 
     void removeSpellCondition(@NotNull SpellCondition condition);
 
-    void registerSpellConditionHandler(@NotNull SpellCondition condition, @NotNull Consumer<@NotNull Spell> handler);
+    void registerSpellConditionHandler(@NotNull SpellCondition condition, @NotNull SpellCondition.Handler handler);
 
-    void removeSpellConditionHandler(SpellCondition condition, Consumer<@NotNull Spell> consumer);
+    void removeSpellConditionHandler(@NotNull SpellCondition condition, @NotNull SpellCondition.Handler consumer);
 
     void clearSpellConditions();
 
