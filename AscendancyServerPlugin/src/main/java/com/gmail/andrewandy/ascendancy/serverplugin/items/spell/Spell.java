@@ -2,7 +2,10 @@ package com.gmail.andrewandy.ascendancy.serverplugin.items.spell;
 
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.api.item.inventory.ItemStack;
+
+import java.util.Optional;
 
 public interface Spell {
 
@@ -24,7 +27,21 @@ public interface Spell {
 
     @NotNull String getName();
 
-    void castAs(@NotNull Player player);
+    /**
+     * Cast a spell as a given player, applying all effects and spawning a projectile
+     * as necessary.
+     *
+     * <strong>WARNING: This method should not be called by the user. Always call
+     * <code>ISpellManager#castSpell(Spell, Player)</code>, otherwise spell physics
+     * will break.
+     * </strong>
+     *
+     * @param player The player to cast as.
+     * @return Returns the projectile if this spell creates one.
+     *
+     * @see ISpellEngine#castSpell(Spell, Player)
+     */
+    @NotNull Optional<@NotNull Projectile> castAs(@NotNull Player player);
 
     enum Shape {
         AOE, CONE, MELEE, PROJECTILE, SELF, ZONE

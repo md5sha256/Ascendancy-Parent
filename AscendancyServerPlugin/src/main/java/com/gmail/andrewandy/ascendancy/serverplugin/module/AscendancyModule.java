@@ -8,8 +8,8 @@ import com.gmail.andrewandy.ascendancy.serverplugin.command.AscendancyCommandMan
 import com.gmail.andrewandy.ascendancy.serverplugin.configuration.Config;
 import com.gmail.andrewandy.ascendancy.serverplugin.configuration.YamlConfig;
 import com.gmail.andrewandy.ascendancy.serverplugin.io.SpongeAscendancyPacketHandler;
-import com.gmail.andrewandy.ascendancy.serverplugin.items.spell.ISpellManager;
-import com.gmail.andrewandy.ascendancy.serverplugin.items.spell.SpellManager;
+import com.gmail.andrewandy.ascendancy.serverplugin.items.spell.ISpellEngine;
+import com.gmail.andrewandy.ascendancy.serverplugin.items.spell.SpellEngine;
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.AscendancyMatch;
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.AscendancyMatchService;
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.DefaultMatchService;
@@ -44,7 +44,7 @@ public class AscendancyModule extends AbstractModule {
         bind(new TypeLiteral<MatchFactory<AscendancyMatch>>() {
         }).toInstance(new DraftMatchFactory(config));
         bind(AscendancyMatchService.class).to(DefaultMatchService.class);
-        bind(ISpellManager.class).to(SpellManager.class).asEagerSingleton();
+        bind(ISpellEngine.class).to(SpellEngine.class).asEagerSingleton();
         bind(CCImmunityManager.class).to(AscendancyCCManager.class).asEagerSingleton();
         bind(AscendancyCommandManager.class).asEagerSingleton();
     }

@@ -8,12 +8,15 @@ import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.projectile.FishHook;
+import org.spongepowered.api.entity.projectile.source.ProjectileSource;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.action.FishingEvent;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 public class AbilityInstrumentOfJudgement extends AbstractCooldownAbility {
@@ -23,13 +26,13 @@ public class AbilityInstrumentOfJudgement extends AbstractCooldownAbility {
         super("Instrument of Judgement", true, 15, TimeUnit.SECONDS, challenger);
     }
 
-    private static void pullEntityToLocation(final Entity entity, Location<World> loc) {
+    private static void pullEntityToLocation(final Entity entity, Vector3d loc) {
         final Location<World> entityLoc = entity.getLocation();
         entityLoc.add(0, 0.5, 0);
         entity.setLocation(entityLoc);
 
         double g = -0.08;
-        double distance = entityLoc.getPosition().distance(loc.getPosition());
+        double distance = entityLoc.getPosition().distance(loc);
         double velocityX = (1.0 + 0.07 * distance) * (loc.getX() - entityLoc.getX()) / distance;
         double velocityY = (1.0 + 0.03 * distance) * (loc.getY() - entityLoc.getY()) / distance - 0.5 * g * distance;
         double velocityZ = (1.0 + 0.07 * distance) * (loc.getZ() - entityLoc.getZ()) / distance;
@@ -41,27 +44,42 @@ public class AbilityInstrumentOfJudgement extends AbstractCooldownAbility {
     @Listener(order = Order.LAST)
     public void onActiveKeyPress(final ActiveKeyPressedEvent event) {
         final Player player = event.getPlayer();
+        if (!isRegistered(player.getUniqueId()) || isOnCooldown(player.getUniqueId())) {
+            return;
+        }
+        // TODO check if the velocity is correct here
+        player.launchProjectile(FishHook.class);
+    }
+
+    @Listener(order = Order.LAST)
+    public void onGrapplingHookLand(final FishingEvent.HookEntity event) {
+        final FishHook fishHook = event.getFishHook();
+        final ProjectileSource source = fishHook.getShooter();
+        if (!(source instanceof Player)) {
+            return;
+        }
+        final Player player = (Player) source;
+        // Check if player is registered
         if (!isRegistered(player.getUniqueId())) {
             return;
         }
-        // Fishing rod code
+        final Optional<Entity> optionalEntity = fishHook.getHookedEntity();
+        final Vector3d target;
 
-        // End
-    }
-
-    //FIXME use correct fishing event
-    @Listener(order = Order.LAST)
-    public void onGrapplingHookLand(final FishingEvent.HookEntity event) {
-        final Entity hooked = event.getTargetEntity();
-        final Location<World> hookLandedPosition = hooked.getLocation();
-        final Location<World> location = null;
-        final double distance = hookLandedPosition.getPosition().distance(location.getPosition());
-        if (distance > 30) {
+        if (optionalEntity.isPresent()) {
+            // FIXME damage the hooked entity;
+            target = event.getTargetEntity().getLocation().getPosition();
+        } else {
+            // Use the block the hook is in instead.
+            target = fishHook.getLocation().getPosition().add(0, 0.5, 0);
+        }
+        final double distance = player.getLocation().getPosition().distanceSquared(target);
+        if (distance > 30 * 30) {
             return;
         }
-        pullEntityToLocation(null, location);
-        // TODO damage the player
-        resetCooldown(null);
+        // Reset the cooldown
+        resetCooldown(player.getUniqueId());
+        pullEntityToLocation(player, target);
     }
 
 }

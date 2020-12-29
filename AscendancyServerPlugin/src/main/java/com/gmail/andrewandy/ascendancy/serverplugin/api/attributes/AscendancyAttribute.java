@@ -16,6 +16,7 @@ public enum AscendancyAttribute {
     MAGIC_RESISTANCE(0, 0),
     MAGIC_PENETRATION(0, 0),
     MANA_MAXIMUM(3000, 0),
+    CURRENT_MANA(0, 0),
     MANA_REGENERATION(100, 0),
     ATTACK_DAMAGE(0, 0),
     ATTACK_SPEED(100, 0), //100 is one attack per second
@@ -52,7 +53,7 @@ public enum AscendancyAttribute {
         return defaultValue;
     }
 
-    public final MutableBoundedValue<Integer> createBlankValue() {
+    public MutableBoundedValue<Integer> createBlankValue() {
         return factory.createBoundedValueBuilder(key).defaultValue(defaultValue).minimum(min)
                 .maximum(max).build();
     }

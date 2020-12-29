@@ -1,8 +1,13 @@
 package com.gmail.andrewandy.ascendancy.serverplugin.items.spell;
 
 import com.gmail.andrewandy.ascendancy.lib.util.CommonUtils;
+import com.gmail.andrewandy.ascendancy.serverplugin.api.attributes.AscendancyAttribute;
+import com.gmail.andrewandy.ascendancy.serverplugin.api.attributes.AttributeData;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.data.value.mutable.MutableBoundedValue;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 import java.util.Optional;
@@ -11,7 +16,7 @@ public enum Spells implements Spell {
 
     ENIGMATIC_BOLT(Shape.PROJECTILE, SecondaryShape.NONE, Effect.AP, 0.5, 300) {
         @Override
-        public ItemStack getAsItemStack() {
+        public @NotNull ItemStack getAsItemStack() {
             return null;
         }
     };
@@ -39,7 +44,7 @@ public enum Spells implements Spell {
     }
 
     @Override
-    public boolean isSpell(final ItemStack itemStack) {
+    public boolean isSpell(final @NotNull ItemStack itemStack) {
         final Optional<?> name = itemStack.get(Keys.DISPLAY_NAME);
         return name.filter(o -> ((String) o).equalsIgnoreCase(getName())).isPresent();
     }
@@ -60,41 +65,46 @@ public enum Spells implements Spell {
     }
 
     @Override
-    public SecondaryShape getSecondaryShape() {
+    public @NotNull SecondaryShape getSecondaryShape() {
         return this.secondaryShape;
     }
 
     @Override
-    public Shape getShape() {
+    public @NotNull Shape getShape() {
         return this.shape;
     }
 
     @Override
-    public Effect getEffect() {
+    public @NotNull Effect getEffect() {
         return this.effect;
     }
 
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return CommonUtils.capitalise(name().toLowerCase()).replace("_", " ");
     }
 
     @Override
-    public void castAs(final Player player) {
-        final Shape shape = this.getShape();
-        final SecondaryShape secondaryShape = this.getSecondaryShape();
-        final Effect effect = this.getEffect();
-        final double effectValue = this.getEffectValue();
-        final int manaCost = this.getManaCost();
+    public @NotNull Optional<@NotNull Projectile> castAs(final Player player) {
+        final Shape shape = getShape();
+        final SecondaryShape secondaryShape = getSecondaryShape();
+        final Effect effect = getEffect();
+        final double effectValue = getEffectValue();
+        final int manaCost = getManaCost();
+
+        final AttributeData attributeData = player.get(AttributeData.class)
+                .orElseThrow(() -> new IllegalStateException("Failed to get attribute data for player: " + player.getName()));
+        final MutableBoundedValue<Integer> mana = attributeData.getAttribute(AscendancyAttribute.CURRENT_MANA);
+        mana.set(Math.min(mana.get() - manaCost, mana.getMinValue()));
+        player.offer(attributeData);
 
         //define apply effect methods here
 
-
         //define shapes here
-        if (shape == Shape.PROJECTILE) {
+        switch (shape) {
 
         }
-
+        return Optional.empty();
     }
 
 }
