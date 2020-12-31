@@ -24,13 +24,15 @@ import java.util.*;
 public class DefaultMatchService implements AscendancyMatchService {
 
     private final Config config;
-    private final LinkedList<Player> playerQueue = new LinkedList<>();
+    private LinkedList<Player> playerQueue = new LinkedList<>();
+    private final Set<Player> playerQueueCache = new HashSet<>();
+    private MatchMakingMode mode = MatchMakingMode.BALANCED; //The way server matches players.
+    private MatchFactory<AscendancyMatch> matchFactory;
+
     @Inject
     private AscendancyServerPlugin plugin;
     @Inject
     private PlayerMatchManager matchManager;
-    private MatchMakingMode mode = MatchMakingMode.BALANCED; //The way server matches players.
-    private MatchFactory<AscendancyMatch> matchFactory;
 
     /**
      * Create a new match making service.
@@ -88,8 +90,9 @@ public class DefaultMatchService implements AscendancyMatchService {
      */
     @Override
     public Queue<Player> clearQueue() {
-        final Queue<Player> players = new LinkedList<>(playerQueue);
-        playerQueue.clear();
+        final Queue<Player> players = this.playerQueue;
+        this.playerQueue = new LinkedList<>();
+        this.playerQueueCache.clear();
         return players;
     }
 
@@ -136,8 +139,10 @@ public class DefaultMatchService implements AscendancyMatchService {
             }
             players.removeIf((player) -> new PlayerJoinMatchEvent(player, match).callEvent());
             match.addAndAssignPlayersTeams(players);
-            if (new MatchStartEvent(match).callEvent()) { //If event was not cancelled.
+            if (new MatchStartEvent(match).callEvent()) {
+                //If event was not cancelled.
                 playerQueue.removeIf((Player player) -> players.contains(player.getUniqueId()));
+                playerQueueCache.removeIf((Player player) -> players.contains(player.getUniqueId()));
                 matchManager.startMatch(match);
                 optimizedMatchCount--;
             } else {
@@ -149,16 +154,19 @@ public class DefaultMatchService implements AscendancyMatchService {
     @Override
     public boolean addToQueue(final Player player) {
         if (matchManager.getMatchOf(player.getUniqueId()).isPresent()) {
-            playerQueue.remove(player);
+            if (playerQueueCache.remove(player)) {
+                playerQueue.remove(player);
+            }
             return false;
         }
-        if (playerQueue.contains(player)) {
+        if (playerQueueCache.contains(player)) {
             return true;
         }
-        return playerQueue.add(player);
+        playerQueue.add(player);
+        playerQueueCache.add(player);
+        return true;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public int getQueuePosition(final Player player) {
         return playerQueue.indexOf(player);
@@ -167,11 +175,14 @@ public class DefaultMatchService implements AscendancyMatchService {
     @Override
     public void removeFromQueue(final UUID uuid) {
         playerQueue.removeIf(player -> player.getUniqueId().equals(uuid));
+        playerQueueCache.removeIf(player -> player.getUniqueId().equals(uuid));
     }
 
     @Override
     public void removeFromQueue(final Player player) {
-        removeFromQueue(player.getUniqueId());
+        if (playerQueueCache.remove(player)) {
+            playerQueue.remove(player);
+        }
     }
 
     @Override
@@ -211,14 +222,16 @@ public class DefaultMatchService implements AscendancyMatchService {
         if (!current.isPresent()) {
             //If not in previous match, then try to load them into the matchmaking queue.
             addToQueueAndTryMatch(event.getTargetEntity());
-            System.out.println(playerQueue);
+            //System.out.println(playerQueue);
         }
     }
 
     @Listener(order = Order.LAST)
     public void onPlayerDisconnect(final ClientConnectionEvent.Disconnect event) {
-        System.out.println(playerQueue);
-        playerQueue.remove(event.getTargetEntity());
+        //System.out.println(playerQueue);
+        if (playerQueueCache.remove(event.getTargetEntity())) {
+            playerQueue.remove(event.getTargetEntity());
+        }
     }
 
     @Listener(order = Order.LAST)

@@ -22,7 +22,8 @@ import java.util.List;
 public final class ChallengerModule extends AbstractModule {
 
     public static List<String> getLoreOf(@NotNull final String name) {
-        return Collections.emptyList(); // TODO Implementation
+        // FIXME Implementation missing!
+        return Collections.emptyList();
     }
 
     @Override

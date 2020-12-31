@@ -74,12 +74,17 @@ public class AbilityInstrumentOfJudgement extends AbstractCooldownAbility {
             target = fishHook.getLocation().getPosition().add(0, 0.5, 0);
         }
         final double distance = player.getLocation().getPosition().distanceSquared(target);
-        if (distance > 30 * 30) {
-            return;
+        if (distance < 30 * 30) {
+            // If enemy, pull enemy to Nikolas
+            if (optionalEntity.isPresent()) {
+                pullEntityToLocation(optionalEntity.get(), player.getLocation().getPosition());
+            } else {
+                // Pull Nikolas to the block
+                pullEntityToLocation(player, target);
+            }
         }
         // Reset the cooldown
         resetCooldown(player.getUniqueId());
-        pullEntityToLocation(player, target);
     }
 
 }

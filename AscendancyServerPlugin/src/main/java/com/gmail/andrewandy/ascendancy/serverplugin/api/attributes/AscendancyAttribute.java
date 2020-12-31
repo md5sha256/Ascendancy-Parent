@@ -19,7 +19,8 @@ public enum AscendancyAttribute {
     CURRENT_MANA(0, 0),
     MANA_REGENERATION(100, 0),
     ATTACK_DAMAGE(0, 0),
-    ATTACK_SPEED(100, 0), //100 is one attack per second
+    //100 is one attack per second
+    ATTACK_SPEED(100, 0),
     ARMOR(0, 0),
     ARMOR_PENETRATION(0, 0);
 

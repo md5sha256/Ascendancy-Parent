@@ -7,17 +7,13 @@ import org.spongepowered.api.effect.particle.ParticleEffect;
 import org.spongepowered.api.util.AABB;
 import org.spongepowered.api.world.World;
 
-import javax.swing.text.View;
-
 public class Mirror {
 
-    private ParticleEffect particleEffect;
     private World world;
     private Vector3d primary, secondary;
     private AABB boundingBox;
 
-    public Mirror(@NotNull ParticleEffect particleEffect, @NotNull World world, @NotNull Vector3d primary, double size) {
-        this.particleEffect = particleEffect;
+    public Mirror(@NotNull World world, @NotNull Vector3d primary, double size) {
         this.world = world;
         this.primary = primary;
         final double sizeToAdd = Math.sqrt(size * size * 3) / 3D;
@@ -26,14 +22,6 @@ public class Mirror {
 
     public AABB getBoundingBox() {
         return boundingBox;
-    }
-
-    public @NotNull ParticleEffect getParticleEffect() {
-        return particleEffect;
-    }
-
-    public void setParticleEffect(@NotNull ParticleEffect particleEffect) {
-        this.particleEffect = particleEffect;
     }
 
     public @NotNull Vector3d getPrimary() {
@@ -66,11 +54,7 @@ public class Mirror {
         this.world = world;
     }
 
-    public void render() {
-        render(world);
-    }
-
-    public void render(final Viewer viewer) {
+    public void render(final Viewer viewer, final ParticleEffect particleEffect) {
         double x1 = Math.min(primary.getX(), secondary.getX());
         double x2 = x1 == primary.getX() ? secondary.getX() : primary.getX();
         double y1 = Math.min(primary.getY(), secondary.getY());
@@ -83,13 +67,13 @@ public class Mirror {
         final Vector3d topLeftCorner = new Vector3d(x1, y2, z1);
         final Vector3d topRightCorner = new Vector3d(x2, y1, z2);
 
-        drawEdge(viewer, bottomLeftCorner, bottomRightCorner);
-        drawEdge(viewer, topLeftCorner, topRightCorner);
-        drawEdge(viewer, bottomLeftCorner, topLeftCorner);
-        drawEdge(viewer, bottomRightCorner, topRightCorner);
+        drawEdge(viewer, particleEffect, bottomLeftCorner, bottomRightCorner);
+        drawEdge(viewer, particleEffect, topLeftCorner, topRightCorner);
+        drawEdge(viewer, particleEffect, bottomLeftCorner, topLeftCorner);
+        drawEdge(viewer, particleEffect, bottomRightCorner, topRightCorner);
     }
 
-    private void drawEdge(final Viewer viewer, final Vector3d primary, final Vector3d secondary) {
+    private void drawEdge(final Viewer viewer, final ParticleEffect particleEffect, final Vector3d primary, final Vector3d secondary) {
         final Vector3d direction = secondary.sub(primary);
         for (double t = primary.getX(); t < secondary.getX(); t++) {
             Vector3d position = primary.add(direction.mul(t));
@@ -104,7 +88,6 @@ public class Mirror {
 
         Mirror mirror = (Mirror) o;
 
-        if (!particleEffect.equals(mirror.particleEffect)) return false;
         if (!world.equals(mirror.world)) return false;
         if (!primary.equals(mirror.primary)) return false;
         return secondary.equals(mirror.secondary);
@@ -113,8 +96,7 @@ public class Mirror {
 
     @Override
     public int hashCode() {
-        int result = particleEffect.hashCode();
-        result = 31 * result + world.hashCode();
+        int result = 31 * world.hashCode();
         result = 31 * result + primary.hashCode();
         result = 31 * result + secondary.hashCode();
         return result;

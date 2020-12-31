@@ -96,6 +96,7 @@ public class AscendancyServerPlugin {
         loadKeybindHandlers();
         PlayerMatchManager matchManager = injector.getInstance(PlayerMatchManager.class);
         ((SimplePlayerMatchManager) matchManager).enableManager();
+        Sponge.getEventManager().registerListeners(this, injector.getInstance(IMatchMakingService.class));
         Sponge.getEventManager().registerListeners(this, CustomEvents.INSTANCE);
         Sponge.getEventManager().registerListeners(this, new Listeners());
         loadMatchMaking(); //Load after the player match manager.

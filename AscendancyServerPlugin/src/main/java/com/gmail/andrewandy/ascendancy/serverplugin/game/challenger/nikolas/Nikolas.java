@@ -7,6 +7,9 @@ import com.gmail.andrewandy.ascendancy.serverplugin.api.challenger.AbstractChall
 import com.gmail.andrewandy.ascendancy.serverplugin.api.challenger.Challenger;
 import com.gmail.andrewandy.ascendancy.serverplugin.api.rune.PlayerSpecificRune;
 import com.gmail.andrewandy.ascendancy.serverplugin.game.challenger.ChallengerModule;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -14,15 +17,17 @@ import java.io.IOException;
 
 public class Nikolas extends AbstractChallenger {
 
-    Nikolas() {
-        super("Nikolas", challenger -> abilities(challenger), challenger -> runes(challenger), ChallengerModule.getLoreOf("Nikolas"));
+    @Inject
+    Nikolas(final NikolasComponentFactory componentFactory) {
+        super("Nikolas", challenger -> abilities(challenger, componentFactory), challenger -> runes(challenger, componentFactory),
+                ChallengerModule.getLoreOf("Nikolas"));
     }
 
-    private static Ability[] abilities(final Challenger challenger) {
-        return new Ability[0];
+    private static Ability[] abilities(final Challenger challenger, final NikolasComponentFactory componentFactory) {
+        return new Ability[]{componentFactory.createInstrumentOfJudgementFor(challenger)};
     }
 
-    private static PlayerSpecificRune[] runes(final Challenger challenger) {
+    private static PlayerSpecificRune[] runes(final Challenger challenger, final NikolasComponentFactory componentFactory) {
         return new PlayerSpecificRune[0];
     }
 

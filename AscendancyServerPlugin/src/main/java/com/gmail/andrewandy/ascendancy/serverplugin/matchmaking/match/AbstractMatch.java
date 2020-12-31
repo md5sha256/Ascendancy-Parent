@@ -114,7 +114,7 @@ public abstract class AbstractMatch implements ManagedMatch {
                 return team;
             }
         }
-        return null;
+        throw new IllegalArgumentException(player.toString() + " is not in this match!");
     }
 
     public Optional<Team> getTeamByName(final String name) {

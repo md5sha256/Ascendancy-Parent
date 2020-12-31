@@ -27,6 +27,10 @@ public class MirrorData implements Iterable<Mirror>, Tickable, Cloneable {
         mirrorDurationMap.entrySet().removeIf(cooldownPredicate);
     }
 
+    public @NotNull UUID getPlayer() {
+        return player;
+    }
+
     @Override
     public UUID getUniqueID() {
         return uuid;
@@ -64,6 +68,14 @@ public class MirrorData implements Iterable<Mirror>, Tickable, Cloneable {
     public void resetCharges() {
         charges = 0;
         usedCharges = 0;
+    }
+
+    public void addMirror(@NotNull Mirror mirror) {
+        mirrorDurationMap.put(mirror, 0L);
+    }
+
+    public void removeMirror(@NotNull Mirror mirror) {
+        mirrorDurationMap.remove(mirror);
     }
 
     @NotNull

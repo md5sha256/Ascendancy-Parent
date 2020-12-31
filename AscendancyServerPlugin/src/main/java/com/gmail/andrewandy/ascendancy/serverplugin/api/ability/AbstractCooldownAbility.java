@@ -63,6 +63,17 @@ public abstract class AbstractCooldownAbility extends AbstractTickableAbility {
         return cooldownMap.get(player);
     }
 
+    /**
+     * Get the cooldown the player is currently on in a certain {@link TimeUnit}
+     *
+     * @param player   The UniqueID of the player.
+     * @param timeUnit The {@link TimeUnit} to convert to
+     * @return Returns the converter cooldown the player is currently on.
+     */
+    public long getCooldownFor(final UUID player, final TimeUnit timeUnit) {
+        return Common.fromTicks(getCooldownFor(player), timeUnit);
+    }
+
     public void setCooldownFor(@NotNull final UUID player, final long cooldown, @NotNull final TimeUnit timeUnit) {
         setCooldownFor(player, Common.toTicks(cooldown, timeUnit));
     }
@@ -88,17 +99,6 @@ public abstract class AbstractCooldownAbility extends AbstractTickableAbility {
      */
     public void resetCooldown(@NotNull final UUID player) {
         setCooldownFor(player, 0);
-    }
-
-    /**
-     * Get the cooldown the player is currently on in a certain {@link TimeUnit}
-     *
-     * @param player   The UniqueID of the player.
-     * @param timeUnit The {@link TimeUnit} to convert to
-     * @return Returns the converter cooldown the player is currently on.
-     */
-    public long getCooldownFor(final UUID player, final TimeUnit timeUnit) {
-        return Common.fromTicks(getCooldownFor(player), timeUnit);
     }
 
     /**

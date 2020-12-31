@@ -38,7 +38,6 @@ public interface Spell {
      *
      * @param player The player to cast as.
      * @return Returns the projectile if this spell creates one.
-     *
      * @see ISpellEngine#castSpell(Spell, Player)
      */
     @NotNull Optional<@NotNull Projectile> castAs(@NotNull Player player);
@@ -54,7 +53,27 @@ public interface Spell {
 
 
     enum Effect {
-        AD, AP, NONE, BLIND, BLINDING_GRACE, WARRIORS_POISE, CHRONO_ANCHOR, DISARM, DISPEL, FURY, GOP, HEAL, LIFE_TAP, MANA_DRAIN, PHASER, ROOT, SHIELD, SILENCE, SLOW, SPEED, TRANSPLACE
+        AD,
+        AP,
+        NONE,
+        BLIND,
+        BLINDING_GRACE,
+        WARRIORS_POISE,
+        CHRONO_ANCHOR,
+        DISARM,
+        DISPEL,
+        FURY,
+        GOP,
+        HEAL,
+        LIFE_TAP,
+        MANA_DRAIN,
+        PHASER,
+        ROOT,
+        SHIELD,
+        SILENCE,
+        SLOW,
+        SPEED,
+        TRANSPLACE
     }
 
 }

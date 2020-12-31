@@ -36,7 +36,7 @@ public interface IMatchMakingService<M extends ManagedMatch> {
     /**
      * Represents how this service will try to match players.
      */
-    public enum MatchMakingMode {
+    enum MatchMakingMode {
 
         /**
          * Will try to match players once
