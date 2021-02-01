@@ -3,6 +3,7 @@ package com.gmail.andrewandy.ascendancy.serverplugin.command;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.SpongeCommandManager;
 import co.aikar.commands.annotation.CommandAlias;
+import com.flowpowered.math.vector.Vector3d;
 import com.gmail.andrewandy.ascendancy.serverplugin.AscendancyServerPlugin;
 import com.gmail.andrewandy.ascendancy.serverplugin.game.util.MathUtils;
 import com.gmail.andrewandy.ascendancy.serverplugin.util.Common;
@@ -14,6 +15,7 @@ import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.world.extent.EntityUniverse;
 
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.Set;
 
@@ -44,13 +46,11 @@ public class AscendancyCommandManager extends BaseCommand {
         } else {
             final Set<EntityUniverse.EntityHit> entities =
                     player.getWorld().getIntersectingEntities(player, 10);
+            //Get closest player in sender's vision.
             final Optional<Player> optionalPlayer =
                     entities.stream().filter(entityHit -> entityHit.getEntity() instanceof Player)
-                            .map(entityHit -> (Player) entityHit.getEntity()).min((e1, e2) -> Doubles
-                            .compare(Math.abs(
-                                    MathUtils.calculateDistance3D(e1.getLocation(), player.getLocation())),
-                                    Math.abs(MathUtils.calculateDistance3D(e2.getLocation(), player
-                                            .getLocation())))); //Get closest player in sender's vision.
+                            .min(Comparator.comparingDouble(EntityUniverse.EntityHit::getDistance))
+                            .map(entityHit -> (Player) entityHit.getEntity());
 
             if (!optionalPlayer.isPresent()) {
                 Common.tell(player, "&cYou must be looking at a player within 10 blocks!");

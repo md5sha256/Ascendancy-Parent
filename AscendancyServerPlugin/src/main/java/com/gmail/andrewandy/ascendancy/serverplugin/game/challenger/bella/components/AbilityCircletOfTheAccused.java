@@ -1,12 +1,12 @@
 package com.gmail.andrewandy.ascendancy.serverplugin.game.challenger.bella.components;
 
+import com.flowpowered.math.vector.Vector3d;
 import com.gmail.andrewandy.ascendancy.serverplugin.api.ability.AbstractCooldownAbility;
 import com.gmail.andrewandy.ascendancy.serverplugin.api.challenger.Challenger;
 import com.gmail.andrewandy.ascendancy.serverplugin.api.challenger.ChallengerUtils;
 import com.gmail.andrewandy.ascendancy.serverplugin.api.event.AscendancyServerEvent;
 import com.gmail.andrewandy.ascendancy.serverplugin.game.challenger.bella.Bella;
 import com.gmail.andrewandy.ascendancy.serverplugin.game.challenger.bella.BellaComponentFactory;
-import com.gmail.andrewandy.ascendancy.serverplugin.game.util.MathUtils;
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.Team;
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.match.ManagedMatch;
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.match.PlayerMatchManager;
@@ -91,19 +91,17 @@ public class AbilityCircletOfTheAccused extends AbstractCooldownAbility {
 
         resetCooldown(caster);
         final Player player = optionalPlayer.get();
-        final Collection<Entity> nearby = player.getNearbyEntities(
-                (entity) -> MathUtils.calculateDistance3D(entity.getLocation(), player.getLocation())
-                        <= 10D);
-        Player target = null;
-        double leastDistance = Double.MAX_VALUE;
         final Location<World> location = player.getLocation();
+        final Vector3d playerPos = location.getPosition();
+        final Collection<Entity> nearby = player.getNearbyEntities(entity -> entity instanceof Player &&
+                entity.getTransform().getPosition().distanceSquared(playerPos) <= 100D);
+        Entity target = null;
+        double leastDistance = Double.MAX_VALUE;
         for (final Entity entity : nearby) {
-            if (!(entity instanceof Player)) {
-                continue;
-            }
-            final double distance = MathUtils.calculateDistance3D(location, entity.getLocation());
+            // assert entity instanceof Player;
+            final double distance = playerPos.distanceSquared(entity.getLocation().getPosition());
             if (distance < leastDistance) {
-                target = (Player) entity;
+                target = entity;
                 leastDistance = distance;
             }
         }
@@ -112,8 +110,8 @@ public class AbilityCircletOfTheAccused extends AbstractCooldownAbility {
         }
         registeredMap.compute(target.getUniqueId(), (playerUID, circletData) -> {
             if (circletData == null) {
-                circletData =
-                        factory.createCircletData(caster, radius); //Caster is the playerUID, default radius = 3
+                //Caster is the playerUID, default radius = 3
+                circletData = factory.createCircletData(caster, radius);
             }
             circletData.reset();
             circletData.setRingBlocks(Bella.generateCircleBlocks(location, radius));
@@ -129,11 +127,11 @@ public class AbilityCircletOfTheAccused extends AbstractCooldownAbility {
      * @return Returns if the operation was successful.
      */
     public boolean clearCirclet(@NotNull final Player player) {
-        if (!registeredMap.containsKey(player.getUniqueId())) {
+        final CircletData data = registeredMap.remove(player.getUniqueId());
+        if (data == null) {
             return false;
         }
-        registeredMap.get(player.getUniqueId()).reset();
-        registeredMap.remove(player.getUniqueId());
+        data.reset();
         return true;
     }
 
@@ -147,7 +145,7 @@ public class AbilityCircletOfTheAccused extends AbstractCooldownAbility {
     public Optional<CircletData> getCircletAt(@NotNull final Location<World> location) {
         final Location<World> copy = location.copy();
         for (final CircletData circletData : registeredMap.values()) {
-            if (circletData.generateCircleTest().test(copy)) {
+            if (circletData.isWithinCircle(copy)) {
                 return Optional.of(circletData);
             }
         }
@@ -164,7 +162,8 @@ public class AbilityCircletOfTheAccused extends AbstractCooldownAbility {
         registeredMap.forEach((key, data) -> {
             data.incrementTick();
             if (data.getTickCount() >= getCooldownDuration()) {
-                data.reset(); //Clear the ring
+                //Clear the ring
+                data.reset();
                 resetCooldown(key);
             }
             cooldownMap.entrySet().removeIf(ChallengerUtils.mapTickPredicate(9, TimeUnit.SECONDS,
@@ -182,15 +181,15 @@ public class AbilityCircletOfTheAccused extends AbstractCooldownAbility {
                         .getEntities(Player.class, rune.getExtentViewFor(data), (Player player) -> {
                             final Optional<Team> optional =
                                     matchManager.getTeamOf(player.getUniqueId());
-                            return optional.isPresent() && optional.get() != team && data
-                                    .generateCircleTest().test(player.getLocation());
+                            return optional.isPresent() && optional.get() != team && data.isWithinCircle(player.getLocation());
                         });
-                players.forEach((Player player) -> {
+                for (Player player : players) {
                     final Optional<Team> optionalTeam = matchManager.getTeamOf(key);
                     if (!optionalTeam.isPresent()) {
                         return;
                     }
-                    if (optionalTeam.get() == team) { //If allied, skip
+                    //If allied, skip
+                    if (optionalTeam.get() == team) {
                         return;
                     }
                     //TODO Set scoreboard so cmd-block impl knows they are in circle.
@@ -204,7 +203,7 @@ public class AbilityCircletOfTheAccused extends AbstractCooldownAbility {
                                     .amplifier(1).build()); //Wither
                     //.addElement((PotionEffect) new BuffEffectAstralDistortion(1, 1)); //Astral Distorton == Astral Nullifcation
                     player.offer(peData);
-                });
+                }
             });
         });
     }
@@ -239,7 +238,7 @@ public class AbilityCircletOfTheAccused extends AbstractCooldownAbility {
             return;
         }
         registeredMap.values().stream()
-                .filter(circletData -> circletData.generateCircleTest().test(entity.getLocation()))
+                .filter(circletData -> circletData.isWithinCircle(entity.getLocation()))
                 .findAny().ifPresent((circletData -> {
 
             event.setCancelled(true);

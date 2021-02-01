@@ -76,11 +76,14 @@ public class CircletData {
         return tickCount;
     }
 
+    public boolean isWithinCircle(final Location<World> location) {
+       return ringCenter != null
+               && ringCenter.getPosition().distanceSquared(location.getPosition()) <= DEFAULT_RADIUS * DEFAULT_RADIUS;
+    }
+
+    @Deprecated
     public Predicate<Location<World>> generateCircleTest() {
-        if (ringCenter != null) {
-            return MathUtils.isWithinSphere(ringCenter, DEFAULT_RADIUS);
-        }
-        return (unused) -> false;
+        return this::isWithinCircle;
     }
 
     public void reset() {

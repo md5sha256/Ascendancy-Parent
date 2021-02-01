@@ -4,6 +4,7 @@ import com.gmail.andrewandy.ascendancy.lib.util.CommonUtils;
 import com.gmail.andrewandy.ascendancy.serverplugin.configuration.Config;
 import com.gmail.andrewandy.ascendancy.serverplugin.game.challenger.ChallengerModule;
 import com.gmail.andrewandy.ascendancy.serverplugin.io.SpongeAscendancyPacketHandler;
+import com.gmail.andrewandy.ascendancy.serverplugin.listener.AttributeInitializer;
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.DefaultMatchService;
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.IMatchMakingService;
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.draftpick.DraftMatchFactory;
@@ -23,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
+import org.spongepowered.api.effect.potion.PotionEffect;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -99,6 +101,7 @@ public class AscendancyServerPlugin {
         Sponge.getEventManager().registerListeners(this, injector.getInstance(IMatchMakingService.class));
         Sponge.getEventManager().registerListeners(this, CustomEvents.INSTANCE);
         Sponge.getEventManager().registerListeners(this, new Listeners());
+        Sponge.getEventManager().registerListeners(this, injector.getInstance(AttributeInitializer.class));
         loadMatchMaking(); //Load after the player match manager.
         Common.log(Level.INFO, "Plugin enabled!");
     }

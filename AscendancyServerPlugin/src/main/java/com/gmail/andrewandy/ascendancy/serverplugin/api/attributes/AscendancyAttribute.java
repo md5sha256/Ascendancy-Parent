@@ -22,7 +22,9 @@ public enum AscendancyAttribute {
     //100 is one attack per second
     ATTACK_SPEED(100, 0),
     ARMOR(0, 0),
-    ARMOR_PENETRATION(0, 0);
+    ARMOR_PENETRATION(0, 0),
+
+    DAMAGE_REDUCTION(0, 100);
 
     private static final ValueFactory factory = Sponge.getRegistry().getValueFactory();
 

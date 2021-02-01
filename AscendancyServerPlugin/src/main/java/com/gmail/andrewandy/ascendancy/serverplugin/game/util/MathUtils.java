@@ -53,10 +53,6 @@ public class MathUtils {
 
     public static boolean isWithinCircle(@NotNull final Location<World> centre, final int radius,
                                          @NotNull final Location<World> target) {
-        if (centre.getExtent() != target.getExtent()) {
-            throw new UnsupportedOperationException(
-                    "Cannot calculate distances for different worlds!");
-        }
         return centre.getPosition().distanceSquared(target.getPosition()) <= radius * radius;
     }
 
@@ -69,9 +65,8 @@ public class MathUtils {
 
     public static <E extends Extent> boolean isWithinSphere(@NotNull final Location<E> centre,
                                                             final double radius,
-                                                            @NotNull final Location<E> test) {
-
-        return centre.getPosition().distanceSquared(test.getPosition()) <= radius * radius;
+                                                            @NotNull final Location<E> target) {
+        return centre.getPosition().distanceSquared(target.getPosition()) <= radius * radius;
     }
 
 }

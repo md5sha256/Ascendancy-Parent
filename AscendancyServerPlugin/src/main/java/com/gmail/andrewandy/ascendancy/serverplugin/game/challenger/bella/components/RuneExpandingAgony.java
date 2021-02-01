@@ -67,8 +67,7 @@ public class RuneExpandingAgony extends AbstractRune {
             final Collection<Player> players =
                     Common.getEntities(Player.class, boundRune.getExtentViewFor(data), (Player p) -> {
                         final Optional<Team> optional = matchManager.getTeamOf(p.getUniqueId());
-                        return optional.isPresent() && optional.get() != team && data
-                                .generateCircleTest().test(p.getLocation());
+                        return optional.isPresent() && optional.get() != team && data.isWithinCircle(p.getLocation());
                     });
             final int size = players.size();
             players.forEach((Player player) -> {

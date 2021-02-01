@@ -4,12 +4,14 @@ import co.aikar.taskchain.SpongeTaskChainFactory;
 import co.aikar.taskchain.TaskChainFactory;
 import com.gmail.andrewandy.ascendancy.serverplugin.AscendancyServerPlugin;
 import com.gmail.andrewandy.ascendancy.serverplugin.api.challenger.CCImmunityManager;
+import com.gmail.andrewandy.ascendancy.serverplugin.api.mechanics.AscendancyDamageUtil;
 import com.gmail.andrewandy.ascendancy.serverplugin.command.AscendancyCommandManager;
 import com.gmail.andrewandy.ascendancy.serverplugin.configuration.Config;
 import com.gmail.andrewandy.ascendancy.serverplugin.configuration.YamlConfig;
 import com.gmail.andrewandy.ascendancy.serverplugin.io.SpongeAscendancyPacketHandler;
 import com.gmail.andrewandy.ascendancy.serverplugin.items.spell.ISpellEngine;
 import com.gmail.andrewandy.ascendancy.serverplugin.items.spell.SpellEngine;
+import com.gmail.andrewandy.ascendancy.serverplugin.listener.AttributeInitializer;
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.AscendancyMatch;
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.AscendancyMatchService;
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.DefaultMatchService;
@@ -41,11 +43,13 @@ public class AscendancyModule extends AbstractModule {
         bind(SpongeAscendancyPacketHandler.class).asEagerSingleton();
         final Config config = new YamlConfig();
         bind(Config.class).toInstance(config);
+        bind(AscendancyDamageUtil.class).asEagerSingleton();
         bind(new TypeLiteral<MatchFactory<AscendancyMatch>>() {
         }).toInstance(new DraftMatchFactory(config));
         bind(AscendancyMatchService.class).to(DefaultMatchService.class);
         bind(ISpellEngine.class).to(SpellEngine.class).asEagerSingleton();
         bind(CCImmunityManager.class).to(AscendancyCCManager.class).asEagerSingleton();
         bind(AscendancyCommandManager.class).asEagerSingleton();
+        bind(AttributeInitializer.class).asEagerSingleton();
     }
 }

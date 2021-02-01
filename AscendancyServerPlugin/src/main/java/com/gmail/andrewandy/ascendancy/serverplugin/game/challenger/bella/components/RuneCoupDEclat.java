@@ -4,7 +4,6 @@ import com.flowpowered.math.vector.Vector3i;
 import com.gmail.andrewandy.ascendancy.serverplugin.AscendancyServerPlugin;
 import com.gmail.andrewandy.ascendancy.serverplugin.api.challenger.ChallengerUtils;
 import com.gmail.andrewandy.ascendancy.serverplugin.api.rune.AbstractRune;
-import com.gmail.andrewandy.ascendancy.serverplugin.game.util.MathUtils;
 import com.gmail.andrewandy.ascendancy.serverplugin.game.util.StackData;
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.Team;
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.match.PlayerMatchManager;
@@ -106,17 +105,19 @@ public class RuneCoupDEclat extends AbstractRune {
             final Team team = optional.get();
             final Collection<Player> players = Common
                     .getEntities(Player.class, getExtentViewFor(data),
-                            (player -> data.generateCircleTest().test(player.getLocation())));
+                            (player -> data.isWithinCircle(player.getLocation())));
             int stacks = 0;
-            for (final Player player : players) { //Loop through all nearby entities.
+            //Loop through all nearby entities.
+            for (final Player player : players) {
                 optional = matchManager.getTeamOf(player.getUniqueId());
-                if (!optional.isPresent() || team == optional
-                        .get()) { //Continue if no team or allied.
+                //Continue if no team or allied.
+                if (!optional.isPresent() || team == optional.get()) {
                     continue;
                 }
                 final StackData stackData = stackCount.get(data.getCaster());
                 assert stackData != null;
-                stackData.tick(); //Tick before adding players.
+                //Tick before adding players.
+                stackData.tick();
                 stackData.addPlayer(player.getUniqueId());
                 stacks += stackData.calculateStacks();
                 if (stacks == 2) {
@@ -124,12 +125,13 @@ public class RuneCoupDEclat extends AbstractRune {
                 }
             }
             final long cooldownRemove =
-                    Math.round(Common.toTicks(stacks * 2, TimeUnit.SECONDS) / 2D);
+                    Math.round(Common.toTicks(stacks * 2L, TimeUnit.SECONDS) / 2D);
             assert map.containsKey(data.getCaster());
             final long val = map.get(data.getCaster());
             //Reduce cooldown
             final long newVal = val - cooldownRemove;
-            if (newVal < 0) { //Remove if cooldown is negative.
+            //Remove if cooldown is negative.
+            if (newVal < 0) {
                 map.remove(data.getCaster());
             } else {
                 map.replace(data.getCaster(), newVal);
@@ -170,24 +172,27 @@ public class RuneCoupDEclat extends AbstractRune {
             if (stackData == null) {
                 return;
             }
-            final boolean inCircle = circletData.generateCircleTest().test(location);
-            if (entity.getUniqueId().equals(caster)) { //If the player is bella.
+            final boolean inCircle = circletData.isWithinCircle(location);
+            //If the player is bella.
+            if (entity.getUniqueId().equals(caster)) {
                 final Location<World> current = entity.getLocation();
 
-                final double distanceToRadius =
-                        MathUtils.calculateDistance3D(current, circletData.getRingCenter());
-                if (Math.abs(distanceToRadius - circletData.getRadius()) <= 1) { //If on border edge
-                    ChallengerUtils.teleportPlayer(player, 1); //Teleport 1 block forward bella.
+                final double distanceToCentreSquared =
+                        current.getPosition().distanceSquared(circletData.getRingCenter().getPosition());
+                //If on border edge
+                if (Math.abs(distanceToCentreSquared - circletData.getRadius() * circletData.getRadius()) <= 1) {
+                    //Teleport 1 block forward bella.
+                    ChallengerUtils.teleportPlayer(player, 1);
                 }
                 return;
             }
             if (!inCircle) {
-                stackData.removePlayer(
-                        entity.getUniqueId()); //Remove if player is no longer in the circle.
+                //Remove if player is no longer in the circle.
+                stackData.removePlayer(entity.getUniqueId());
                 return;
             }
-            stackData
-                    .addPlayer(entity.getUniqueId()); //Add to stack data, will be ticked on next tick?
+            //Add to stack data, will be ticked on next tick?
+            stackData.addPlayer(entity.getUniqueId());
         }
     }
 }

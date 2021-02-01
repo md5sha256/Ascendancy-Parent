@@ -1,6 +1,8 @@
 package com.gmail.andrewandy.ascendancy.serverplugin.game.challenger.astricion.components;
 
 import com.gmail.andrewandy.ascendancy.serverplugin.api.ability.AbstractAbility;
+import com.gmail.andrewandy.ascendancy.serverplugin.api.attributes.AscendancyAttribute;
+import com.gmail.andrewandy.ascendancy.serverplugin.api.attributes.AttributeData;
 import com.gmail.andrewandy.ascendancy.serverplugin.api.challenger.Challenger;
 import com.gmail.andrewandy.ascendancy.serverplugin.game.challenger.astricion.Astricion;
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.match.ManagedMatch;
@@ -10,6 +12,9 @@ import com.gmail.andrewandy.ascendancy.serverplugin.util.keybind.ActiveKeyPresse
 import com.gmail.andrewandy.ascendancy.serverplugin.util.keybind.ActiveKeyReleasedEvent;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.data.value.mutable.MutableBoundedValue;
+import org.spongepowered.api.effect.potion.PotionEffect;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -35,19 +40,35 @@ public final class AbilitySuppression extends AbstractAbility {
         register(player);
     }
 
-    //TODO use entangle & give resistance
+    @Override
+    public void register(UUID player) {
+        super.register(player);
+        Sponge.getServer().getPlayer(player).ifPresent(onlinePlayer -> {
+            final AttributeData data = onlinePlayer.get(AttributeData.class)
+                    .orElseThrow(() -> new IllegalStateException("Failed to get AttributeData for: " + onlinePlayer.getName()));
+            final MutableBoundedValue<Integer> damageReduction = data.getAttribute(AscendancyAttribute.DAMAGE_REDUCTION);
+            damageReduction.set(damageReduction.get() + 40);
+        });
+    }
+
+    @Override
+    public void unregister(UUID player) {
+        super.unregister(player);
+        Sponge.getServer().getPlayer(player).ifPresent(onlinePlayer -> {
+            final AttributeData data = onlinePlayer.get(AttributeData.class)
+                    .orElseThrow(() -> new IllegalStateException("Failed to get AttributeData for: " + onlinePlayer.getName()));
+            final MutableBoundedValue<Integer> damageReduction = data.getAttribute(AscendancyAttribute.DAMAGE_REDUCTION);
+            damageReduction.set(damageReduction.get() - 40);
+        });
+    }
+
     @Listener
     public void onEntityDamage(final DamageEntityEvent event) {
         final Entity entity = event.getTargetEntity();
         if (!(entity instanceof Player) || !isRegistered(entity.getUniqueId())) {
             return;
         }
-        event.setBaseDamage(
-                calculateIncomingDamage(event.getBaseDamage())); //Modifies the base damage directly
-    }
 
-    public double calculateIncomingDamage(final double incoming) {
-        return incoming * 0.6D; //Reduced incoming damage.
     }
 
     @Listener
