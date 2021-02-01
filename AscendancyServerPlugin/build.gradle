@@ -44,16 +44,24 @@ repositories {
 
 dependencies {
 
+    //SpongeAPI
+    provided 'org.spongepowered:spongeapi:5.1.0'
+
+    // Jetbrains Annotations
     compileOnly 'org.jetbrains:annotations:19.0.0'
 
-    compileOnly ('com.google.inject.extensions:guice-assistedinject:4.0') {
+    //AscendancyLib
+    compile project(':AscendancyLib')
+
+    // Guice assisted-inject
+    compile('com.google.inject.extensions:guice-assistedinject:4.0') {
         exclude group: 'com.google.inject', module: 'guice'
     }
-    compile 'org.spongepowered:spongeapi:5.1.0' //SpongeAPI
+    // ACF
     compile 'co.aikar:acf-sponge:0.5.0-SNAPSHOT'
+    // TaskChain
     compile 'co.aikar:taskchain-sponge:3.7.2'
-    implementation project(':AscendancyLib') //AscendancyLib
-    compile project(':AscendancyLib') //AscendancyLib
+
 
 }
 
@@ -74,12 +82,8 @@ shadowJar {
     baseName = archivesBaseName
     version = "0.1-ALPHA"
     classifier = null
-    dependencies {
-        include(dependency(":AscendencyLib"))
-        include(dependency("co.aikar:acf-sponge"))
-        include(dependency("co.aikar:taskchain-sponge"))
-    }
-    relocate 'co.aikar.taskchain', 'com.gmail.andrewandy.taskchain'
-    relocate 'co.aikar.commands', 'com.gmail.andrewandy.acf'
-    relocate 'co.aikar.locales', 'com.gmail.andrewandy.locales'
+    relocate 'co.aikar.taskchain', 'com.gmail.andrewandy.ascendancy.serverplugin.lib.taskchain'
+    relocate 'co.aikar.commands', 'com.gmail.andrewandy.ascendancy.serverplugin.lib.acf'
+    relocate 'co.aikar.locales', 'com.gmail.andrewandy.ascendancy.serverplugin.lib.locales'
+    relocate 'com.google.inject', 'com.gmail.andrewandy.ascendancy.serverplugin.lib.inject'
 }
