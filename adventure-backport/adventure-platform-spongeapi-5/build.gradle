@@ -1,0 +1,14 @@
+repositories {
+    maven {
+        url 'https://repo.spongepowered.org/maven/'
+    }
+}
+
+dependencies {
+    compile "net.kyori:adventure-api:${parent.adventure}"
+    compile project(":adventure-backport:text-serializer-spongeapi-5")
+    implementation "net.kyori:adventure-platform-facet:4.0.0-SNAPSHOT"
+    implementation "net.kyori:adventure-platform-viaversion:4.0.0-SNAPSHOT"
+    compileOnly 'org.spongepowered:spongeapi:5.1.0'
+    compileOnly 'us.myles:viaversion-common:3.0.0'
+}

@@ -1,0 +1,16 @@
+repositories {
+    maven {
+        url 'https://repo.spongepowered.org/maven/'
+    }
+}
+
+dependencies {
+    compile "net.kyori:adventure-api:${parent.adventure}"
+    compile "net.kyori:adventure-nbt:${parent.adventure}"
+
+    implementation("net.kyori:adventure-text-serializer-gson:${parent.adventure}") {
+        exclude group: "com.google.code.gson"
+    }
+
+    compileOnly "org.spongepowered:spongeapi:5.1.0"
+}

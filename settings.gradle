@@ -1,3 +1,5 @@
+include ':adventure-backport:text-serializer-spongeapi-5'
+include ':adventure-backport:adventure-platform-spongeapi-5'
 include ':AscendancyLib'
 include ':AscendancyCustomMod'
 include ':AscendancyServerPlugin'

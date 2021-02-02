@@ -1,9 +1,9 @@
 package com.gmail.andrewandy.ascendency.client;
 
+import com.gmail.andrewandy.ascendancy.lib.effect.AscendancyEffects;
 import com.gmail.andrewandy.ascendency.client.io.ClientPacketHandler;
 import com.gmail.andrewandy.ascendency.client.keybinds.ActiveKeyBind;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
+import net.minecraft.potion.Potion;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -38,7 +38,6 @@ public class AscendancyClient {
      */
     @Mod.EventHandler
     public void preinit(FMLPreInitializationEvent event) {
-
     }
 
     /**
@@ -68,62 +67,13 @@ public class AscendancyClient {
         MinecraftForge.EVENT_BUS.register(ActiveKeyBind.INSTANCE);
     }
 
-    /**
-     * Forge will automatically look up and bind blocks to the fields in this class
-     * based on their registry name.
-     */
+
     @GameRegistry.ObjectHolder(MOD_ID)
-    public static class Blocks {
-      /*
-          public static final MySpecialBlock mySpecialBlock = null; // placeholder for special block below
-      */
-    }
-
-    /**
-     * Forge will automatically look up and bind items to the fields in this class
-     * based on their registry name.
-     */
-    @GameRegistry.ObjectHolder(MOD_ID)
-    public static class Items {
-      /*
-          public static final ItemBlock mySpecialBlock = null; // itemblock for the block above
-          public static final MySpecialItem mySpecialItem = null; // placeholder for special item below
-      */
-    }
-
-    /**
-     * This is a special class that listens to registry events, to allow creation of mod blocks and items at the proper time.
-     */
-    @Mod.EventBusSubscriber
-    public static class ObjectRegistryHandler {
-        /**
-         * Listen for the register event for creating custom items
-         */
+    public static class Potions {
         @SubscribeEvent
-        public static void addItems(RegistryEvent.Register<Item> event) {
-           /*
-             event.getRegistry().register(new ItemBlock(Blocks.myBlock).setRegistryName(MOD_ID, "myBlock"));
-             event.getRegistry().register(new MySpecialItem().setRegistryName(MOD_ID, "mySpecialItem"));
-            */
-        }
-
-        /**
-         * Listen for the register event for creating custom blocks
-         */
-        @SubscribeEvent
-        public static void addBlocks(RegistryEvent.Register<Block> event) {
-           /*
-             event.getRegistry().register(new MySpecialBlock().setRegistryName(MOD_ID, "mySpecialBlock"));
-            */
+        public void registerPotions(RegistryEvent.Register<Potion> potionRegistryEvent) {
+            potionRegistryEvent.getRegistry().registerAll(AscendancyEffects.POTIONS.toArray(new Potion[0]));
         }
     }
-    /* EXAMPLE ITEM AND BLOCK - you probably want these in separate files
-    public static class MySpecialItem extends Item {
 
-    }
-
-    public static class MySpecialBlock extends Block {
-
-    }
-    */
 }

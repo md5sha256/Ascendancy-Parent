@@ -1,0 +1,21 @@
+ext.adventure = "4.4.0"
+
+subprojects {
+
+    group 'com.gmail.andrewandy.ascendancy.adventure-backport'
+    version '4.0.0-SNAPSHOT'
+
+    repositories {
+        mavenCentral()
+        maven {
+            name = 'viaversion'
+            url = 'https://repo.viaversion.com'
+        }
+    }
+}
+
+jar {
+    manifest.attributes(
+            'Automatic-Module-Name': 'net.kyori.adventure.text.serializer.spongeapi5'
+    )
+}

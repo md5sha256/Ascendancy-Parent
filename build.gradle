@@ -13,14 +13,27 @@ dependencies {
     //testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
-repositories {
-    mavenCentral()
-    maven {
-        name = 'sponge'
-        url = 'https://repo.spongepowered.org/maven'
-    }
-    maven {
-        name = 'aikar'
-        url = 'https://repo.aikar.co/content/groups/aikar/'
+subprojects {
+    apply plugin: 'groovy'
+    apply plugin: 'java'
+
+    repositories {
+        mavenCentral()
+        maven {
+            name = 'sponge'
+            url = 'https://repo.spongepowered.org/maven'
+        }
+        maven {
+            name = 'aikar'
+            url = 'https://repo.aikar.co/content/groups/aikar/'
+        }
+        maven {
+            name = 'sonatype-snapshots'
+            url = 'https://oss.sonatype.org/content/repositories/snapshots'
+        }
+        maven {
+            name = 'sonatype-releases'
+            url = 'https://oss.sonatype.org/content/repositories/releases'
+        }
     }
 }
