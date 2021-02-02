@@ -10,21 +10,17 @@ import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.IMatchMakingServ
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.draftpick.DraftMatchFactory;
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.match.PlayerMatchManager;
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.match.SimplePlayerMatchManager;
-import com.gmail.andrewandy.ascendancy.serverplugin.module.AscendancyModule;
+import com.gmail.andrewandy.ascendancy.serverplugin.module.AscendancySpongeModule;
+import com.gmail.andrewandy.ascendancy.serverplugin.module.CoreModule;
 import com.gmail.andrewandy.ascendancy.serverplugin.util.Common;
 import com.gmail.andrewandy.ascendancy.serverplugin.util.CustomEvents;
 import com.gmail.andrewandy.ascendancy.serverplugin.util.Listeners;
-import com.gmail.andrewandy.ascendancy.serverplugin.util.YamlLoader;
 import com.gmail.andrewandy.ascendancy.serverplugin.util.keybind.KeyBindHandler;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
-import org.spongepowered.api.effect.potion.PotionEffect;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -32,10 +28,10 @@ import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.configurate.ConfigurationNode;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.logging.Level;
 
 @Plugin(id = "ascendancyserverplugin",
@@ -48,11 +44,8 @@ public class AscendancyServerPlugin {
 
     private static final String DEFAULT_NETWORK_CHANNEL_NAME = "ASCENDANCY_DEFAULT_CHANNEL";
     private static Injector injector;
-    private final AscendancyModule ascModule;
-    private final ChallengerModule challengerModule = new ChallengerModule();
     private DefaultMatchService matchMatchMakingService;
     private KeyBindHandler keyBindHandler;
-    private YAMLConfigurationLoader configurationLoader;
 
     @Inject
     @ConfigDir(sharedRoot = true)
@@ -68,20 +61,10 @@ public class AscendancyServerPlugin {
 
     @Inject
     public AscendancyServerPlugin() {
-        ascModule = new AscendancyModule(this);
     }
 
     public File getDataFolder() {
         return dataFolder;
-    }
-
-    @NotNull
-    public ConfigurationNode getSettings() {
-        try {
-            return configurationLoader.load();
-        } catch (final IOException ex) {
-            throw new IllegalStateException(ex);
-        }
     }
 
     public Logger getLogger() {
@@ -90,7 +73,7 @@ public class AscendancyServerPlugin {
 
     @Listener(order = Order.DEFAULT)
     public void onServerStart(final GameStartedServerEvent event) {
-        injector = parent.createChildInjector(ascModule, challengerModule);
+        injector = parent.createChildInjector(new AscendancySpongeModule(), new CoreModule(), new ChallengerModule());
         Common.setPrefix("[CustomServerMod]");
         loadSettings();
         config = injector.getInstance(Config.class);
@@ -125,17 +108,10 @@ public class AscendancyServerPlugin {
 
 
     public void loadSettings() {
-        Common.log(Level.INFO, "&bLoading settings from disk...");
-        final long time = System.currentTimeMillis();
-        configurationLoader = new YamlLoader("settings.yml").getLoader();
-        Common.log(Level.INFO,
-                "&aLoad complete! Took " + (System.currentTimeMillis() - time) + "ms.");
         try {
-            injector.getInstance(Config.class).loadFromFile(Paths.get(
-                    getDataFolder().getAbsolutePath().concat(File.separator).concat("Config.yml")));
-        } catch (final IOException e) {
-            Common.log(Level.SEVERE, "&cUnable to load config!");
-            e.printStackTrace();
+            config.load();
+        } catch (IOException ex) {
+            throw new RuntimeException("failed to load config!");
         }
     }
 
@@ -166,19 +142,20 @@ public class AscendancyServerPlugin {
     }
 
     private void loadMatchMaking() throws IllegalArgumentException {
-        ConfigurationNode node = getSettings();
-        node = node.getNode("MatchMaking");
-        if (node == null) {
+        final DraftMatchFactory draftMatchFactory = injector.getInstance(DraftMatchFactory.class);
+        ConfigurationNode node = config.getRootNode();
+        node = node.node("MatchMaking");
+        if (node.virtual() || node.empty()) {
             throw new IllegalArgumentException(
                     "Invalid settings detected! Missing MatchMaking section!");
         }
-        final int min = node.getNode("Min-Players").getInt();
-        final int max = node.getNode("Max-Players").getInt();
-        final String modeEnumName = node.getNode("Mode").getString().toUpperCase();
+        final int min = node.node("Min-Players").getInt();
+        final int max = node.node("Max-Players").getInt();
+        final String modeEnumName = node.node("Mode").getString("null").toUpperCase();
         final IMatchMakingService.MatchMakingMode mode =
                 IMatchMakingService.MatchMakingMode.valueOf(modeEnumName);
         final DefaultMatchService service =
-                new DefaultMatchService(new DraftMatchFactory(config), config).setMatchMakingMode(mode);
+                new DefaultMatchService(draftMatchFactory, config).setMatchMakingMode(mode);
         if (matchMatchMakingService != null) {
             for (final Player player : matchMatchMakingService.clearQueue()) {
                 service.addToQueue(player);

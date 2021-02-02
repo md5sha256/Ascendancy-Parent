@@ -19,14 +19,13 @@ public class TickHandler {
                 .submit(plugin);
     }
 
-
-    public void submitTickable(final Tickable tickable) {
-        removeTickable(tickable);
-        submitTickable(tickable, 1);
-    }
-
     public void removeTickable(final Tickable tickable) {
         toTick.remove(tickable);
+    }
+
+    public void submitTickable(final Tickable tickable) {
+        toTick.remove(tickable);
+        submitTickable(tickable, 1);
     }
 
     public void submitTickable(final Tickable tickable, final int ticks) {

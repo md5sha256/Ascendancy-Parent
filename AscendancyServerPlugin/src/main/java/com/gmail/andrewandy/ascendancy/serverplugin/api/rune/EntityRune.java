@@ -6,8 +6,6 @@ public interface EntityRune extends Rune {
 
     void applyTo(Entity entity);
 
-    void clearFrom(Entity entity);
-
     @Override
     default void applyTo(final Object object) {
         if (!canApplyTo(object)) {
@@ -15,6 +13,8 @@ public interface EntityRune extends Rune {
         }
         applyTo((Entity) object);
     }
+
+    void clearFrom(Entity entity);
 
     @Override
     default void clearFrom(final Object object) {

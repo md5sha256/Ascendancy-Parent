@@ -13,12 +13,14 @@ import com.gmail.andrewandy.ascendancy.serverplugin.game.challenger.nikolas.Niko
 import com.gmail.andrewandy.ascendancy.serverplugin.game.challenger.vengelis.Vengelis;
 import com.gmail.andrewandy.ascendancy.serverplugin.game.challenger.vengelis.VengelisComponentFactory;
 import com.google.inject.AbstractModule;
+import com.google.inject.Singleton;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
 
+@Singleton
 public final class ChallengerModule extends AbstractModule {
 
     public static List<String> getLoreOf(@NotNull final String name) {
@@ -28,7 +30,6 @@ public final class ChallengerModule extends AbstractModule {
 
     @Override
     protected void configure() {
-
         install(new FactoryModuleBuilder().build(AstricionComponentFactory.class));
         install(new FactoryModuleBuilder().build(BellaComponentFactory.class));
         install(new FactoryModuleBuilder().build(BreezyComponentFactory.class));
@@ -42,7 +43,8 @@ public final class ChallengerModule extends AbstractModule {
         bind(Breezy.class).asEagerSingleton();
         bind(Knavis.class).asEagerSingleton();
         bind(Nikolas.class).asEagerSingleton();
-        bind(Vengelis.class).asEagerSingleton(); // Vengelis depends on the instance of Knavis!
+        // Vengelis depends on the instance of Knavis!
+        bind(Vengelis.class).asEagerSingleton();
 
     }
 

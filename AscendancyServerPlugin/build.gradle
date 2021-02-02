@@ -30,6 +30,7 @@ java {
 }
 
 compileJava {
+    // Keep params
     options.compilerArgs += ["-parameters"]
     options.fork = true
     options.forkOptions.executable = 'javac'
@@ -45,7 +46,10 @@ repositories {
 dependencies {
 
     //SpongeAPI
-    provided 'org.spongepowered:spongeapi:5.1.0'
+    provided ('org.spongepowered:spongeapi:5.1.0') {
+        // Exclude sponge 5's configurate, we shade in configurate 4.0.0
+        exclude group: 'ninja.leaping.configurate'
+    }
 
     // Jetbrains Annotations
     compileOnly 'org.jetbrains:annotations:19.0.0'
@@ -57,12 +61,21 @@ dependencies {
     compile('com.google.inject.extensions:guice-assistedinject:4.0') {
         exclude group: 'com.google.inject', module: 'guice'
     }
+
     // ACF
     compile 'co.aikar:acf-sponge:0.5.0-SNAPSHOT'
+
     // TaskChain
     compile 'co.aikar:taskchain-sponge:3.7.2'
 
+    // Configurate 4.0.0
+    implementation('org.spongepowered:configurate-yaml:4.0.0')
 
+    // Adventure sponge
+    implementation project(':adventure-backport:adventure-platform-spongeapi-5')
+
+    // Adventure mini-message
+    implementation ('net.kyori:adventure-text-minimessage:4.0.0-SNAPSHOT')
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
@@ -86,4 +99,6 @@ shadowJar {
     relocate 'co.aikar.commands', 'com.gmail.andrewandy.ascendancy.serverplugin.lib.acf'
     relocate 'co.aikar.locales', 'com.gmail.andrewandy.ascendancy.serverplugin.lib.locales'
     relocate 'com.google.inject', 'com.gmail.andrewandy.ascendancy.serverplugin.lib.inject'
+    // Relocate configurate to prevent conflicts with sponge (shouldn't be an issue for Sponge 5, may be for Sponge 7.)
+    relocate 'com.spongepowered.configurate', 'com.gmail.andrewandy.ascendancy.serverplugin.lib.configurate'
 }

@@ -51,7 +51,7 @@ public class SimplePlayerMatchManager implements PlayerMatchManager {
         final Match started = event.getMatch();
         //Check for player conflicts.
         final String message =
-                "[WARNING] [Ascendency Match Manager] Detected a player conflict in a match being started which is not being tracked!";
+                "[WARNING] [Ascendancy Match Manager] Detected a player conflict in a match being started which is not being tracked!";
         boolean logged = false;
         for (final UUID uuid : started.getPlayers()) {
             final Optional<ManagedMatch> optionalMatch = getMatchOf(uuid);
@@ -67,7 +67,8 @@ public class SimplePlayerMatchManager implements PlayerMatchManager {
         }
     }
 
-    @Listener(order = Order.LAST) //Executed last.
+    //Executed last.
+    @Listener(order = Order.LAST)
     public void onMatchEnd(final MatchEndedEvent event) {
         final Match match = event.getMatch();
         if (!(match instanceof ManagedMatch)) {
@@ -76,8 +77,9 @@ public class SimplePlayerMatchManager implements PlayerMatchManager {
         matches.remove(match);
     }
 
-    @Listener(order = Order.FIRST) //teleports the player to a reset point if it is set.
+    //teleports the player to a reset point if it is set.
     //Run this first, so that the queue checker will ALWAYS have the most up to date state of the player.
+    @Listener(order = Order.FIRST)
     public void onPlayerJoin(final ClientConnectionEvent.Join event) {
         final UUID player = event.getTargetEntity().getUniqueId();
         if (resetCoordinate == null) {
