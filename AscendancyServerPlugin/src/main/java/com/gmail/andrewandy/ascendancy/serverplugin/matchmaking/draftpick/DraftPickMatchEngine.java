@@ -1,13 +1,15 @@
 package com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.draftpick;
 
+import co.aikar.commands.annotation.Name;
 import com.gmail.andrewandy.ascendancy.serverplugin.AscendancyServerPlugin;
 import com.gmail.andrewandy.ascendancy.serverplugin.api.attributes.AttributeData;
 import com.gmail.andrewandy.ascendancy.serverplugin.api.challenger.Challenger;
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.Team;
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.match.ManagedMatch;
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.match.engine.GameEngine;
+import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
-import ninja.leaping.configurate.ConfigurationNode;
+import com.google.inject.name.Named;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
@@ -18,6 +20,7 @@ import org.spongepowered.api.scoreboard.Scoreboard;
 import org.spongepowered.api.scoreboard.critieria.Criteria;
 import org.spongepowered.api.scoreboard.objective.Objective;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.configurate.ConfigurationNode;
 
 import java.lang.ref.WeakReference;
 import java.util.*;
@@ -33,7 +36,11 @@ import java.util.*;
 public class DraftPickMatchEngine implements GameEngine {
 
     @Inject
-    private static AscendancyServerPlugin plugin;
+    @Named("internal-config")
+    private ConfigurationNode internalConfig;
+
+    @Inject
+    private AscendancyServerPlugin plugin;
 
     private static Scoreboard scoreboard;
     private static Objective damagerObjective, victimObjective, relativeIDObjective;
@@ -169,16 +176,18 @@ public class DraftPickMatchEngine implements GameEngine {
         if (scoreboard != null) {
             return;
         }
-        ConfigurationNode node = plugin.getSettings();
-        node = node.getNode("DamageScoreboard");
-        Objects.requireNonNull(node, "Invalid Config! DamageScoreboard is missing!");
+        ConfigurationNode node = internalConfig;
+        node = node.node("DamageScoreboard");
+        Preconditions.checkArgument(!node.virtual() && !node.empty(), "Invalid Config! DamageScoreboard is missing!");
         final String rawName, rawDamager, rawVictim;
-        rawName = node.getNode("ScoreboardPlayerID").getString();
-        rawDamager = node.getNode("ScoreboardDamager").getString();
-        rawVictim = node.getNode("ScoreboardVictim").getString();
-        final String relativeIDName = rawName;
+        rawName = node.node("ScoreboardPlayerID").getString();
+        rawDamager = node.node("ScoreboardDamager").getString();
+        rawVictim = node.node("ScoreboardVictim").getString();
+
+        assert rawName != null && rawDamager != null && rawVictim != null;
+
         relativeIDObjective =
-                Objective.builder().name(relativeIDName).criterion(Criteria.DUMMY).build();
+                Objective.builder().name(rawName).criterion(Criteria.DUMMY).build();
         damagerObjective = Objective.builder().name(rawDamager).criterion(Criteria.DUMMY).build();
         victimObjective = Objective.builder().name(rawVictim).criterion(Criteria.DUMMY).build();
         scoreboard = Sponge.getServer().getServerScoreboard()

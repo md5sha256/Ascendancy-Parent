@@ -1,4 +1,4 @@
-package com.gmail.andrewandy.ascendency.client.util;
+package com.gmail.andrewandy.ascendancy.client.util;
 
 import com.gmail.andrewandy.ascendancy.lib.data.FileDataPacket;
 import com.gmail.andrewandy.ascendancy.lib.data.FileRequestPacket;

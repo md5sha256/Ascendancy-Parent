@@ -1,6 +1,6 @@
-package com.gmail.andrewandy.ascendency.client.keybinds;
+package com.gmail.andrewandy.ascendancy.client.keybinds;
 
-import com.gmail.andrewandy.ascendency.client.io.ClientPacketHandler;
+import com.gmail.andrewandy.ascendancy.client.io.ClientPacketHandler;
 import com.gmail.andrewandy.ascendancy.lib.AscendancyPacket;
 import com.gmail.andrewandy.ascendancy.lib.keybind.AscendancyKey;
 import com.gmail.andrewandy.ascendancy.lib.keybind.CustomKeyPressedPacket;

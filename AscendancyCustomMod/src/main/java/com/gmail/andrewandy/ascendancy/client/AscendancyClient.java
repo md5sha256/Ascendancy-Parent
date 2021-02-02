@@ -1,7 +1,7 @@
-package com.gmail.andrewandy.ascendency.client;
+package com.gmail.andrewandy.ascendancy.client;
 
-import com.gmail.andrewandy.ascendency.client.io.ClientPacketHandler;
-import com.gmail.andrewandy.ascendency.client.keybinds.ActiveKeyBind;
+import com.gmail.andrewandy.ascendancy.client.io.ClientPacketHandler;
+import com.gmail.andrewandy.ascendancy.client.keybinds.ActiveKeyBind;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;

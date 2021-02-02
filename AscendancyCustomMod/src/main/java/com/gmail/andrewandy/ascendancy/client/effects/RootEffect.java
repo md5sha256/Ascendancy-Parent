@@ -1,4 +1,4 @@
-package com.gmail.andrewandy.ascendency.client.effects;
+package com.gmail.andrewandy.ascendancy.client.effects;
 
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;

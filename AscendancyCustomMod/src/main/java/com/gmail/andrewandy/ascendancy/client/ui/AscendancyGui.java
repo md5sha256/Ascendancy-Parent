@@ -1,4 +1,4 @@
-package com.gmail.andrewandy.ascendency.client.ui;
+package com.gmail.andrewandy.ascendancy.client.ui;
 
 import net.minecraft.client.gui.GuiScreen;
 
