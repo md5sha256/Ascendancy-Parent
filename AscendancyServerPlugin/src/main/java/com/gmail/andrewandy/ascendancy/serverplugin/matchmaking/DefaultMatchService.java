@@ -8,13 +8,14 @@ import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.match.event.Matc
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.match.event.PlayerJoinMatchEvent;
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.match.event.PlayerLeftMatchEvent;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import net.minecraftforge.common.MinecraftForge;
-import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.configurate.ConfigurationNode;
 
 import java.util.*;
 
@@ -24,8 +25,8 @@ import java.util.*;
 public class DefaultMatchService implements AscendancyMatchService {
 
     private final Config config;
-    private LinkedList<Player> playerQueue = new LinkedList<>();
     private final Set<Player> playerQueueCache = new HashSet<>();
+    private LinkedList<Player> playerQueue = new LinkedList<>();
     private MatchMakingMode mode = MatchMakingMode.BALANCED; //The way server matches players.
     private MatchFactory<AscendancyMatch> matchFactory;
 
@@ -42,8 +43,7 @@ public class DefaultMatchService implements AscendancyMatchService {
      * @param config             The config file.
      */
     @Inject
-    public DefaultMatchService(final AscendancyMatchFactory matchMakingFactory,
-                               final Config config) {
+    public DefaultMatchService(final AscendancyMatchFactory matchMakingFactory, @Named("internal-config") final Config config) {
         this.matchFactory = matchMakingFactory;
         this.config = Objects.requireNonNull(config);
         registerListeners();
@@ -51,8 +51,8 @@ public class DefaultMatchService implements AscendancyMatchService {
     }
 
     public void reloadConfiguration() {
-        final ConfigurationNode node = config.getRootNode().getNode("MatchMaking");
-        this.mode = MatchMakingMode.valueOf(node.getNode("Mode").getString());
+        final ConfigurationNode node = config.getRootNode().node("MatchMaking");
+        this.mode = MatchMakingMode.valueOf(node.node("Mode").getString());
     }
 
     @Override
@@ -237,6 +237,7 @@ public class DefaultMatchService implements AscendancyMatchService {
     @Listener(order = Order.LAST)
     public void onPlayerLeaveMatch(final PlayerLeftMatchEvent event) {
         final Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(event.getPlayer());
-        optionalPlayer.ifPresent(this::addToQueueAndTryMatch); //Add the player to the queue.
+        //Add the player to the queue.
+        optionalPlayer.ifPresent(this::addToQueue);
     }
 }

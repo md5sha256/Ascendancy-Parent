@@ -27,7 +27,7 @@ public enum Teams {
         return teams;
     }
 
-    public AscendancyTeam asAscendencyTeam() {
+    public AscendancyTeam asAscendancyTeam() {
         return ascendancyTeam;
     }
 

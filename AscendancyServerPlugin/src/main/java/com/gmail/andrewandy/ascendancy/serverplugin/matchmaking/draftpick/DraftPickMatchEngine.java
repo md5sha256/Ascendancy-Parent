@@ -1,6 +1,7 @@
 package com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.draftpick;
 
 import com.gmail.andrewandy.ascendancy.serverplugin.AscendancyServerPlugin;
+import com.gmail.andrewandy.ascendancy.serverplugin.api.attributes.AttributeData;
 import com.gmail.andrewandy.ascendancy.serverplugin.api.challenger.Challenger;
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.Team;
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.match.ManagedMatch;
@@ -36,7 +37,8 @@ public class DraftPickMatchEngine implements GameEngine {
 
     private static Scoreboard scoreboard;
     private static Objective damagerObjective, victimObjective, relativeIDObjective;
-    private final WeakReference<DraftPickMatch> matchReference; //Holds the reference to the match
+    //Holds the reference to the match
+    private final WeakReference<DraftPickMatch> matchReference;
     private final Collection<AscendancyPlayer> ascendancyPlayers;
 
 
@@ -55,7 +57,7 @@ public class DraftPickMatchEngine implements GameEngine {
      *
      * @return Returns a shall-cloned copy of the {@link AscendancyPlayer}s.
      */
-    Collection<AscendancyPlayer> getAscendencyPlayers() {
+    Collection<AscendancyPlayer> getAscendancyPlayers() {
         return new HashSet<>(ascendancyPlayers);
     }
 
@@ -116,6 +118,11 @@ public class DraftPickMatchEngine implements GameEngine {
 
     private void disable() {
         Sponge.getEventManager().unregisterListeners(this);
+        for (AscendancyPlayer player : ascendancyPlayers) {
+            final Optional<Player> optional = Sponge.getServer().getPlayer(player.getPlayerUUID());
+            // Remove attribute data on game end.
+            optional.ifPresent(p -> p.remove(AttributeData.class));
+        }
         ascendancyPlayers.clear();
     }
 
@@ -155,7 +162,7 @@ public class DraftPickMatchEngine implements GameEngine {
     }
 
     /**
-     * Internal method, intilaises the scoreboard to synchronise data with
+     * Internal method, initialises the scoreboard to synchronise data with
      * the commndblock implementation of this game engine.
      */
     private void initScoreBoard() {
@@ -211,26 +218,21 @@ public class DraftPickMatchEngine implements GameEngine {
             return;
         }
         final Player player = optionalPlayer.get();
-        final Optional<AscendancyPlayer> optional =
-                getGamePlayerOf(player.getUniqueId()); //Player object
+        //Player object
+        final Optional<AscendancyPlayer> optional = getGamePlayerOf(player.getUniqueId());
         if (!optional.isPresent()) {
             return;
         }
-        if (!match.isEngaged()) { //Cancels this event if the match is not engaged.
+        //Cancels this event if the match is not engaged.
+        if (!match.isEngaged()) {
             event.setCancelled(true);
             return;
         }
         final Text victimText = ((Player) victim).getTeamRepresentation();
         final Text damagerText = player.getTeamRepresentation();
-        victimObjective.getOrCreateScore(damagerText).
-
-                setScore(relativeIDObjective.getOrCreateScore(victimText).
-
-                        getScore());
-        damagerObjective.getOrCreateScore(victimText).
-
-                setScore(relativeIDObjective.getOrCreateScore(damagerText).
-
-                        getScore());
+        victimObjective.getOrCreateScore(damagerText)
+                .setScore(relativeIDObjective.getOrCreateScore(victimText).getScore());
+        damagerObjective.getOrCreateScore(victimText)
+                .setScore(relativeIDObjective.getOrCreateScore(damagerText).getScore());
     }
 }

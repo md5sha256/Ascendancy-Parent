@@ -33,6 +33,7 @@ public class DraftPickMatch extends AbstractMatch implements AscendancyMatch {
      * object with regards to runes.
      */
     public class RuneManager {
+
         public boolean applyRuneTo(final PlayerSpecificRune rune, final UUID player) {
             if (!getPlayers().contains(player)) {
                 throw new IllegalArgumentException("Player is not in this match!");

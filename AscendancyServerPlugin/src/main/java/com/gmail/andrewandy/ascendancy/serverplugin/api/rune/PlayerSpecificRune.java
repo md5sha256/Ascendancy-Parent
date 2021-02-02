@@ -7,8 +7,6 @@ public interface PlayerSpecificRune extends EntityRune {
 
     void applyTo(Player player);
 
-    void clearFrom(Player player);
-
     @Override
     default void applyTo(final Entity entity) {
         if (!canApplyTo(entity)) {
@@ -16,6 +14,8 @@ public interface PlayerSpecificRune extends EntityRune {
         }
         applyTo((Player) entity);
     }
+
+    void clearFrom(Player player);
 
     default void clearFrom(final Entity entity) {
         if (entity instanceof Player) {
