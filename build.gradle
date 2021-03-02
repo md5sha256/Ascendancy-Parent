@@ -2,44 +2,9 @@ plugins {
     id 'groovy'
     id 'java'
     id 'java-library'
-    id("com.github.johnrengelman.shadow") version "4.0.2"
 }
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
-}
-
-dependencies {
-    //compile 'org.codehaus.groovy:groovy-all:2.3.11'
-    compile project(":AscendancyLib")
-    compile project(":AscendancyCustomMod")
-    compile project(":AscendancyServerPlugin")
-    //testCompile group: 'junit', name: 'junit', version: '4.12'
-}
-
-subprojects {
-
-    apply(plugin: "com.github.johnrengelman.shadow")
-
-    group(modGroup)
-
-    buildscript {
-        repositories {
-            jcenter()
-            maven {
-                name = "forge"
-                url = "https://files.minecraftforge.net/maven"
-            }
-        }
-        dependencies {
-            classpath "net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT"
-            classpath "com.github.jengelman.gradle.plugins:shadow:4.0.2"
-        }
-    }
-
-    repositories {
-        mavenCentral()
-    }
-
 }
