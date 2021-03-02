@@ -5,6 +5,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.text.translation.I18n;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class AscendancyEffect extends PotionEffect {
 
@@ -36,11 +37,11 @@ public abstract class AscendancyEffect extends PotionEffect {
     }
 
     @Override
-    public void performEffect(EntityLivingBase entityliving) {
+    public void performEffect(@NotNull EntityLivingBase entityliving) {
     }
 
     @Override
-    public void combine(PotionEffect potioneffect) {
+    public void combine(@NotNull PotionEffect potioneffect) {
         if (!(potioneffect instanceof AscendancyEffect)) {
             return;
         }
@@ -52,7 +53,7 @@ public abstract class AscendancyEffect extends PotionEffect {
     }
 
     @Override
-    public boolean onUpdate(EntityLivingBase entityliving) {
+    public boolean onUpdate(@NotNull EntityLivingBase entityliving) {
         boolean bool = super.onUpdate(entityliving);
         if (InitialApplication) {
             InitialApplication = false;
@@ -103,5 +104,6 @@ public abstract class AscendancyEffect extends PotionEffect {
     public void readCustomNBT(NBTTagCompound nbt) {
 
     }
+
 }
 

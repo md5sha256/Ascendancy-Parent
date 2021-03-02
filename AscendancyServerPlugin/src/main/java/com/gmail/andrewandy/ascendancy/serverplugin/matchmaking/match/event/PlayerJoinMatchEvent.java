@@ -29,4 +29,5 @@ public class PlayerJoinMatchEvent extends MatchEvent implements Cancellable {
     public void setCancelled(boolean cancel) {
         this.cancel = cancel;
     }
+
 }

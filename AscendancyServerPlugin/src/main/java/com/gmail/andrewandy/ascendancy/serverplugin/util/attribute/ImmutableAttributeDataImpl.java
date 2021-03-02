@@ -22,20 +22,24 @@ public class ImmutableAttributeDataImpl
     private final ValueFactory factory = Sponge.getRegistry().getValueFactory();
 
     public ImmutableAttributeDataImpl(
-            @NotNull final Map<AscendancyAttribute, ? extends BoundedValue<Integer>> values) {
+            @NotNull final Map<AscendancyAttribute, ? extends BoundedValue<Integer>> values
+    ) {
         final Map<AscendancyAttribute, ImmutableBoundedValue<Integer>> temp =
                 new HashMap<>(values.size());
         for (final Map.Entry<AscendancyAttribute, ? extends BoundedValue<Integer>> entry : values
                 .entrySet()) {
-            temp.put(entry.getKey(),
-                    entry.getKey().createBlankValue(entry.getValue().get()).asImmutable());
+            temp.put(
+                    entry.getKey(),
+                    entry.getKey().createBlankValue(entry.getValue().get()).asImmutable()
+            );
         }
         this.attributeMap = ImmutableMap.copyOf(temp);
     }
 
     @Override
     public @NotNull ImmutableBoundedValue<Integer> getAttribute(
-            @NotNull final AscendancyAttribute attribute) {
+            @NotNull final AscendancyAttribute attribute
+    ) {
         return attributeMap.get(attribute);
     }
 
@@ -53,4 +57,5 @@ public class ImmutableAttributeDataImpl
     public int getContentVersion() {
         return 0;
     }
+
 }

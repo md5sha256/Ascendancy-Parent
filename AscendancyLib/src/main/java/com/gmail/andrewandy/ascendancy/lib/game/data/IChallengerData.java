@@ -9,4 +9,5 @@ public interface IChallengerData {
     List<String> getLore();
 
     String getName();
+
 }

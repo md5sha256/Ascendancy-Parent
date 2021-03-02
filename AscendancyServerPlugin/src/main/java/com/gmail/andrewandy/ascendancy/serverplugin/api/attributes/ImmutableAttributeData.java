@@ -14,4 +14,5 @@ public interface ImmutableAttributeData
         final BoundedValue<Integer> boundedValue = getAttribute(attribute);
         return boundedValue.exists() ? attribute.defaultValue() : boundedValue.get();
     }
+
 }

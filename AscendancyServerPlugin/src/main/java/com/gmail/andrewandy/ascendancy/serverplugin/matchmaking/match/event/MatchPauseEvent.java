@@ -25,4 +25,5 @@ public class MatchPauseEvent extends MatchEvent implements Cancellable {
     public void setCancelled(final boolean cancel) {
         this.cancel = cancel;
     }
+
 }

@@ -14,7 +14,12 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.plugin.PluginContainer;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @CommandAlias("ascendencydebug|ascdebug")
@@ -89,4 +94,5 @@ public class DebugMatchCommand
         assert team.isPresent();
         Common.tell(sender, "&bYou have joined the debug match, team: " + team.get().getName());
     }
+
 }

@@ -10,7 +10,8 @@ import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.ConfigurationOptions;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
@@ -18,12 +19,11 @@ import java.util.logging.Level;
 
 public class YamlConfig implements Config {
 
+    private final Path path;
     private YamlConfigurationLoader loader;
     private ConfigurationNode cachedNode;
-
     @Inject
     private TaskChainFactory taskChainFactory;
-    private final Path path;
 
     public YamlConfig(@Assisted final Path path) {
         this.path = path;
@@ -54,8 +54,10 @@ public class YamlConfig implements Config {
         final long time = System.currentTimeMillis();
         this.cachedNode = loader.load();
         this.cachedNode.mergeFrom(defaultRoot);
-        Common.log(Level.INFO,
-                "&aLoad complete! Took " + (System.currentTimeMillis() - time) + "ms.");
+        Common.log(
+                Level.INFO,
+                "&aLoad complete! Took " + (System.currentTimeMillis() - time) + "ms."
+        );
     }
 
     public void save() throws IOException {

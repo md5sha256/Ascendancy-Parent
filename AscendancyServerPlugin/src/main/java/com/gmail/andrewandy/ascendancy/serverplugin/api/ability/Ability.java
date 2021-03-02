@@ -56,4 +56,5 @@ public interface Ability {
      * @return Returns a {@link Collection<UUID>} of the player's UniqueIDs
      */
     Collection<UUID> getRegistered();
+
 }

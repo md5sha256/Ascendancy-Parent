@@ -87,4 +87,5 @@ public class FileRequestPacket extends DataRequestPacket {
     public String getIdentifier() {
         return FileRequestPacket.class.getCanonicalName() + SPLITTER + PROTOCOL_VERSION;
     }
+
 }

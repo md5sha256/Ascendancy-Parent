@@ -10,7 +10,13 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.ChangeEntityPotionEffectEvent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Singleton
@@ -74,14 +80,18 @@ public class AscendancyCCManager implements CCImmunityManager {
     }
 
     @Override
-    public long getImmunityDuration(@NotNull final Entity entity,
-                                    @NotNull final TimeUnit timeUnit) {
+    public long getImmunityDuration(
+            @NotNull final Entity entity,
+            @NotNull final TimeUnit timeUnit
+    ) {
         return Common.fromTicks(immunityMap.getOrDefault(entity.getUniqueId(), 0L), timeUnit);
     }
 
     @Override
-    public void setImmune(@NotNull final Entity entity, final long duration,
-                          @NotNull final TimeUnit timeUnit) {
+    public void setImmune(
+            @NotNull final Entity entity, final long duration,
+            @NotNull final TimeUnit timeUnit
+    ) {
         if (duration <= 0) {
             throw new IllegalArgumentException("Duration must be greater than 0!");
         }
@@ -111,4 +121,5 @@ public class AscendancyCCManager implements CCImmunityManager {
             event.setCancelled(true);
         }
     }
+
 }

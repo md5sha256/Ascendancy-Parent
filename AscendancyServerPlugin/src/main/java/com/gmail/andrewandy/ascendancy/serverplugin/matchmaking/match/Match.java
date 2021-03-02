@@ -49,7 +49,12 @@ public interface Match {
 
     enum MatchState implements Comparable<MatchState> {
 
-        LOBBY, LOADING, ENGAGED, ENDED, PAUSED, ERROR;
+        LOBBY,
+        LOADING,
+        ENGAGED,
+        ENDED,
+        PAUSED,
+        ERROR;
 
         public MatchState getNext() {
             if (isSpecialState()) {
@@ -75,4 +80,5 @@ public interface Match {
             return this == PAUSED || this == ERROR;
         }
     }
+
 }

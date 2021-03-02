@@ -1,5 +1,7 @@
 package com.gmail.andrewandy.ascendancy.serverplugin.game.challenger.astricion;
 
+import com.gmail.andrewandy.ascendancy.lib.game.data.IChallengerData;
+import com.gmail.andrewandy.ascendancy.lib.game.data.game.ChallengerDataImpl;
 import com.gmail.andrewandy.ascendancy.serverplugin.api.ability.Ability;
 import com.gmail.andrewandy.ascendancy.serverplugin.api.challenger.AbstractChallenger;
 import com.gmail.andrewandy.ascendancy.serverplugin.api.challenger.Challenger;
@@ -9,8 +11,6 @@ import com.gmail.andrewandy.ascendancy.serverplugin.game.challenger.astricion.co
 import com.gmail.andrewandy.ascendancy.serverplugin.game.challenger.astricion.components.RuneEmpoweringRage;
 import com.gmail.andrewandy.ascendancy.serverplugin.game.challenger.astricion.components.RuneReleasedLimit;
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.match.PlayerMatchManager;
-import com.gmail.andrewandy.ascendancy.lib.game.data.IChallengerData;
-import com.gmail.andrewandy.ascendancy.lib.game.data.game.ChallengerDataImpl;
 import com.google.inject.Inject;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,12 +22,16 @@ public class Astricion extends AbstractChallenger {
     @Inject
     Astricion(@NotNull final PlayerMatchManager matchManager, final AstricionComponentFactory componentFactory) {
         super("Astricion", (challenger -> abilities(challenger, componentFactory)), Astricion::runes,
-                ChallengerModule.getLoreOf("Astricion"));
+                ChallengerModule.getLoreOf("Astricion")
+        );
     }
 
-    private static Ability[] abilities(final Challenger challenger,
-                                       final AstricionComponentFactory componentFactory) {
-        return new Ability[]{componentFactory.createDemonicCapacityFor(challenger), componentFactory.createSuppressionFor(challenger)};
+    private static Ability[] abilities(
+            final Challenger challenger,
+            final AstricionComponentFactory componentFactory
+    ) {
+        return new Ability[]{componentFactory.createDemonicCapacityFor(challenger), componentFactory.createSuppressionFor(
+                challenger)};
     }
 
     @Deprecated
@@ -46,4 +50,5 @@ public class Astricion extends AbstractChallenger {
             throw new IllegalStateException(e);
         }
     }
+
 }

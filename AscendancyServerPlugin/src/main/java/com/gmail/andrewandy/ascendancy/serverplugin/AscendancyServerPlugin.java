@@ -161,9 +161,12 @@ public class AscendancyServerPlugin {
                 service.addToQueue(player);
             }
         }
-        Common.log(Level.INFO,
+        Common.log(
+                Level.INFO,
                 "7a[Matchmaking] Loaded: Max-Players = " + max + ", Min-Players = " + min
-                        + ", Mode = " + CommonUtils.capitalise(mode.name().toLowerCase()));
+                        + ", Mode = " + CommonUtils.capitalise(mode.name().toLowerCase())
+        );
         matchMatchMakingService = service;
     }
+
 }

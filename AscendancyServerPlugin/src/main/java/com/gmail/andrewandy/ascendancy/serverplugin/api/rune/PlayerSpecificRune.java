@@ -1,5 +1,6 @@
 package com.gmail.andrewandy.ascendancy.serverplugin.api.rune;
 
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 
@@ -24,7 +25,7 @@ public interface PlayerSpecificRune extends EntityRune {
     }
 
     @Override
-    default void clearFrom(final Object object) {
+    default void clearFrom(final @NotNull Object object) {
         if (!canApplyTo(object)) {
             return;
         }
@@ -32,7 +33,8 @@ public interface PlayerSpecificRune extends EntityRune {
     }
 
     @Override
-    default boolean canApplyTo(final Object object) {
+    default boolean canApplyTo(final @NotNull Object object) {
         return object instanceof Player;
     }
+
 }

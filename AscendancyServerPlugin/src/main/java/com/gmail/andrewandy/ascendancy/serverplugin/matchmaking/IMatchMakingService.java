@@ -54,7 +54,8 @@ public interface IMatchMakingService<M extends ManagedMatch> {
          * Will ONLY match based on if there are enough players
          * to meet a game's require player count.
          */
-        OPTIMAL;
+        OPTIMAL
 
     }
+
 }

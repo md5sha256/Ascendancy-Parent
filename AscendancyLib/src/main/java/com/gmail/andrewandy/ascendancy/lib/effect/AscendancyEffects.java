@@ -10,7 +10,11 @@ public class AscendancyEffects {
 
     public static final Collection<Potion> POTIONS = new HashSet<>();
 
-    public static final Potion EFFECT_ENTANGLEMENT = createPotion(new ResourceLocation("ascendancy:entanglement"), true, 0x5a4b1e);
+    public static final Potion EFFECT_ENTANGLEMENT = createPotion(
+            new ResourceLocation("ascendancy:entanglement"),
+            true,
+            0x5a4b1e
+    );
 
     private AscendancyEffects() {
 

@@ -1,6 +1,8 @@
 plugins {
     id 'groovy'
     id 'java'
+    id 'java-library'
+    id("com.github.johnrengelman.shadow") version "4.0.2"
 }
 
 java {
@@ -18,7 +20,9 @@ dependencies {
 
 subprojects {
 
-    group modGroup
+    apply(plugin: "com.github.johnrengelman.shadow")
+
+    group(modGroup)
 
     buildscript {
         repositories {
@@ -30,7 +34,7 @@ subprojects {
         }
         dependencies {
             classpath "net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT"
-            classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.2'
+            classpath "com.github.jengelman.gradle.plugins:shadow:4.0.2"
         }
     }
 

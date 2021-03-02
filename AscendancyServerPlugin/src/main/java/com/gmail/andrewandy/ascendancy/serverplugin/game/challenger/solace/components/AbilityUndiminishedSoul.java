@@ -58,4 +58,5 @@ public class AbilityUndiminishedSoul extends AbstractCooldownAbility {
         }
         super.tick();
     }
+
 }

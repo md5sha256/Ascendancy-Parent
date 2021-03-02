@@ -11,8 +11,8 @@ import java.util.List;
 public class ChallengerDataImpl implements IChallengerData {
 
     private final byte[] iconData;
-    private String name;
-    private List<String> lore;
+    private final String name;
+    private final List<String> lore;
 
     public ChallengerDataImpl(String name, File icon, List<String> lore) throws IOException {
         this(name, CommonUtils.readFromStream(new FileInputStream(icon)), lore);
@@ -28,11 +28,14 @@ public class ChallengerDataImpl implements IChallengerData {
         return name;
     }
 
-    @Override public byte[] getIcon() {
+    @Override
+    public byte[] getIcon() {
         return iconData;
     }
 
-    @Override public List<String> getLore() {
+    @Override
+    public List<String> getLore() {
         return lore;
     }
+
 }

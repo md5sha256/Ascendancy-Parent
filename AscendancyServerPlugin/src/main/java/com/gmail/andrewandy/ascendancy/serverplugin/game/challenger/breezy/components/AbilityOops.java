@@ -36,8 +36,10 @@ public class AbilityOops extends AbstractCooldownAbility {
     private final PlayerMatchManager matchManager;
 
     @AssistedInject
-    AbilityOops(@Assisted final Challenger challenger,
-                final PlayerMatchManager matchManager) {
+    AbilityOops(
+            @Assisted final Challenger challenger,
+            final PlayerMatchManager matchManager
+    ) {
         super("Oops", true, 6, TimeUnit.SECONDS, challenger);
         this.matchManager = matchManager;
     }
@@ -74,8 +76,10 @@ public class AbilityOops extends AbstractCooldownAbility {
         final World world = player.getWorld();
         for (final Player p : players) {
             final FallingBlock fallingBlock = (FallingBlock) world
-                    .createEntity(EntityTypes.FALLING_BLOCK,
-                            p.getLocation().getPosition().add(0, 3f, 0));
+                    .createEntity(
+                            EntityTypes.FALLING_BLOCK,
+                            p.getLocation().getPosition().add(0, 3f, 0)
+                    );
             final FallingBlockData fallingBlockData = fallingBlock.getFallingBlockData();
             //Make sure anvil can't be placed (i.e self destructs on place)
             fallingBlockData.set(Keys.CAN_PLACE_AS_BLOCK, false);
@@ -114,4 +118,5 @@ public class AbilityOops extends AbstractCooldownAbility {
             });
         }
     }
+
 }

@@ -37,7 +37,8 @@ public class AscendancyDamageUtil {
         final DamageSource damageSource = DamageSource.builder().bypassesArmor().type(damageType).absolute().build();
         final AttributeData attributeData = victim.get(AttributeData.class)
                 .orElseThrow(() -> new IllegalStateException("Failed to get AttributeData for Player: " + victim.getName()));
-        final double finalDamage = calculator.calculateDamage(victim, attacker, baseDamage) * attributeData.getAttributePrimitive(AscendancyAttribute.DAMAGE_REDUCTION) / 100D;
+        final double finalDamage = calculator.calculateDamage(victim, attacker, baseDamage) * attributeData.getAttributePrimitive(
+                AscendancyAttribute.DAMAGE_REDUCTION) / 100D;
         victim.damage(finalDamage, damageSource);
         return finalDamage;
     }
@@ -52,8 +53,11 @@ public class AscendancyDamageUtil {
          * @param baseDamage The base damage to deal.
          * @return Returns the modified damage to deal to the player.
          */
-        double calculateDamage(@NotNull Player victim, @NotNull Player attacker,
-                               double baseDamage);
+        double calculateDamage(
+                @NotNull Player victim, @NotNull Player attacker,
+                double baseDamage
+        );
+
     }
 
 

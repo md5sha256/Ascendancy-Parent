@@ -1,9 +1,6 @@
-buildscript {
-
-}
+buildscript {}
 
 apply plugin: "net.minecraftforge.gradle.forge"
-apply plugin: 'com.github.johnrengelman.shadow'
 
 version = project.properties.modVersion
 archivesBaseName = project.properties.modBaseName
@@ -26,15 +23,15 @@ repositories {
     repositories {
         mavenCentral()
         maven {
-            name = 'sponge'
-            url = 'https://repo.spongepowered.org/maven'
+            name = "sponge"
+            url = "https://repo.spongepowered.org/maven"
         }
 
     }
 }
 
 dependencies {
-    compile project(':AscendancyLib')
+    implementation project(":AscendancyLib")
 }
 
 java {
@@ -46,7 +43,7 @@ compileJava {
     // Keep params
     options.compilerArgs += ["-parameters"]
     options.fork = true
-    options.forkOptions.executable = 'javac'
+    options.forkOptions.executable = "javac"
 }
 
 processResources {
@@ -68,7 +65,7 @@ processResources {
     }
 }
 
-task deobfJar(type: Jar, dependsOn: 'jar') {
+task deobfJar(type: Jar, dependsOn: "jar") {
     from "build/source/main"
     classifier "dev"
 }
@@ -83,7 +80,6 @@ shadowJar {
 
     minimize()
 }
-
 
 
 artifacts {

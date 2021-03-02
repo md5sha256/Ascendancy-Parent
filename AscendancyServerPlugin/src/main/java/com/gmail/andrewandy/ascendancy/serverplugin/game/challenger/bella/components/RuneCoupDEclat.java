@@ -24,7 +24,12 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.extent.Extent;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class RuneCoupDEclat extends AbstractRune {
@@ -37,9 +42,11 @@ public class RuneCoupDEclat extends AbstractRune {
     private final AscendancyServerPlugin plugin;
 
     @AssistedInject
-    RuneCoupDEclat(@Assisted final AbilityCircletOfTheAccused cotcInstance,
-                   final PlayerMatchManager matchManager,
-                   final AscendancyServerPlugin plugin) {
+    RuneCoupDEclat(
+            @Assisted final AbilityCircletOfTheAccused cotcInstance,
+            final PlayerMatchManager matchManager,
+            final AscendancyServerPlugin plugin
+    ) {
         super(cotcInstance.getBoundChallenger());
         this.matchManager = matchManager;
         this.plugin = plugin;
@@ -76,9 +83,11 @@ public class RuneCoupDEclat extends AbstractRune {
         final Location<World> location = circletData.getRingCenter();
         final double radius = circletData.getRadius();
         final Vector3i bottom = new Vector3i(location.getX() + radius, location.getY() - radius,
-                location.getZ() - radius), top;
+                location.getZ() - radius
+        ), top;
         top = new Vector3i(location.getX() - radius, location.getY() + radius,
-                location.getZ() + radius);
+                location.getZ() + radius
+        );
         return location.getExtent().getExtentView(top, bottom);
     }
 
@@ -105,7 +114,8 @@ public class RuneCoupDEclat extends AbstractRune {
             final Team team = optional.get();
             final Collection<Player> players = Common
                     .getEntities(Player.class, getExtentViewFor(data),
-                            (player -> data.isWithinCircle(player.getLocation())));
+                            (player -> data.isWithinCircle(player.getLocation()))
+                    );
             int stacks = 0;
             //Loop through all nearby entities.
             for (final Player player : players) {
@@ -195,4 +205,5 @@ public class RuneCoupDEclat extends AbstractRune {
             stackData.addPlayer(entity.getUniqueId());
         }
     }
+
 }

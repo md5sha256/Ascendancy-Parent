@@ -16,22 +16,28 @@ public class MutablePair<K, V> {
         return key;
     }
 
-    public void setValue(V value) {
-        this.value = value;
-    }
-
     public V getValue() {
         return value;
     }
 
+    public void setValue(V value) {
+        this.value = value;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         MutablePair<?, ?> pair = (MutablePair<?, ?>) o;
 
-        if (!Objects.equals(key, pair.key)) return false;
+        if (!Objects.equals(key, pair.key)) {
+            return false;
+        }
         return Objects.equals(value, pair.value);
     }
 
@@ -41,4 +47,5 @@ public class MutablePair<K, V> {
         result = 31 * result + (value != null ? value.hashCode() : 0);
         return result;
     }
+
 }

@@ -11,7 +11,6 @@ public class RootEffect extends Potion {
     }
 
 
-
     public static class Type extends PotionEffect {
 
         public Type(final Potion potionIn) {
@@ -26,13 +25,17 @@ public class RootEffect extends Potion {
             super(potionIn, durationIn, amplifierIn);
         }
 
-        public Type(final Potion potionIn, final int durationIn, final int amplifierIn,
-            final boolean ambientIn, final boolean showParticlesIn) {
+        public Type(
+                final Potion potionIn, final int durationIn, final int amplifierIn,
+                final boolean ambientIn, final boolean showParticlesIn
+        ) {
             super(potionIn, durationIn, amplifierIn, ambientIn, showParticlesIn);
         }
 
         public Type(final PotionEffect other) {
             super(other);
         }
+
     }
+
 }

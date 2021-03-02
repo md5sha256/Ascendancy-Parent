@@ -58,4 +58,5 @@ public class ClientPacketHandler extends AscendancyPacketHandler {
         assert ctx.side.isServer();
         return onMessage(message);
     }
+
 }

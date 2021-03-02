@@ -1,5 +1,7 @@
 package com.gmail.andrewandy.ascendancy.serverplugin.game.challenger.bella;
 
+import com.gmail.andrewandy.ascendancy.lib.game.data.IChallengerData;
+import com.gmail.andrewandy.ascendancy.lib.game.data.game.ChallengerDataImpl;
 import com.gmail.andrewandy.ascendancy.serverplugin.AscendancyServerPlugin;
 import com.gmail.andrewandy.ascendancy.serverplugin.api.ability.Ability;
 import com.gmail.andrewandy.ascendancy.serverplugin.api.challenger.AbstractChallenger;
@@ -9,8 +11,6 @@ import com.gmail.andrewandy.ascendancy.serverplugin.game.challenger.ChallengerMo
 import com.gmail.andrewandy.ascendancy.serverplugin.game.challenger.bella.components.AbilityCircletOfTheAccused;
 import com.gmail.andrewandy.ascendancy.serverplugin.game.challenger.bella.components.RuneCoupDEclat;
 import com.gmail.andrewandy.ascendancy.serverplugin.game.util.MathUtils;
-import com.gmail.andrewandy.ascendancy.lib.game.data.IChallengerData;
-import com.gmail.andrewandy.ascendancy.lib.game.data.game.ChallengerDataImpl;
 import com.google.inject.Inject;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.block.BlockTypes;
@@ -34,16 +34,22 @@ public class Bella extends AbstractChallenger {
     Bella(@NotNull final BellaComponentFactory componentFactory) {
         super("Bella", challenger -> abilities(challenger, componentFactory),
                 challenger -> runes(challenger, componentFactory),
-                ChallengerModule.getLoreOf("Bella"));
+                ChallengerModule.getLoreOf("Bella")
+        );
     }
 
-    private static Ability[] abilities(@NotNull final Challenger challenger,
-                                       @NotNull final BellaComponentFactory componentFactory) {
+    private static Ability[] abilities(
+            @NotNull final Challenger challenger,
+            @NotNull final BellaComponentFactory componentFactory
+    ) {
         return new Ability[]{componentFactory.createCircletAccusedFor(challenger),
                 componentFactory.createReleasedRebellionFor(challenger)};
     }
 
-    private static PlayerSpecificRune[] runes(@NotNull final Challenger challenger, @NotNull final BellaComponentFactory componentFactory) {
+    private static PlayerSpecificRune[] runes(
+            @NotNull final Challenger challenger,
+            @NotNull final BellaComponentFactory componentFactory
+    ) {
         AbilityCircletOfTheAccused ability = null;
         for (final Ability a : challenger.getAbilities()) {
             if (a instanceof AbilityCircletOfTheAccused) {
@@ -69,8 +75,10 @@ public class Bella extends AbstractChallenger {
      * @param radius The radius.
      * @return Returns a Collection of Blocks which were placed.
      */
-    public static Collection<Location<World>> generateCircleBlocks(final Location<World> centre,
-                                                                   final int radius) {
+    public static Collection<Location<World>> generateCircleBlocks(
+            final Location<World> centre,
+            final int radius
+    ) {
         final Collection<Location<World>> rawCircle =
                 MathUtils.createCircleWithCentre(centre, radius);
         final Cause cause = Cause.builder().named("Bella", plugin).build();
@@ -87,4 +95,5 @@ public class Bella extends AbstractChallenger {
             throw new IllegalStateException(ex);
         }
     }
+
 }

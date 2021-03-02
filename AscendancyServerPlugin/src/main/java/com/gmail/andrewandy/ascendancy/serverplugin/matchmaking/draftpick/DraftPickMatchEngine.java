@@ -1,6 +1,5 @@
 package com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.draftpick;
 
-import co.aikar.commands.annotation.Name;
 import com.gmail.andrewandy.ascendancy.serverplugin.AscendancyServerPlugin;
 import com.gmail.andrewandy.ascendancy.serverplugin.api.attributes.AttributeData;
 import com.gmail.andrewandy.ascendancy.serverplugin.api.challenger.Challenger;
@@ -23,7 +22,10 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.configurate.ConfigurationNode;
 
 import java.lang.ref.WeakReference;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Represents the engine in which will execute logic for the main sequence of the
@@ -35,18 +37,16 @@ import java.util.*;
 //TODO integrate draft-picking with the UI
 public class DraftPickMatchEngine implements GameEngine {
 
-    @Inject
-    @Named("internal-config")
-    private ConfigurationNode internalConfig;
-
-    @Inject
-    private AscendancyServerPlugin plugin;
-
     private static Scoreboard scoreboard;
     private static Objective damagerObjective, victimObjective, relativeIDObjective;
     //Holds the reference to the match
     private final WeakReference<DraftPickMatch> matchReference;
     private final Collection<AscendancyPlayer> ascendancyPlayers;
+    @Inject
+    @Named("internal-config")
+    private ConfigurationNode internalConfig;
+    @Inject
+    private AscendancyServerPlugin plugin;
 
 
     DraftPickMatchEngine(final DraftPickMatch match) {
@@ -244,4 +244,5 @@ public class DraftPickMatchEngine implements GameEngine {
         damagerObjective.getOrCreateScore(victimText)
                 .setScore(relativeIDObjective.getOrCreateScore(damagerText).getScore());
     }
+
 }

@@ -36,8 +36,10 @@ public class AbilityGyration extends AbstractCooldownAbility {
     //Represents whether they have an active 1st hit - do not remove!
 
     @AssistedInject
-    AbilityGyration(@Assisted final Challenger toBind,
-                    final PlayerMatchManager matchManager) {
+    AbilityGyration(
+            @Assisted final Challenger toBind,
+            final PlayerMatchManager matchManager
+    ) {
         super("Gyration", true, 10, TimeUnit.SECONDS, toBind);
         this.matchManager = matchManager;
     }
@@ -106,4 +108,5 @@ public class AbilityGyration extends AbstractCooldownAbility {
     public void tick() {
         super.tick();
     }
+
 }

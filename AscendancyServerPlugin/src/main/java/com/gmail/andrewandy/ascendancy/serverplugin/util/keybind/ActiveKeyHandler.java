@@ -73,4 +73,5 @@ public class ActiveKeyHandler implements KeyBindHandler {
     public boolean isKeyPressed(@NotNull final Player player) {
         return pressed.contains(player.getUniqueId());
     }
+
 }

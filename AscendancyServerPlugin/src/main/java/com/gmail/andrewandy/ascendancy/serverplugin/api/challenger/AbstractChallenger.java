@@ -19,19 +19,23 @@ public abstract class AbstractChallenger implements Challenger {
     @NotNull
     private final Ability[] abilities;
 
-    public AbstractChallenger(@NotNull final String name, @NotNull final Ability[] abilities,
-                              @NotNull final PlayerSpecificRune[] runes,
-                              @NotNull final List<String> lore) {
+    public AbstractChallenger(
+            @NotNull final String name, @NotNull final Ability[] abilities,
+            @NotNull final PlayerSpecificRune[] runes,
+            @NotNull final List<String> lore
+    ) {
         this.name = name;
         this.runes = runes;
         this.abilities = abilities;
         this.lore = lore;
     }
 
-    public AbstractChallenger(@NotNull final String name,
-                              @NotNull final Function<Challenger, Ability[]> abilities,
-                              @NotNull final Function<Challenger, PlayerSpecificRune[]> runes,
-                              @NotNull final List<String> lore) {
+    public AbstractChallenger(
+            @NotNull final String name,
+            @NotNull final Function<Challenger, Ability[]> abilities,
+            @NotNull final Function<Challenger, PlayerSpecificRune[]> runes,
+            @NotNull final List<String> lore
+    ) {
         this.name = name;
         this.runes = Objects.requireNonNull(runes).apply(this);
         this.abilities = Objects.requireNonNull(abilities).apply(this);

@@ -46,16 +46,19 @@ public class AbilityShadowsRetreat extends AbstractTickableAbility {
     private BiConsumer<Player, Integer> onMark;
 
     @AssistedInject
-    AbilityShadowsRetreat(@Assisted final Challenger challenger,
-                          final PlayerMatchManager matchManager,
-                          final KnavisComponentFactory componentFactory) {
+    AbilityShadowsRetreat(
+            @Assisted final Challenger challenger,
+            final PlayerMatchManager matchManager,
+            final KnavisComponentFactory componentFactory
+    ) {
         super("Shadow's Retreat", true, challenger);
         this.matchManager = matchManager;
         this.factory = componentFactory;
     }
 
     public void setTickThresholdSupplier(
-            final BiFunction<UUID, LocationMark, long[]> tickThresholdFunction) {
+            final BiFunction<UUID, LocationMark, long[]> tickThresholdFunction
+    ) {
         this.tickThresholdFunction = tickThresholdFunction;
     }
 
@@ -92,10 +95,12 @@ public class AbilityShadowsRetreat extends AbstractTickableAbility {
 
     @NotNull
     private LocationMark castAbilityAs(@NotNull final Player player) {
-        final LocationMark mark = dataMap.compute(player.getUniqueId(),
+        final LocationMark mark = dataMap.compute(
+                player.getUniqueId(),
                 (key, value) -> value == null ?
                         new LocationMark() :
-                        value);
+                        value
+        );
         castCounter.compute(player.getUniqueId(), (uuid, castCount) -> {
             if (castCount == null) {
                 castCount = 0;
@@ -171,4 +176,5 @@ public class AbilityShadowsRetreat extends AbstractTickableAbility {
             }
         });
     }
+
 }

@@ -58,4 +58,5 @@ public abstract class AbstractAbility implements Ability {
     public Collection<UUID> getRegistered() {
         return new HashSet<>(registered);
     }
+
 }

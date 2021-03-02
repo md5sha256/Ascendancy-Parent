@@ -7,7 +7,6 @@ import com.gmail.andrewandy.ascendancy.serverplugin.api.challenger.AbstractChall
 import com.gmail.andrewandy.ascendancy.serverplugin.api.challenger.Challenger;
 import com.gmail.andrewandy.ascendancy.serverplugin.api.rune.PlayerSpecificRune;
 import com.gmail.andrewandy.ascendancy.serverplugin.game.challenger.ChallengerModule;
-import com.gmail.andrewandy.ascendancy.serverplugin.game.challenger.knavis.KnavisComponentFactory;
 import com.google.inject.Inject;
 
 import java.io.File;
@@ -18,17 +17,22 @@ public class Hilda extends AbstractChallenger {
     @Inject
     Hilda(HildaComponentFactory factory) {
         super("Hilda", challenger -> abilities(challenger, factory),
-                challenger -> runes(challenger, factory), ChallengerModule.getLoreOf("Knavis"));
+                challenger -> runes(challenger, factory), ChallengerModule.getLoreOf("Knavis")
+        );
     }
 
-    private static Ability[] abilities(final Challenger challenger,
-                                       final HildaComponentFactory componentFactory) {
+    private static Ability[] abilities(
+            final Challenger challenger,
+            final HildaComponentFactory componentFactory
+    ) {
         return new Ability[]{componentFactory.createMirrorOfResolutionFor(challenger),
                 componentFactory.createIdentityOfPurityFor(challenger)};
     }
 
-    private static PlayerSpecificRune[] runes(final Challenger challenger,
-                                              final HildaComponentFactory componentFactory) {
+    private static PlayerSpecificRune[] runes(
+            final Challenger challenger,
+            final HildaComponentFactory componentFactory
+    ) {
         return new PlayerSpecificRune[0];
     }
 

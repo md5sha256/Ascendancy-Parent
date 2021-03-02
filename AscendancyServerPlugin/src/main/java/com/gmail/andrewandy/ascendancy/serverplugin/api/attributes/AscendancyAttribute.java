@@ -31,7 +31,8 @@ public enum AscendancyAttribute {
     public static Key<Value<AttributeData>> ASC_DATA_KEY = KeyFactory
             .makeSingleKey(TypeToken.of(AttributeData.class), new TypeToken<Value<AttributeData>>() {
                     }, DataQuery.of("AscendancyAttribute"), "ascenendancyserverplugin:asc_attr",
-                    "Ascendancy Attributes");
+                    "Ascendancy Attributes"
+            );
 
     private final int defaultValue, max, min;
     private final Key<MutableBoundedValue<Integer>> key = KeyFactory

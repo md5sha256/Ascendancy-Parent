@@ -4,7 +4,12 @@ import com.gmail.andrewandy.ascendancy.serverplugin.api.challenger.ChallengerUti
 import com.gmail.andrewandy.ascendancy.serverplugin.util.game.Tickable;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
@@ -114,4 +119,5 @@ public class MirrorData implements Iterable<Mirror>, Tickable, Cloneable {
         data.mirrorDurationMap.putAll(this.mirrorDurationMap);
         return data;
     }
+
 }

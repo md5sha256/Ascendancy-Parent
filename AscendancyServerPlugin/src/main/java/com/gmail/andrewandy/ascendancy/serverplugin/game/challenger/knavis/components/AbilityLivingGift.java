@@ -69,5 +69,7 @@ public class AbilityLivingGift extends AbstractAbility {
         public Cause getCause() {
             return cause;
         }
+
     }
+
 }

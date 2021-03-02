@@ -1,6 +1,7 @@
 package com.gmail.andrewandy.ascendancy.lib.effect;
 
 import net.minecraft.entity.EntityLivingBase;
+import org.jetbrains.annotations.NotNull;
 
 public class EffectEntanglement extends AscendancyEffect {
 
@@ -17,7 +18,7 @@ public class EffectEntanglement extends AscendancyEffect {
     }
 
     @Override
-    public void performEffect(EntityLivingBase entityliving) {
+    public void performEffect(@NotNull EntityLivingBase entityliving) {
         entityliving.motionX = 0f;
         entityliving.motionY = 0f;
         entityliving.motionZ = 0f;

@@ -14,7 +14,11 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Represents the Player-MatchManager which ascendency will ALWAYS default to.
@@ -195,4 +199,5 @@ public class SimplePlayerMatchManager implements PlayerMatchManager {
     public void unregisterMatch(final ManagedMatch managedMatch) {
         matches.remove(managedMatch);
     }
+
 }

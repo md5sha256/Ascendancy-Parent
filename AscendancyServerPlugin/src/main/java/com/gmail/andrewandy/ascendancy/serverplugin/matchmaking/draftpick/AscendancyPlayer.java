@@ -79,19 +79,25 @@ public class AscendancyPlayer implements GamePlayer {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
 
         final AscendancyPlayer that = (AscendancyPlayer) o;
 
-        if (relativeID != that.relativeID)
+        if (relativeID != that.relativeID) {
             return false;
-        if (!Objects.equals(runes, that.runes))
+        }
+        if (!Objects.equals(runes, that.runes)) {
             return false;
-        if (!Objects.equals(challenger, that.challenger))
+        }
+        if (!Objects.equals(challenger, that.challenger)) {
             return false;
+        }
         return Objects.equals(player, that.player);
     }
+
 }

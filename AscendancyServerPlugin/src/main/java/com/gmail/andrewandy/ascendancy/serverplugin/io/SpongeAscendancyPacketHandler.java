@@ -1,8 +1,8 @@
 package com.gmail.andrewandy.ascendancy.serverplugin.io;
 
-import com.gmail.andrewandy.ascendancy.serverplugin.AscendancyServerPlugin;
 import com.gmail.andrewandy.ascendancy.lib.AscendancyPacket;
 import com.gmail.andrewandy.ascendancy.lib.AscendancyPacketHandler;
+import com.gmail.andrewandy.ascendancy.serverplugin.AscendancyServerPlugin;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.spongepowered.api.Platform;
@@ -25,12 +25,13 @@ public class SpongeAscendancyPacketHandler extends AscendancyPacketHandler
         implements RawDataListener {
 
 
-    private static final String CHANNEL_NAME = "ASCENDENCY_SPONGE";
+    private static final String CHANNEL_NAME = "ASCENDANCY_SPONGE";
+
     @Inject
     private AscendancyServerPlugin plugin;
     private ChannelBinding.RawDataChannel dataChannel;
 
-    SpongeAscendancyPacketHandler() {
+    public SpongeAscendancyPacketHandler() {
     }
 
     public void initSponge() {
@@ -49,8 +50,10 @@ public class SpongeAscendancyPacketHandler extends AscendancyPacketHandler
     }
 
     @Override
-    public void handlePayload(final ChannelBuf data, final RemoteConnection connection,
-                              final Platform.Type side) {
+    public void handlePayload(
+            final ChannelBuf data, final RemoteConnection connection,
+            final Platform.Type side
+    ) {
         if (dataChannel == null) {
             throw new IllegalStateException("Data channel has not be initialised!");
         }
@@ -70,12 +73,15 @@ public class SpongeAscendancyPacketHandler extends AscendancyPacketHandler
 
             final UUID uuid = response.getTargetPlayer();
             final Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(uuid);
-            optionalPlayer.ifPresent((Player player) -> dataChannel.sendTo(player,
+            optionalPlayer.ifPresent((Player player) -> dataChannel.sendTo(
+                    player,
                     (ChannelBuf channel) -> channel
                             .writeBytes(response
-                                    .getFormattedData()))); //Send data to player.
+                                    .getFormattedData())
+            )); //Send data to player.
         } catch (final ReflectiveOperationException e) {
             throw new IllegalStateException("Unable to interact with packet!", e);
         }
     }
+
 }

@@ -20,7 +20,11 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.entity.ChangeEntityPotionEffectEvent;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -115,14 +119,14 @@ public class RuneHeartOfTheDryad extends AbstractRune {
      *
      * @param uuid The UUID of the player.
      * @return Returns whether the player can see noticable changes when the rune is "applied", checks
-     * for if the player already has it or if they are on cooldown.
+     *         for if the player already has it or if they are on cooldown.
      */
     public boolean isEligible(final UUID uuid) {
         return !currentActive.containsKey(uuid) && !cooldownMap.containsKey(uuid);
     }
 
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return "Heart Of The Dryad";
     }
 
@@ -136,8 +140,10 @@ public class RuneHeartOfTheDryad extends AbstractRune {
         currentActive.entrySet()
                 .removeIf(ChallengerUtils.mapTickPredicate(4L, TimeUnit.SECONDS, (UUID uuid) -> {
                     cooldownMap.put(uuid, 0L);
-                    registered.compute(uuid,
-                            (unused, unused1) -> new PotionEffect[0]); //If player is no longer active, remove his effects
+                    registered.compute(
+                            uuid,
+                            (unused, unused1) -> new PotionEffect[0]
+                    ); //If player is no longer active, remove his effects
                 }));
     }
 
@@ -167,4 +173,5 @@ public class RuneHeartOfTheDryad extends AbstractRune {
             applyTo((Player) event.getTargetEntity());
         }
     }
+
 }

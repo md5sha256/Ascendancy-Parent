@@ -34,6 +34,7 @@ public class DamageImpls {
                     attackerData.getAttributePrimitive(AscendancyAttribute.ATTACK_DAMAGE);
             return baseDamage * attackDamage * (1 - (0.05 * Math.max(armor - armorPen, 0)));
         }
+
     }
 
     public static final class MagicDamage extends AscendancyDamageType {
@@ -58,6 +59,7 @@ public class DamageImpls {
 
             return baseDamage * abilityPower * (1 - (0.05 * Math.max(magicRes - magicPen, 0)));
         }
+
     }
 
     public static final class TrueDamage extends AscendancyDamageType {
@@ -70,6 +72,7 @@ public class DamageImpls {
         public double calculateDamageFor(@NotNull Player victim, @NotNull Player attacker, double baseDamage) {
             return baseDamage;
         }
+
     }
 
 }

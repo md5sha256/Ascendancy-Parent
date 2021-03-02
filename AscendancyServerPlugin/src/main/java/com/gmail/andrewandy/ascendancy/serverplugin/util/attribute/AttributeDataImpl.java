@@ -30,7 +30,8 @@ public class AttributeDataImpl extends AbstractData<AttributeData, ImmutableAttr
     }
 
     public AttributeDataImpl(
-            @NotNull final Map<AscendancyAttribute, ? extends BoundedValue<Integer>> valueMap) {
+            @NotNull final Map<AscendancyAttribute, ? extends BoundedValue<Integer>> valueMap
+    ) {
         final Map<AscendancyAttribute, MutableBoundedValue<Integer>> temp =
                 new HashMap<>(valueMap.size());
         //Populate map
@@ -48,8 +49,10 @@ public class AttributeDataImpl extends AbstractData<AttributeData, ImmutableAttr
 
     @Override
     @NotNull
-    public Optional<AttributeData> fill(@NotNull final DataHolder dataHolder,
-                                        @NotNull final MergeFunction overlap) {
+    public Optional<AttributeData> fill(
+            @NotNull final DataHolder dataHolder,
+            @NotNull final MergeFunction overlap
+    ) {
         overlap.merge(this, dataHolder.get(AttributeData.class).orElse(null));
         return Optional.of(this);
     }
@@ -100,4 +103,5 @@ public class AttributeDataImpl extends AbstractData<AttributeData, ImmutableAttr
     public MutableBoundedValue<Integer> getAttribute(@NotNull final AscendancyAttribute attribute) {
         return attributeMap.get(attribute);
     }
+
 }

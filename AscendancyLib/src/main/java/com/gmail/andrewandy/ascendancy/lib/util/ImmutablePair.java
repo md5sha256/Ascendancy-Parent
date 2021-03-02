@@ -22,12 +22,18 @@ public class ImmutablePair<K, V> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         ImmutablePair<?, ?> immutablePair = (ImmutablePair<?, ?>) o;
 
-        if (!Objects.equals(key, immutablePair.key)) return false;
+        if (!Objects.equals(key, immutablePair.key)) {
+            return false;
+        }
         return Objects.equals(value, immutablePair.value);
     }
 
@@ -37,4 +43,5 @@ public class ImmutablePair<K, V> {
         result = 31 * result + (value != null ? value.hashCode() : 0);
         return result;
     }
+
 }

@@ -36,4 +36,5 @@ public class WaitPacket extends AscendancyResultPacket {
     public TimeUnit getTimeUnit() {
         return timeUnit;
     }
+
 }

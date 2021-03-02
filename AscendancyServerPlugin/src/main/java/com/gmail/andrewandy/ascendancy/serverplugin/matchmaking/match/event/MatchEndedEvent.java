@@ -4,6 +4,7 @@ import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.match.Match;
 import org.spongepowered.api.event.cause.Cause;
 
 public class MatchEndedEvent extends MatchEvent {
+
     public MatchEndedEvent(final Match match) {
         super(match);
     }
@@ -16,4 +17,5 @@ public class MatchEndedEvent extends MatchEvent {
     public Cause getCause() {
         return null;
     }
+
 }

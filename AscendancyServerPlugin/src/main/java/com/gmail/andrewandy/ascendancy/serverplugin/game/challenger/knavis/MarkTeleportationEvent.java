@@ -55,4 +55,5 @@ public class MarkTeleportationEvent extends AscendancyServerEvent implements Can
     public void setCancelled(final boolean cancel) {
         this.cancel = cancel;
     }
+
 }

@@ -1,5 +1,6 @@
 package com.gmail.andrewandy.ascendancy.serverplugin.api.rune;
 
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.entity.Entity;
 
 public interface EntityRune extends Rune {
@@ -7,7 +8,7 @@ public interface EntityRune extends Rune {
     void applyTo(Entity entity);
 
     @Override
-    default void applyTo(final Object object) {
+    default void applyTo(final @NotNull Object object) {
         if (!canApplyTo(object)) {
             throw new UnsupportedOperationException();
         }
@@ -17,7 +18,7 @@ public interface EntityRune extends Rune {
     void clearFrom(Entity entity);
 
     @Override
-    default void clearFrom(final Object object) {
+    default void clearFrom(final @NotNull Object object) {
         if (!canApplyTo(object)) {
             return;
         }
@@ -25,7 +26,8 @@ public interface EntityRune extends Rune {
     }
 
     @Override
-    default boolean canApplyTo(final Object object) {
+    default boolean canApplyTo(final @NotNull Object object) {
         return object instanceof Entity;
     }
+
 }

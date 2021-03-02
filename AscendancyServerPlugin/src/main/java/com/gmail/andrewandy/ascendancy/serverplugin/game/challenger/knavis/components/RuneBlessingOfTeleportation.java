@@ -30,8 +30,10 @@ public class RuneBlessingOfTeleportation extends AbstractRune {
     private final AbilityShadowsRetreat boundAbility;
 
     @AssistedInject
-    RuneBlessingOfTeleportation(@Assisted final Challenger challenger,
-                                @Assisted final AbilityShadowsRetreat toBind) {
+    RuneBlessingOfTeleportation(
+            @Assisted final Challenger challenger,
+            @Assisted final AbilityShadowsRetreat toBind
+    ) {
         super(challenger);
         this.boundAbility = toBind;
         toBind.setTickThresholdSupplier(
@@ -84,4 +86,5 @@ public class RuneBlessingOfTeleportation extends AbstractRune {
     public DataContainer toContainer() {
         return null;
     }
+
 }

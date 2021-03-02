@@ -6,7 +6,12 @@ import com.gmail.andrewandy.ascendancy.serverplugin.util.Common;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 public abstract class AbstractMatch implements ManagedMatch {
 
@@ -165,12 +170,15 @@ public abstract class AbstractMatch implements ManagedMatch {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
         final AbstractMatch that = (AbstractMatch) o;
         return Objects.equals(matchID, that.matchID) && Objects.equals(teams, that.teams)
                 && matchState == that.matchState;
     }
+
 }

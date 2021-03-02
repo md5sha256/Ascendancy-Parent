@@ -1,8 +1,8 @@
 package com.gmail.andrewandy.ascendancy.serverplugin.api.challenger;
 
+import com.gmail.andrewandy.ascendancy.lib.game.data.IChallengerData;
 import com.gmail.andrewandy.ascendancy.serverplugin.api.ability.Ability;
 import com.gmail.andrewandy.ascendancy.serverplugin.api.rune.PlayerSpecificRune;
-import com.gmail.andrewandy.ascendancy.lib.game.data.IChallengerData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -56,4 +56,5 @@ public interface Challenger {
     default double calculateDamage(final double baseDamage) {
         return baseDamage;
     }
+
 }

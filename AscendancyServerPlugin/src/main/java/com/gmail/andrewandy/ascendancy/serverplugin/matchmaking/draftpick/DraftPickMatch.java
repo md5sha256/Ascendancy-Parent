@@ -89,5 +89,7 @@ public class DraftPickMatch extends AbstractMatch implements AscendancyMatch {
         public void clearRunesFromAll() {
             getPlayers().forEach(this::clearRunes);
         }
+
     }
+
 }

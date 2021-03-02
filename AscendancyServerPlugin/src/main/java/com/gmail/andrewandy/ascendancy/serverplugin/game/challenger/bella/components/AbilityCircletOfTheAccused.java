@@ -35,7 +35,11 @@ import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class AbilityCircletOfTheAccused extends AbstractCooldownAbility {
@@ -49,10 +53,12 @@ public class AbilityCircletOfTheAccused extends AbstractCooldownAbility {
     private RuneCoupDEclat rune;
 
     @AssistedInject
-    AbilityCircletOfTheAccused(@Assisted final Challenger bound,
-                               final BellaComponentFactory factory,
-                               final PlayerMatchManager matchManager,
-                               final KeyBindHandler keyBindHandler) {
+    AbilityCircletOfTheAccused(
+            @Assisted final Challenger bound,
+            final BellaComponentFactory factory,
+            final PlayerMatchManager matchManager,
+            final KeyBindHandler keyBindHandler
+    ) {
         super("Circlet Of The Accused", true, 5, TimeUnit.SECONDS, bound);
         this.factory = factory;
         this.matchManager = matchManager;
@@ -79,8 +85,10 @@ public class AbilityCircletOfTheAccused extends AbstractCooldownAbility {
      * @param radius           The radius of the circle.
      * @param respectCooldowns Whether we should respect cooldowns.
      */
-    public void activateAs(final UUID caster, final UUID targetUID, final int radius,
-                           final boolean respectCooldowns) {
+    public void activateAs(
+            final UUID caster, final UUID targetUID, final int radius,
+            final boolean respectCooldowns
+    ) {
         final Optional<Player> optionalPlayer = Sponge.getServer().getPlayer(targetUID);
         if (!optionalPlayer.isPresent()) {
             throw new IllegalArgumentException("Player does not exist!");
@@ -140,7 +148,7 @@ public class AbilityCircletOfTheAccused extends AbstractCooldownAbility {
      *
      * @param location The location to get the circlet for.
      * @return Returns an optional, populated if an circlet exists at a given
-     * location checked using {@link CircletData#generateCircleTest()}.
+     *         location checked using {@link CircletData#generateCircleTest()}.
      */
     public Optional<CircletData> getCircletAt(@NotNull final Location<World> location) {
         final Location<World> copy = location.copy();
@@ -171,7 +179,8 @@ public class AbilityCircletOfTheAccused extends AbstractCooldownAbility {
                             .getServer()
                             .getPlayer(uuid)
                             .ifPresent(
-                                    this::clearCirclet)));
+                                    this::clearCirclet)
+            ));
 
 
             final Optional<ManagedMatch> match = matchManager.getMatchOf(key);
@@ -224,7 +233,8 @@ public class AbilityCircletOfTheAccused extends AbstractCooldownAbility {
             }
             final Player target = procEvent.getTarget();
             activateAs(procEvent.getInvoker().getUniqueId(), target.getUniqueId(),
-                    procEvent.circletRadius, true);
+                    procEvent.circletRadius, true
+            );
         }
     }
 
@@ -245,10 +255,13 @@ public class AbilityCircletOfTheAccused extends AbstractCooldownAbility {
             final Cause cause = Cause.builder().named("Source", circletData.getCaster()).build();
             lastDamageEvent = SpongeEventFactory
                     .createDamageEntityEvent(cause, event.getOriginalFunctions(), entity,
-                            event.getOriginalDamage());
+                            event.getOriginalDamage()
+                    );
             Sponge.getEventManager().post(lastDamageEvent);
-            entity.damage(event.getFinalDamage(),
-                    DamageSource.builder().from(DamageSources.GENERIC).build());
+            entity.damage(
+                    event.getFinalDamage(),
+                    DamageSource.builder().from(DamageSources.GENERIC).build()
+            );
         }));
     }
 
@@ -276,8 +289,10 @@ public class AbilityCircletOfTheAccused extends AbstractCooldownAbility {
         @NotNull
         private Player target;
 
-        ProcEvent(@NotNull final Player invoker, @NotNull final Player target,
-                  final int circletRadius) {
+        ProcEvent(
+                @NotNull final Player invoker, @NotNull final Player target,
+                final int circletRadius
+        ) {
             this.cause = Cause.builder().named("Bella", invoker).build();
             this.invoker = invoker;
             this.target = target;
@@ -321,5 +336,7 @@ public class AbilityCircletOfTheAccused extends AbstractCooldownAbility {
         public Player getInvoker() {
             return invoker;
         }
+
     }
+
 }

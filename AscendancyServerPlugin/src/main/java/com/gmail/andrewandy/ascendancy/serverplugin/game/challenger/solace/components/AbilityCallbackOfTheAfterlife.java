@@ -28,8 +28,10 @@ public class AbilityCallbackOfTheAfterlife extends AbstractCooldownAbility {
     private final Map<UUID, UUID> soulMap = new HashMap<>(); //Maps Solace to its target.
 
     @AssistedInject
-    AbilityCallbackOfTheAfterlife(@Assisted final Challenger toBind,
-                                  final KeyBindHandler keyBindHandler) {
+    AbilityCallbackOfTheAfterlife(
+            @Assisted final Challenger toBind,
+            final KeyBindHandler keyBindHandler
+    ) {
         super("CallBackOfTheAfterlife", true, 5, TimeUnit.SECONDS, toBind);
         this.keyBindHandler = keyBindHandler;
     }
@@ -53,10 +55,14 @@ public class AbilityCallbackOfTheAfterlife extends AbstractCooldownAbility {
             return;
         }
         final Player lowest = lowestHealth.get();
-        soulMap.put(event.getPlayer().getUniqueId(),
-                lowest.getUniqueId()); //Map the invoker (solace) to the person with the soul.
-        soulRegister.put(lowest.getUniqueId(),
-                getCooldownDuration()); //Add the target to the registered soul map.
+        soulMap.put(
+                event.getPlayer().getUniqueId(),
+                lowest.getUniqueId()
+        ); //Map the invoker (solace) to the person with the soul.
+        soulRegister.put(
+                lowest.getUniqueId(),
+                getCooldownDuration()
+        ); //Add the target to the registered soul map.
     }
 
 
@@ -94,4 +100,5 @@ public class AbilityCallbackOfTheAfterlife extends AbstractCooldownAbility {
         cooldownMap.entrySet()
                 .removeIf(ChallengerUtils.mapTickPredicate(Common.toTicks(1, TimeUnit.MINUTES), null));
     }
+
 }

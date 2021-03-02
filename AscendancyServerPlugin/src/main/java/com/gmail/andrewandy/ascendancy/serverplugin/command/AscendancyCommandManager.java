@@ -3,11 +3,8 @@ package com.gmail.andrewandy.ascendancy.serverplugin.command;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.SpongeCommandManager;
 import co.aikar.commands.annotation.CommandAlias;
-import com.flowpowered.math.vector.Vector3d;
 import com.gmail.andrewandy.ascendancy.serverplugin.AscendancyServerPlugin;
-import com.gmail.andrewandy.ascendancy.serverplugin.game.util.MathUtils;
 import com.gmail.andrewandy.ascendancy.serverplugin.util.Common;
-import com.google.common.primitives.Doubles;
 import com.google.inject.Inject;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -33,8 +30,10 @@ public class AscendancyCommandManager extends BaseCommand {
     }
 
     @CommandAlias("readinventory|readinv")
-    public void showInventory(final Player player,
-                              @co.aikar.commands.annotation.Optional final String targetPlayer) {
+    public void showInventory(
+            final Player player,
+            @co.aikar.commands.annotation.Optional final String targetPlayer
+    ) {
         final Player other;
         if (targetPlayer != null) {
             final Optional<Player> optional = Sponge.getServer().getPlayer(targetPlayer);

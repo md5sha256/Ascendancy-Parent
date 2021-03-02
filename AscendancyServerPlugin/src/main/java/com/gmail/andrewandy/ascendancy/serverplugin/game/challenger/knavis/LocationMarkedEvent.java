@@ -19,8 +19,10 @@ public class LocationMarkedEvent extends AscendancyServerEvent {
     private int markSlot;
 
 
-    LocationMarkedEvent(@Assisted final Player marker, @Assisted final int markSlot,
-                        @Assisted final AbilityShadowsRetreat retreat, final Knavis knavis) {
+    LocationMarkedEvent(
+            @Assisted final Player marker, @Assisted final int markSlot,
+            @Assisted final AbilityShadowsRetreat retreat, final Knavis knavis
+    ) {
         this.player = marker;
         setMarkedSlot(markSlot);
         this.locationMark = retreat.getMarkFor(marker.getUniqueId())
@@ -53,4 +55,5 @@ public class LocationMarkedEvent extends AscendancyServerEvent {
     public Cause getCause() {
         return Cause.builder().named("Knavis", knavis).build();
     }
+
 }

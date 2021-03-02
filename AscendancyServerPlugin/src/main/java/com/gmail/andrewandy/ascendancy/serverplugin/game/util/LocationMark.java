@@ -62,4 +62,5 @@ public class LocationMark {
     public long getSecondaryTick() {
         return secondaryTick;
     }
+
 }

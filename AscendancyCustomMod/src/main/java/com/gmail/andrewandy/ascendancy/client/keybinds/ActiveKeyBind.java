@@ -44,12 +44,18 @@ public enum ActiveKeyBind {
                 throw new IllegalStateException("Invalid state! Unknown key press status!");
             }
         }
-        CustomKeyPressedPacket packet = new CustomKeyPressedPacket(ForgeHooks.getCraftingPlayer().getPersistentID(), action, AscendancyKey.ACTIVE_KEY);
+        CustomKeyPressedPacket packet = new CustomKeyPressedPacket(
+                ForgeHooks.getCraftingPlayer().getPersistentID(),
+                action,
+                AscendancyKey.ACTIVE_KEY
+        );
         AscendancyPacket result = ClientPacketHandler.getInstance().onMessage(packet);
         assert result instanceof AscendancyResultPacket;
         AscendancyResultPacket resultPacket = (AscendancyResultPacket) result;
         if (resultPacket.getResult() != Result.SUCCESS) {
-            System.out.println("[Ascendency] WARNING - Unexpected response received. Got " + resultPacket.getResult().name() + ", expected " + Result.SUCCESS.name());
+            System.out.printf("[Ascendancy] WARNING - Unexpected response received. Got $1%s, expected $2%s",
+                    resultPacket.getResult().name(), Result.SUCCESS.name()
+            );
         }
     }
 

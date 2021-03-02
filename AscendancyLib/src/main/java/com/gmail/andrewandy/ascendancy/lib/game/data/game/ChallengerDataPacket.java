@@ -46,6 +46,22 @@ public class ChallengerDataPacket extends DataPacket {
         this(null, data);
     }
 
+    public ChallengerDataPacket(UUID player, byte[] data) {
+        super(player, data);
+    }
+
+    public ChallengerDataPacket(UUID player, InputStream src) throws IOException {
+        super(player, src);
+    }
+
+    public ChallengerDataPacket(ByteBuf buffer) {
+        super(buffer);
+    }
+
+    public ChallengerDataPacket(ByteBuffer buffer) {
+        super(buffer);
+    }
+
     @Override
     public byte[] getFormattedData() {
         byte[] data = getData();
@@ -103,19 +119,4 @@ public class ChallengerDataPacket extends DataPacket {
         return ChallengerDataPacket.class.getCanonicalName() + "::" + VERSION;
     }
 
-    public ChallengerDataPacket(UUID player, byte[] data) {
-        super(player, data);
-    }
-
-    public ChallengerDataPacket(UUID player, InputStream src) throws IOException {
-        super(player, src);
-    }
-
-    public ChallengerDataPacket(ByteBuf buffer) {
-        super(buffer);
-    }
-
-    public ChallengerDataPacket(ByteBuffer buffer) {
-        super(buffer);
-    }
 }

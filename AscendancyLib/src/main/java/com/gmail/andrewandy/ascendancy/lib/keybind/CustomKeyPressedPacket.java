@@ -74,4 +74,5 @@ public class CustomKeyPressedPacket extends AscendancyPacket {
     public String getIdentifier() {
         return CustomKeyPressedPacket.class.getCanonicalName() + "::" + VERSION;
     }
+
 }

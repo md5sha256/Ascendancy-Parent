@@ -2,7 +2,11 @@ package com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.draftpick;
 
 import com.gmail.andrewandy.ascendancy.serverplugin.api.challenger.Challenger;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.UUID;
 
 public class DraftPickState {
 
@@ -18,7 +22,9 @@ public class DraftPickState {
 
     public enum PickPhase {
 
-        PICKING, BANNING, FINALISE;
+        PICKING,
+        BANNING,
+        FINALISE;
 
     }
 

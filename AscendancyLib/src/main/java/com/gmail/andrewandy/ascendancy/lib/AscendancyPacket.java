@@ -34,6 +34,7 @@ public abstract class AscendancyPacket implements IMessage {
 
     /**
      * Get the processed data which can be sent.
+     *
      * @return Returns the formatted data.
      */
     public abstract byte[] getFormattedData();
@@ -59,7 +60,9 @@ public abstract class AscendancyPacket implements IMessage {
 
     /**
      * Get the String identifier of this packet.
+     *
      * @return Returns the String identifier.
      */
     public abstract String getIdentifier();
+
 }

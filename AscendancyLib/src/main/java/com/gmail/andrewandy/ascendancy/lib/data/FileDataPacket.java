@@ -6,7 +6,13 @@ import com.gmail.andrewandy.ascendancy.lib.results.Result;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -34,7 +40,8 @@ public class FileDataPacket extends DataPacket {
     }
 
 
-    public FileDataPacket(final UUID player, final InputStream src, final String fileName, final long targetFileSize) throws IOException {
+    public FileDataPacket(final UUID player, final InputStream src, final String fileName, final long targetFileSize) throws
+            IOException {
         super(player, src);
         this.fileName = fileName;
         if (targetFileSize < 0) {
@@ -157,4 +164,5 @@ public class FileDataPacket extends DataPacket {
     public String getIdentifier() {
         return FileRequestPacket.class.getCanonicalName() + SPLITTER + PROTOCOL_VERSION;
     }
+
 }

@@ -26,7 +26,7 @@ public interface CCImmunityManager extends Tickable {
      * of crowd-control.
      *
      * @return Returns a shallow-cloned copy of {@link PotionEffectType}s which this
-     * manager recognises as crowd-control effects.
+     *         manager recognises as crowd-control effects.
      */
     @NotNull Collection<PotionEffectType> getRegisteredEffects();
 
@@ -50,8 +50,8 @@ public interface CCImmunityManager extends Tickable {
      *
      * @param effectType The {@link PotionEffectType} to check for.
      * @return Returns whether the specified effect type is recognised as a crowd-control
-     * effect. Implementations of this method should ensure that if the result is <code>true</code>,
-     * {@link #getRegisteredEffects()} MUST contain this effect type.
+     *         effect. Implementations of this method should ensure that if the result is <code>true</code>,
+     *         {@link #getRegisteredEffects()} MUST contain this effect type.
      */
     boolean isCrowdControl(@NotNull PotionEffectType effectType);
 
@@ -69,7 +69,7 @@ public interface CCImmunityManager extends Tickable {
      * @param entity   The entity to check for.
      * @param timeUnit The time unit to convert to.
      * @return Returns the remaining time the entity is immune to crown control for. This number should
-     * ALWAYS be >= 0.
+     *         ALWAYS be >= 0.
      */
     long getImmunityDuration(@NotNull Entity entity, @NotNull TimeUnit timeUnit);
 
@@ -131,4 +131,5 @@ public interface CCImmunityManager extends Tickable {
         clearRegisteredCC();
         clearRegisteredImmuneEntities();
     }
+
 }

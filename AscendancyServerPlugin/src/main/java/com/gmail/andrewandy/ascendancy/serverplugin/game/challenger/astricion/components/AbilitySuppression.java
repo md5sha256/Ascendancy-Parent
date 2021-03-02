@@ -14,7 +14,6 @@ import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.value.mutable.MutableBoundedValue;
-import org.spongepowered.api.effect.potion.PotionEffect;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -28,8 +27,10 @@ public final class AbilitySuppression extends AbstractAbility {
     private final PlayerMatchManager matchManager;
 
     @AssistedInject
-    public AbilitySuppression(@Assisted final Challenger bound,
-                              final PlayerMatchManager matchManager) {
+    public AbilitySuppression(
+            @Assisted final Challenger bound,
+            final PlayerMatchManager matchManager
+    ) {
 
         super("Suppression", true, bound);
         this.matchManager = matchManager;
@@ -106,4 +107,5 @@ public final class AbilitySuppression extends AbstractAbility {
             }
         }));
     }
+
 }

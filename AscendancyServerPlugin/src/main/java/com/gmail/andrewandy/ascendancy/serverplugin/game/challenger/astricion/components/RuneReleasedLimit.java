@@ -40,4 +40,5 @@ public class RuneReleasedLimit extends AbstractRune {
     public DataContainer toContainer() {
         return null;
     }
+
 }

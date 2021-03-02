@@ -1,7 +1,6 @@
 package com.gmail.andrewandy.ascendancy.serverplugin.game.challenger.bella.components;
 
 import com.gmail.andrewandy.ascendancy.serverplugin.AscendancyServerPlugin;
-import com.gmail.andrewandy.ascendancy.serverplugin.game.util.MathUtils;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import org.jetbrains.annotations.NotNull;
@@ -30,8 +29,10 @@ public class CircletData {
     private Collection<Location<World>> ringBlocks;
 
     @AssistedInject
-    CircletData(@Assisted final UUID caster, @Assisted final int radius,
-                final AscendancyServerPlugin plugin) {
+    CircletData(
+            @Assisted final UUID caster, @Assisted final int radius,
+            final AscendancyServerPlugin plugin
+    ) {
         this.plugin = plugin;
         this.caster = caster;
         if (radius < 1) {
@@ -77,8 +78,8 @@ public class CircletData {
     }
 
     public boolean isWithinCircle(final Location<World> location) {
-       return ringCenter != null
-               && ringCenter.getPosition().distanceSquared(location.getPosition()) <= DEFAULT_RADIUS * DEFAULT_RADIUS;
+        return ringCenter != null
+                && ringCenter.getPosition().distanceSquared(location.getPosition()) <= DEFAULT_RADIUS * DEFAULT_RADIUS;
     }
 
     @Deprecated
@@ -93,4 +94,5 @@ public class CircletData {
         ringBlocks.forEach(location -> location.setBlockType(BlockTypes.AIR, cause));
         this.ringBlocks = null;
     }
+
 }

@@ -41,4 +41,5 @@ public interface Rune extends DataSerializable, Tickable {
      * @return Returns whether or not this object can have this rune applied to it.
      */
     boolean canApplyTo(@NotNull Object object);
+
 }

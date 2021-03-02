@@ -1,8 +1,14 @@
 package com.gmail.andrewandy.ascendancy.serverplugin.matchmaking;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 public class Team implements Cloneable {
+
     private final int startingPlayerCount;
     private final List<UUID> players;
     private final String name;
@@ -110,4 +116,5 @@ public class Team implements Cloneable {
         team.players.addAll(this.players);
         return team;
     }
+
 }

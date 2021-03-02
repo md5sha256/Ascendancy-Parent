@@ -28,8 +28,10 @@ public enum Spells implements Spell {
     private final SecondaryShape secondaryShape;
     private final Effect effect;
 
-    Spells(final Shape shape, final SecondaryShape secondaryShape, final Effect effect,
-           final double effectValue, final int manaCost, final boolean willBounce) {
+    Spells(
+            final Shape shape, final SecondaryShape secondaryShape, final Effect effect,
+            final double effectValue, final int manaCost, final boolean willBounce
+    ) {
         this.shape = shape;
         this.secondaryShape = secondaryShape;
         this.effect = effect;
@@ -38,8 +40,10 @@ public enum Spells implements Spell {
         this.willBounce = willBounce;
     }
 
-    Spells(final Shape shape, final SecondaryShape secondaryShape, final Effect effect,
-           final double effectValue, final int manaCost) {
+    Spells(
+            final Shape shape, final SecondaryShape secondaryShape, final Effect effect,
+            final double effectValue, final int manaCost
+    ) {
         this(shape, secondaryShape, effect, effectValue, manaCost, false);
     }
 

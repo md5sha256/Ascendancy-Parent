@@ -43,12 +43,18 @@ public interface Spell {
     @NotNull Optional<@NotNull Projectile> castAs(@NotNull Player player);
 
     enum Shape {
-        AOE, CONE, MELEE, PROJECTILE, SELF, ZONE
+        AOE,
+        CONE,
+        MELEE,
+        PROJECTILE,
+        SELF,
+        ZONE
     }
 
 
     enum SecondaryShape {
-        NONE, ZONE
+        NONE,
+        ZONE
     }
 
 

@@ -97,9 +97,11 @@ public class Common {
      * @param location  The extent which to loop through
      * @param predicate The predicate to test, can be null.
      */
-    public static <T extends Entity> Collection<T> getEntities(final Class<T> type,
-                                                               final Extent location,
-                                                               final Predicate<T> predicate) {
+    public static <T extends Entity> Collection<T> getEntities(
+            final Class<T> type,
+            final Extent location,
+            final Predicate<T> predicate
+    ) {
         Objects.requireNonNull(type);
         Objects.requireNonNull(location);
         Stream<T> stream = location.getEntities().stream().filter(type::isInstance).map(type::cast);
@@ -109,10 +111,12 @@ public class Common {
         return stream.collect(Collectors.toSet());
     }
 
-    public static <T extends Entity> List<T> getSortedEntities(final Class<T> type,
-                                                               final Extent location,
-                                                               final Predicate<T> predicate,
-                                                               final Comparator<T> sorter) {
+    public static <T extends Entity> List<T> getSortedEntities(
+            final Class<T> type,
+            final Extent location,
+            final Predicate<T> predicate,
+            final Comparator<T> sorter
+    ) {
         Objects.requireNonNull(type);
         Objects.requireNonNull(location);
         Stream<T> stream = location.getEntities().stream().filter(type::isInstance).map(type::cast);

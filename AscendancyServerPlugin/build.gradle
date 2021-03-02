@@ -1,53 +1,54 @@
 buildscript {
     repositories {
         maven {
-            name = 'sponge'
-            url = 'https://repo.spongepowered.org/maven'
+            name = "sponge"
+            url = "https://repo.spongepowered.org/maven"
         }
     }
 }
 
 plugins {
-    id 'org.spongepowered.plugin' version '0.8.1'
+    id("org.spongepowered.plugin") version "0.8.2"
 }
 
 apply plugin: "net.minecraftforge.gradle.forge"
-apply plugin: 'com.github.johnrengelman.shadow'
+
+version = project.properties.modVersion
 
 repositories {
     maven {
-        name = 'aikar'
-        url = 'https://repo.aikar.co/content/groups/aikar/'
+        name = "aikar"
+        url = "https://repo.aikar.co/content/groups/aikar/"
     }
 }
 
 dependencies {
 
     //SpongeAPI
-    provided('org.spongepowered:spongeapi:5.1.0') {
-        // Exclude sponge 5's configurate, we shade in configurate 4.0.0
-        exclude group: 'ninja.leaping.configurate'
+    provided("org.spongepowered:spongeapi:5.1.0") {
+        // Exclude sponge 5"s configurate, we shade in configurate 4.0.0
+        exclude group: "ninja.leaping.configurate"
     }
 
     // Jetbrains Annotations
-    compileOnly 'org.jetbrains:annotations:19.0.0'
+    compileOnly("org.jetbrains:annotations:19.0.0")
 
     //AscendancyLib
-    compile project(':AscendancyLib')
+    compile project(":AscendancyLib")
 
     // Guice assisted-inject
-    compile('com.google.inject.extensions:guice-assistedinject:4.0') {
-        exclude group: 'com.google.inject', module: 'guice'
+    compile("com.google.inject.extensions:guice-assistedinject:4.0") {
+        exclude group: "com.google.inject", module: "guice"
     }
 
     // ACF
-    compile 'co.aikar:acf-sponge:0.5.0-SNAPSHOT'
+    compile("co.aikar:acf-sponge:0.5.0-SNAPSHOT")
 
     // TaskChain
-    compile 'co.aikar:taskchain-sponge:3.7.2'
+    compile("co.aikar:taskchain-sponge:3.7.2")
 
     // Configurate 4.0.0
-    implementation('org.spongepowered:configurate-yaml:4.0.0')
+    implementation("org.spongepowered:configurate-yaml:4.0.0")
 
 }
 
@@ -69,21 +70,19 @@ compileJava {
     // Keep params
     options.compilerArgs += ["-parameters"]
     options.fork = true
-    options.forkOptions.executable = 'javac'
+    options.forkOptions.executable = "javac"
 }
 
 
 shadowJar {
     baseName = archivesBaseName
-    classifier = null
-    version = modVersion
-    relocate 'co.aikar.taskchain', 'com.gmail.andrewandy.ascendancy.serverplugin.lib.taskchain'
-    relocate 'co.aikar.commands', 'com.gmail.andrewandy.ascendancy.serverplugin.lib.acf'
-    relocate 'co.aikar.locales', 'com.gmail.andrewandy.ascendancy.serverplugin.lib.locales'
-    relocate 'io.leagen.geantyref', 'com.gmail.andrewandy.ascendancy.serverplugin.lib.geantyref'
-    relocate 'com.google.inject', 'com.gmail.andrewandy.ascendancy.serverplugin.lib.inject'
-    relocate 'org.checkerframework', 'com.gmail.andrewandy.ascendancy.serverplugin.lib.checkerframework'
-    relocate 'org.yaml.snakeyaml', 'com.gmail.andrewandy.ascendancy.serverplugin.lib.snakeyaml'
-    // Relocate configurate to prevent conflicts with sponge (shouldn't be an issue for Sponge 5, may be for Sponge 7.)
-    relocate 'org.spongepowered.configurate', 'com.gmail.andrewandy.ascendancy.serverplugin.lib.configurate'
+    relocate("co.aikar.taskchain", "com.gmail.andrewandy.ascendancy.serverplugin.lib.taskchain")
+    relocate("co.aikar.commands", "com.gmail.andrewandy.ascendancy.serverplugin.lib.acf")
+    relocate("co.aikar.locales", "com.gmail.andrewandy.ascendancy.serverplugin.lib.locales")
+    relocate("io.leagen.geantyref", "com.gmail.andrewandy.ascendancy.serverplugin.lib.geantyref")
+    relocate("com.google.inject", "com.gmail.andrewandy.ascendancy.serverplugin.lib.inject")
+    relocate("org.checkerframework", "com.gmail.andrewandy.ascendancy.serverplugin.lib.checkerframework")
+    relocate("org.yaml.snakeyaml", "com.gmail.andrewandy.ascendancy.serverplugin.lib.snakeyaml")
+    // Relocate configurate to prevent conflicts with sponge (shouldn"t be an issue for Sponge 5, may be for Sponge 7.)
+    relocate("org.spongepowered.configurate", "com.gmail.andrewandy.ascendancy.serverplugin.lib.configurate")
 }

@@ -41,4 +41,5 @@ public class ActiveKeyPressedEvent extends AscendancyServerEvent implements Canc
     public Cause getCause() {
         return cause;
     }
+
 }

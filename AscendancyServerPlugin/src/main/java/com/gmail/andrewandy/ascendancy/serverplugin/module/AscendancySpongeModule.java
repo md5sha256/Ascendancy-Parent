@@ -54,4 +54,5 @@ public class AscendancySpongeModule extends AbstractModule {
     public ConfigurationNode provideInternalConfigNode(final Config config) {
         return config.getRootNode();
     }
+
 }

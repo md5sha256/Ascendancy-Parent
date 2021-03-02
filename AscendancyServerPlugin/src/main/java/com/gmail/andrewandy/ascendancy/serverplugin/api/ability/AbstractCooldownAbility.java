@@ -21,8 +21,10 @@ public abstract class AbstractCooldownAbility extends AbstractTickableAbility {
     protected Map<UUID, Long> cooldownMap = new HashMap<>();
     private Predicate<Map.Entry<UUID, Long>> tickHandler;
 
-    public AbstractCooldownAbility(final String name, final boolean isActive, final long cooldown,
-                                   final TimeUnit timeUnit, final Challenger bound) {
+    public AbstractCooldownAbility(
+            final String name, final boolean isActive, final long cooldown,
+            final TimeUnit timeUnit, final Challenger bound
+    ) {
         super(name, isActive, bound);
         this.cooldown = Common.toTicks(cooldown, timeUnit);
         this.tickHandler = ChallengerUtils.mapTickPredicate(this.cooldown, null);
@@ -122,4 +124,5 @@ public abstract class AbstractCooldownAbility extends AbstractTickableAbility {
     public void tick() {
         cooldownMap.entrySet().removeIf(tickHandler);
     }
+
 }

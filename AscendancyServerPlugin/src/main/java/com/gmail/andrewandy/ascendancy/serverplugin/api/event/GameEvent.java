@@ -1,6 +1,7 @@
 package com.gmail.andrewandy.ascendancy.serverplugin.api.event;
 
 import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.Team;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
 
@@ -26,7 +27,8 @@ public abstract class GameEvent extends AscendancyServerEvent {
     }
 
     @Override
-    public Cause getCause() {
+    public @NotNull Cause getCause() {
         return cause;
     }
+
 }

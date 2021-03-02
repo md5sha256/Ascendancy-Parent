@@ -9,7 +9,8 @@ import java.util.List;
 
 public enum Teams {
 
-    ARCTIC(AscendancyTeam.ARCTIC, 1, 5), BLAZIC(AscendancyTeam.BLAZIC, 6, 10);
+    ARCTIC(AscendancyTeam.ARCTIC, 1, 5),
+    BLAZIC(AscendancyTeam.BLAZIC, 6, 10);
 
     private final AscendancyTeam ascendancyTeam;
     private final Team team = new Team(CommonUtils.capitalise(name().toLowerCase()), 3);

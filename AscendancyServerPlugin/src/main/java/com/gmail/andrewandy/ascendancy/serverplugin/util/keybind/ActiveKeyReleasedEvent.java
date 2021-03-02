@@ -26,4 +26,5 @@ public class ActiveKeyReleasedEvent extends AscendancyServerEvent {
     public Cause getCause() {
         return cause;
     }
+
 }

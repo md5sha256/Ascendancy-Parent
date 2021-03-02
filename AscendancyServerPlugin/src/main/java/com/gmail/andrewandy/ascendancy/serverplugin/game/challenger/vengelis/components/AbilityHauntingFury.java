@@ -17,7 +17,11 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -32,12 +36,15 @@ public class AbilityHauntingFury extends AbstractCooldownAbility {
     private final Map<UUID, Integer> hitMap = new HashMap<>();
 
     @AssistedInject
-    AbilityHauntingFury(@Assisted final Challenger toBind,
-                        final PlayerMatchManager matchManager,
-                        final Knavis knavis) {
+    AbilityHauntingFury(
+            @Assisted final Challenger toBind,
+            final PlayerMatchManager matchManager,
+            final Knavis knavis
+    ) {
         super("HauntingFury", false, 6, TimeUnit.SECONDS, toBind);
         super.setTickHandler(ChallengerUtils.mapTickPredicate(6, TimeUnit.SECONDS,
-                this::scheduleUnregisterNextTick));
+                this::scheduleUnregisterNextTick
+        ));
         this.matchManager = matchManager;
         this.knavis = knavis;
     }
@@ -124,4 +131,5 @@ public class AbilityHauntingFury extends AbstractCooldownAbility {
             }
         }
     }
+
 }

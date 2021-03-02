@@ -7,6 +7,7 @@ import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.match.PlayerMatc
 import com.gmail.andrewandy.ascendancy.serverplugin.util.Common;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
@@ -28,9 +29,11 @@ public class RuneDivineCrown extends AbstractRune {
     private final RuneCoupDEclat boundRune;
 
     @AssistedInject
-    RuneDivineCrown(@Assisted final AbilityCircletOfTheAccused boundAbility,
-                    @Assisted final RuneCoupDEclat boundRune,
-                    final PlayerMatchManager matchManager) {
+    RuneDivineCrown(
+            @Assisted final AbilityCircletOfTheAccused boundAbility,
+            @Assisted final RuneCoupDEclat boundRune,
+            final PlayerMatchManager matchManager
+    ) {
         super(boundAbility.getBoundChallenger());
         this.matchManager = matchManager;
         this.boundAbility = boundAbility;
@@ -49,7 +52,7 @@ public class RuneDivineCrown extends AbstractRune {
     }
 
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return "Divine Crown";
     }
 
@@ -109,4 +112,5 @@ public class RuneDivineCrown extends AbstractRune {
             }
         }
     }
+
 }

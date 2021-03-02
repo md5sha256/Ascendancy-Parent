@@ -7,16 +7,16 @@ import org.spongepowered.api.event.cause.entity.damage.DamageType;
 public abstract class AscendancyDamageType implements DamageType {
 
 
-    private static String generateId(@NotNull String name) {
-        return "ascendancyserverplugin:" + name;
-    }
-
     private final String name;
     private final String id;
 
-    AscendancyDamageType(@NotNull String name ) {
+    AscendancyDamageType(@NotNull String name) {
         this.name = name;
         this.id = generateId(name);
+    }
+
+    private static String generateId(@NotNull String name) {
+        return "ascendancyserverplugin:" + name;
     }
 
     @Override

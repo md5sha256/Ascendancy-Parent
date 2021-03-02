@@ -23,7 +23,7 @@ public class RuneEmpoweringRage extends AbstractRune {
     }
 
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return "EmpoweringRage";
     }
 
@@ -42,4 +42,5 @@ public class RuneEmpoweringRage extends AbstractRune {
     public DataContainer toContainer() {
         return null;
     }
+
 }

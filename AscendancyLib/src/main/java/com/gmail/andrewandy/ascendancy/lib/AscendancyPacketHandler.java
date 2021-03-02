@@ -17,7 +17,10 @@ public abstract class AscendancyPacketHandler implements IMessageHandler<Ascenda
 
     private Map<Class<?>, Function<? extends AscendancyPacket, ? extends AscendancyPacket>> handlerMap = new ConcurrentHashMap<>();
 
-    public <T extends AscendancyPacket, R extends AscendancyPacket> void registerHandler(Class<T> clazz, Function<T, R> handleFunction) {
+    public <T extends AscendancyPacket, R extends AscendancyPacket> void registerHandler(
+            Class<T> clazz,
+            Function<T, R> handleFunction
+    ) {
         removeHandler(clazz);
         handlerMap.put(clazz, handleFunction);
     }
@@ -54,4 +57,5 @@ public abstract class AscendancyPacketHandler implements IMessageHandler<Ascenda
         }
         return null;
     }
+
 }

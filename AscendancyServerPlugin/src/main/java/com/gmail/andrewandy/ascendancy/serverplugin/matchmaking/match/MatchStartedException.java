@@ -1,6 +1,7 @@
 package com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.match;
 
 public class MatchStartedException extends IllegalArgumentException {
+
     public MatchStartedException() {
     }
 
@@ -15,4 +16,5 @@ public class MatchStartedException extends IllegalArgumentException {
     public MatchStartedException(final Throwable cause) {
         super(cause);
     }
+
 }

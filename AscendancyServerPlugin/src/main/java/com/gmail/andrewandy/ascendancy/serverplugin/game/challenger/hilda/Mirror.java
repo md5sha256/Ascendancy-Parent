@@ -73,7 +73,12 @@ public class Mirror {
         drawEdge(viewer, particleEffect, bottomRightCorner, topRightCorner);
     }
 
-    private void drawEdge(final Viewer viewer, final ParticleEffect particleEffect, final Vector3d primary, final Vector3d secondary) {
+    private void drawEdge(
+            final Viewer viewer,
+            final ParticleEffect particleEffect,
+            final Vector3d primary,
+            final Vector3d secondary
+    ) {
         final Vector3d direction = secondary.sub(primary);
         for (double t = primary.getX(); t < secondary.getX(); t++) {
             Vector3d position = primary.add(direction.mul(t));
@@ -83,13 +88,21 @@ public class Mirror {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Mirror mirror = (Mirror) o;
 
-        if (!world.equals(mirror.world)) return false;
-        if (!primary.equals(mirror.primary)) return false;
+        if (!world.equals(mirror.world)) {
+            return false;
+        }
+        if (!primary.equals(mirror.primary)) {
+            return false;
+        }
         return secondary.equals(mirror.secondary);
     }
 

@@ -20,4 +20,5 @@ public class DebugMatch extends AbstractMatch {
     public void addAndAssignTeam(final UUID player) {
         //TODO
     }
+
 }

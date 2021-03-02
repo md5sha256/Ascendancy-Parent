@@ -7,6 +7,7 @@ import com.gmail.andrewandy.ascendancy.serverplugin.api.rune.AbstractRune;
 import com.gmail.andrewandy.ascendancy.serverplugin.util.Common;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.entity.living.player.Player;
@@ -43,7 +44,7 @@ public class RuneChosenOTEarth extends AbstractRune {
     }
 
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return "Chosen of the Earth";
     }
 
@@ -93,4 +94,5 @@ public class RuneChosenOTEarth extends AbstractRune {
         tickHistory.entrySet()
                 .removeIf(ChallengerUtils.mapTickPredicate(6L, TimeUnit.SECONDS, stacks::remove));
     }
+
 }

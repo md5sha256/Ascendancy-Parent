@@ -7,7 +7,6 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -22,9 +21,11 @@ public class ChallengerUtils {
      * @param onRemove    An action to be done when an element is removed, can be null.
      * @return Returns a predicate to be used in {@link java.util.Collection#removeIf(Predicate)}
      */
-    public static <T> Predicate<Map.Entry<T, Long>> mapTickPredicate(final long removeAfter,
-                                                                    final TimeUnit unit,
-                                                                    final Consumer<T> onRemove) {
+    public static <T> Predicate<Map.Entry<T, Long>> mapTickPredicate(
+            final long removeAfter,
+            final TimeUnit unit,
+            final Consumer<T> onRemove
+    ) {
         return mapTickPredicate(Common.toTicks(removeAfter, unit), onRemove);
     }
 
@@ -35,13 +36,16 @@ public class ChallengerUtils {
      * @param onRemove    An action to be done when an element is removed, can be null/
      * @return Returns a predicate to be used in {@link java.util.Collection#removeIf(Predicate)}
      */
-    public static <T> Predicate<Map.Entry<T, Long>> mapTickPredicate(final long removeAfter,
-                                                                    final Consumer<T> onRemove) {
+    public static <T> Predicate<Map.Entry<T, Long>> mapTickPredicate(
+            final long removeAfter,
+            final Consumer<T> onRemove
+    ) {
         return (Map.Entry<T, Long> entry) -> {
             entry.setValue(entry.getValue() + 1); //Increment tick count
             if (entry.getValue() >= removeAfter) {
-                if (onRemove != null)
+                if (onRemove != null) {
                     onRemove.accept(entry.getKey());
+                }
                 return true;
             }
             return false;
@@ -58,7 +62,8 @@ public class ChallengerUtils {
         z = distance * Math.sin(theta);
         player.setLocationSafely(
                 new Location<>(location.getExtent(), x + location.getX(), location.getY(),
-                        z + location.getZ()));
+                        z + location.getZ()
+                ));
     }
 
     /**
@@ -68,4 +73,5 @@ public class ChallengerUtils {
     public static boolean isEffectNegative(final PotionEffect potionEffect) {
         return false;
     }
+
 }

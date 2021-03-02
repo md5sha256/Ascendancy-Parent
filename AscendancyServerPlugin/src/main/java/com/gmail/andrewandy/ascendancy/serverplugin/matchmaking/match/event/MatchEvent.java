@@ -32,4 +32,5 @@ public abstract class MatchEvent extends AscendancyServerEvent {
     public Cause getCause() {
         return cause;
     }
+
 }

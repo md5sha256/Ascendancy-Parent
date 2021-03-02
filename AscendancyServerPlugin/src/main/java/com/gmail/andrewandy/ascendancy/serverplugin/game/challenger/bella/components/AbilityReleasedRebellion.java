@@ -65,4 +65,5 @@ public class AbilityReleasedRebellion extends AbstractTickableAbility {
                 Sponge.getServer().getPlayer(tickMap.get(invoker.getUniqueId()).getKey());
         optionalPlayer.ifPresent(event::setTarget);
     }
+
 }

@@ -22,7 +22,7 @@ public class RuneDiabolicResistance extends AbstractRune {
     }
 
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return "DiabolicalResistance";
     }
 
@@ -41,4 +41,5 @@ public class RuneDiabolicResistance extends AbstractRune {
     public DataContainer toContainer() {
         return null;
     }
+
 }

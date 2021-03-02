@@ -12,8 +12,10 @@ public abstract class AbstractTickableAbility extends AbstractAbility implements
 
     private final UUID uuid = UUID.randomUUID();
 
-    public AbstractTickableAbility(final String name, final boolean isActive,
-                                   final Challenger bound) {
+    public AbstractTickableAbility(
+            final String name, final boolean isActive,
+            final Challenger bound
+    ) {
         super(name, isActive, bound);
     }
 

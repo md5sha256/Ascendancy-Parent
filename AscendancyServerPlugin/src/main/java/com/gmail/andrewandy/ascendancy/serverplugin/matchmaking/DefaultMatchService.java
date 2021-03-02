@@ -17,7 +17,14 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.configurate.ConfigurationNode;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Queue;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Represents a service which automatically tries so make matches based on current player queues.
@@ -240,4 +247,5 @@ public class DefaultMatchService implements AscendancyMatchService {
         //Add the player to the queue.
         optionalPlayer.ifPresent(this::addToQueue);
     }
+
 }

@@ -70,96 +70,119 @@ public class MockPlayer implements Player {
 
     private final UUID uniqueID = UUID.randomUUID();
 
-    @Override public UUID getUniqueId() {
+    @Override
+    public UUID getUniqueId() {
         return uniqueID;
     }
 
-    @Override public Optional<Container> getOpenInventory() {
+    @Override
+    public Optional<Container> getOpenInventory() {
         return Optional.empty();
     }
 
-    @Override public Optional<Container> openInventory(final Inventory inventory, final Cause cause)
-        throws IllegalArgumentException {
+    @Override
+    public Optional<Container> openInventory(final Inventory inventory, final Cause cause)
+            throws IllegalArgumentException {
         return Optional.empty();
     }
 
-    @Override public boolean closeInventory(final Cause cause) throws IllegalArgumentException {
+    @Override
+    public boolean closeInventory(final Cause cause) throws IllegalArgumentException {
         return false;
     }
 
-    @Override public int getViewDistance() {
+    @Override
+    public int getViewDistance() {
         return 0;
     }
 
-    @Override public ChatVisibility getChatVisibility() {
+    @Override
+    public ChatVisibility getChatVisibility() {
         return null;
     }
 
-    @Override public boolean isChatColorsEnabled() {
+    @Override
+    public boolean isChatColorsEnabled() {
         return false;
     }
 
-    @Override public MessageChannelEvent.Chat simulateChat(final Text message, final Cause cause) {
+    @Override
+    public MessageChannelEvent.Chat simulateChat(final Text message, final Cause cause) {
         return null;
     }
 
-    @Override public Set<SkinPart> getDisplayedSkinParts() {
+    @Override
+    public Set<SkinPart> getDisplayedSkinParts() {
         return null;
     }
 
-    @Override public PlayerConnection getConnection() {
+    @Override
+    public PlayerConnection getConnection() {
         return null;
     }
 
-    @Override public void sendResourcePack(final ResourcePack pack) {
+    @Override
+    public void sendResourcePack(final ResourcePack pack) {
 
     }
 
-    @Override public TabList getTabList() {
+    @Override
+    public TabList getTabList() {
         return null;
     }
 
-    @Override public void kick() {
+    @Override
+    public void kick() {
 
     }
 
-    @Override public void kick(Text reason) {
+    @Override
+    public void kick(Text reason) {
 
     }
 
-    @Override public Scoreboard getScoreboard() {
+    @Override
+    public Scoreboard getScoreboard() {
         return null;
     }
 
-    @Override public void setScoreboard(Scoreboard scoreboard) {
+    @Override
+    public void setScoreboard(Scoreboard scoreboard) {
 
     }
 
-    @Override public boolean isSleepingIgnored() {
+    @Override
+    public boolean isSleepingIgnored() {
         return false;
     }
 
-    @Override public void setSleepingIgnored(boolean sleepingIgnored) {
+    @Override
+    public void setSleepingIgnored(boolean sleepingIgnored) {
 
     }
 
-    @Override public Inventory getEnderChestInventory() {
+    @Override
+    public Inventory getEnderChestInventory() {
         return null;
     }
 
-    @Override public boolean respawnPlayer() {
+    @Override
+    public boolean respawnPlayer() {
         return false;
     }
 
-    @Override public Optional<Entity> getSpectatorTarget() {
+    @Override
+    public Optional<Entity> getSpectatorTarget() {
         return Optional.empty();
     }
 
-    @Override public void setSpectatorTarget(@Nullable Entity entity) {
+    @Override
+    public void setSpectatorTarget(@Nullable Entity entity) {
 
     }
 
-    @Override public void spawnParticles(ParticleEffect particleEffect, Vector3d position) {
+    @Override
+    public void spawnParticles(ParticleEffect particleEffect, Vector3d position) {
 
     }
 
@@ -168,249 +191,315 @@ public class MockPlayer implements Player {
 
     }
 
-    @Override public void playSound(SoundType sound, SoundCategory category, Vector3d position,
-                                    double volume) {
+    @Override
+    public void playSound(
+            SoundType sound, SoundCategory category, Vector3d position,
+            double volume
+    ) {
 
     }
 
     @Override
-    public void playSound(SoundType sound, SoundCategory category, Vector3d position, double volume,
-                          double pitch) {
+    public void playSound(
+            SoundType sound, SoundCategory category, Vector3d position, double volume,
+            double pitch
+    ) {
 
     }
 
     @Override
-    public void playSound(SoundType sound, SoundCategory category, Vector3d position, double volume,
-                          double pitch, double minVolume) {
+    public void playSound(
+            SoundType sound, SoundCategory category, Vector3d position, double volume,
+            double pitch, double minVolume
+    ) {
 
     }
 
-    @Override public void sendTitle(Title title) {
+    @Override
+    public void sendTitle(Title title) {
 
     }
 
-    @Override public void sendBookView(BookView bookView) {
+    @Override
+    public void sendBookView(BookView bookView) {
 
     }
 
-    @Override public void sendBlockChange(int x, int y, int z, BlockState state) {
+    @Override
+    public void sendBlockChange(int x, int y, int z, BlockState state) {
 
     }
 
-    @Override public void resetBlockChange(int x, int y, int z) {
+    @Override
+    public void resetBlockChange(int x, int y, int z) {
 
     }
 
-    @Override public Optional<ItemStack> getHelmet() {
+    @Override
+    public Optional<ItemStack> getHelmet() {
         return Optional.empty();
     }
 
-    @Override public void setHelmet(@Nullable ItemStack helmet) {
+    @Override
+    public void setHelmet(@Nullable ItemStack helmet) {
 
     }
 
-    @Override public Optional<ItemStack> getChestplate() {
+    @Override
+    public Optional<ItemStack> getChestplate() {
         return Optional.empty();
     }
 
-    @Override public void setChestplate(@Nullable ItemStack chestplate) {
+    @Override
+    public void setChestplate(@Nullable ItemStack chestplate) {
 
     }
 
-    @Override public Optional<ItemStack> getLeggings() {
+    @Override
+    public Optional<ItemStack> getLeggings() {
         return Optional.empty();
     }
 
-    @Override public void setLeggings(@Nullable ItemStack leggings) {
+    @Override
+    public void setLeggings(@Nullable ItemStack leggings) {
 
     }
 
-    @Override public Optional<ItemStack> getBoots() {
+    @Override
+    public Optional<ItemStack> getBoots() {
         return Optional.empty();
     }
 
-    @Override public void setBoots(@Nullable ItemStack boots) {
+    @Override
+    public void setBoots(@Nullable ItemStack boots) {
 
     }
 
-    @Override public Optional<ItemStack> getItemInHand(HandType handType) {
+    @Override
+    public Optional<ItemStack> getItemInHand(HandType handType) {
         return Optional.empty();
     }
 
-    @Override public void setItemInHand(HandType hand, @Nullable ItemStack itemInHand) {
+    @Override
+    public void setItemInHand(HandType hand, @Nullable ItemStack itemInHand) {
 
     }
 
-    @Override public Vector3d getHeadRotation() {
+    @Override
+    public Vector3d getHeadRotation() {
         return null;
     }
 
-    @Override public void setHeadRotation(Vector3d rotation) {
+    @Override
+    public void setHeadRotation(Vector3d rotation) {
 
     }
 
-    @Override public EntityType getType() {
+    @Override
+    public EntityType getType() {
         return null;
     }
 
-    @Override public EntitySnapshot createSnapshot() {
+    @Override
+    public EntitySnapshot createSnapshot() {
         return null;
     }
 
-    @Override public Random getRandom() {
+    @Override
+    public Random getRandom() {
         return null;
     }
 
-    @Override public boolean setLocation(Location<World> location) {
+    @Override
+    public boolean setLocation(Location<World> location) {
         return false;
     }
 
-    @Override public Vector3d getRotation() {
+    @Override
+    public Vector3d getRotation() {
         return null;
     }
 
-    @Override public void setRotation(Vector3d rotation) {
+    @Override
+    public void setRotation(Vector3d rotation) {
 
     }
 
-    @Override public boolean setLocationAndRotation(Location<World> location, Vector3d rotation) {
+    @Override
+    public boolean setLocationAndRotation(Location<World> location, Vector3d rotation) {
         return false;
     }
 
-    @Override public boolean setLocationAndRotation(Location<World> location, Vector3d rotation,
-                                                    EnumSet<RelativePositions> relativePositions) {
+    @Override
+    public boolean setLocationAndRotation(
+            Location<World> location, Vector3d rotation,
+            EnumSet<RelativePositions> relativePositions
+    ) {
         return false;
     }
 
-    @Override public Vector3d getScale() {
+    @Override
+    public Vector3d getScale() {
         return null;
     }
 
-    @Override public void setScale(Vector3d scale) {
+    @Override
+    public void setScale(Vector3d scale) {
 
     }
 
-    @Override public Transform<World> getTransform() {
+    @Override
+    public Transform<World> getTransform() {
         return null;
     }
 
-    @Override public boolean setTransform(Transform<World> transform) {
+    @Override
+    public boolean setTransform(Transform<World> transform) {
         return false;
     }
 
-    @Override public boolean transferToWorld(World world, Vector3d position) {
+    @Override
+    public boolean transferToWorld(World world, Vector3d position) {
         return false;
     }
 
-    @Override public Optional<AABB> getBoundingBox() {
+    @Override
+    public Optional<AABB> getBoundingBox() {
         return Optional.empty();
     }
 
-    @Override public List<Entity> getPassengers() {
+    @Override
+    public List<Entity> getPassengers() {
         return null;
     }
 
-    @Override public DataTransactionResult addPassenger(Entity entity) {
+    @Override
+    public DataTransactionResult addPassenger(Entity entity) {
         return null;
     }
 
-    @Override public DataTransactionResult removePassenger(Entity entity) {
+    @Override
+    public DataTransactionResult removePassenger(Entity entity) {
         return null;
     }
 
-    @Override public DataTransactionResult clearPassengers() {
+    @Override
+    public DataTransactionResult clearPassengers() {
         return null;
     }
 
-    @Override public Optional<Entity> getVehicle() {
+    @Override
+    public Optional<Entity> getVehicle() {
         return Optional.empty();
     }
 
-    @Override public DataTransactionResult setVehicle(@Nullable Entity entity) {
+    @Override
+    public DataTransactionResult setVehicle(@Nullable Entity entity) {
         return null;
     }
 
-    @Override public Entity getBaseVehicle() {
+    @Override
+    public Entity getBaseVehicle() {
         return null;
     }
 
-    @Override public boolean isOnGround() {
+    @Override
+    public boolean isOnGround() {
         return false;
     }
 
-    @Override public boolean isRemoved() {
+    @Override
+    public boolean isRemoved() {
         return false;
     }
 
-    @Override public boolean isLoaded() {
+    @Override
+    public boolean isLoaded() {
         return false;
     }
 
-    @Override public void remove() {
+    @Override
+    public void remove() {
 
     }
 
-    @Override public boolean damage(double damage, DamageSource damageSource, Cause cause) {
+    @Override
+    public boolean damage(double damage, DamageSource damageSource, Cause cause) {
         return false;
     }
 
-    @Override public Optional<UUID> getCreator() {
+    @Override
+    public Optional<UUID> getCreator() {
         return Optional.empty();
     }
 
-    @Override public void setCreator(@Nullable UUID uuid) {
+    @Override
+    public void setCreator(@Nullable UUID uuid) {
 
     }
 
-    @Override public Optional<UUID> getNotifier() {
+    @Override
+    public Optional<UUID> getNotifier() {
         return Optional.empty();
     }
 
-    @Override public void setNotifier(@Nullable UUID uuid) {
+    @Override
+    public void setNotifier(@Nullable UUID uuid) {
 
     }
 
-    @Override public EntityArchetype createArchetype() {
+    @Override
+    public EntityArchetype createArchetype() {
         return null;
     }
 
-    @Override public GameProfile getProfile() {
+    @Override
+    public GameProfile getProfile() {
         return null;
     }
 
-    @Override public boolean isOnline() {
+    @Override
+    public boolean isOnline() {
         return false;
     }
 
-    @Override public Optional<Player> getPlayer() {
+    @Override
+    public Optional<Player> getPlayer() {
         return Optional.empty();
     }
 
-    @Override public boolean validateRawData(DataView container) {
+    @Override
+    public boolean validateRawData(DataView container) {
         return false;
     }
 
-    @Override public void setRawData(DataView container) throws InvalidDataException {
+    @Override
+    public void setRawData(DataView container) throws InvalidDataException {
 
     }
 
-    @Override public int getContentVersion() {
+    @Override
+    public int getContentVersion() {
         return 0;
     }
 
-    @Override public DataContainer toContainer() {
+    @Override
+    public DataContainer toContainer() {
         return null;
     }
 
-    @Override public <T extends Property<?, ?>> Optional<T> getProperty(Class<T> propertyClass) {
+    @Override
+    public <T extends Property<?, ?>> Optional<T> getProperty(Class<T> propertyClass) {
         return Optional.empty();
     }
 
-    @Override public Collection<Property<?, ?>> getApplicableProperties() {
+    @Override
+    public Collection<Property<?, ?>> getApplicableProperties() {
         return null;
     }
 
-    @Override public <T extends DataManipulator<?, ?>> Optional<T> get(Class<T> containerClass) {
+    @Override
+    public <T extends DataManipulator<?, ?>> Optional<T> get(Class<T> containerClass) {
         return Optional.empty();
     }
 
@@ -419,11 +508,13 @@ public class MockPlayer implements Player {
         return Optional.empty();
     }
 
-    @Override public boolean supports(Class<? extends DataManipulator<?, ?>> holderClass) {
+    @Override
+    public boolean supports(Class<? extends DataManipulator<?, ?>> holderClass) {
         return false;
     }
 
-    @Override public <E> DataTransactionResult offer(Key<? extends BaseValue<E>> key, E value) {
+    @Override
+    public <E> DataTransactionResult offer(Key<? extends BaseValue<E>> key, E value) {
         return null;
     }
 
@@ -432,14 +523,19 @@ public class MockPlayer implements Player {
         return null;
     }
 
-    @Override public DataTransactionResult offer(DataManipulator<?, ?> valueContainer,
-                                                 MergeFunction function) {
+    @Override
+    public DataTransactionResult offer(
+            DataManipulator<?, ?> valueContainer,
+            MergeFunction function
+    ) {
         return null;
     }
 
     @Override
-    public DataTransactionResult offer(DataManipulator<?, ?> valueContainer, MergeFunction function,
-                                       Cause cause) {
+    public DataTransactionResult offer(
+            DataManipulator<?, ?> valueContainer, MergeFunction function,
+            Cause cause
+    ) {
         return null;
     }
 
@@ -448,144 +544,182 @@ public class MockPlayer implements Player {
         return null;
     }
 
-    @Override public DataTransactionResult remove(Key<?> key) {
+    @Override
+    public DataTransactionResult remove(Key<?> key) {
         return null;
     }
 
-    @Override public DataTransactionResult undo(DataTransactionResult result) {
+    @Override
+    public DataTransactionResult undo(DataTransactionResult result) {
         return null;
     }
 
-    @Override public DataTransactionResult copyFrom(DataHolder that, MergeFunction function) {
+    @Override
+    public DataTransactionResult copyFrom(DataHolder that, MergeFunction function) {
         return null;
     }
 
-    @Override public Collection<DataManipulator<?, ?>> getContainers() {
+    @Override
+    public Collection<DataManipulator<?, ?>> getContainers() {
         return null;
     }
 
-    @Override public <E> Optional<E> get(Key<? extends BaseValue<E>> key) {
+    @Override
+    public <E> Optional<E> get(Key<? extends BaseValue<E>> key) {
         return Optional.empty();
     }
 
-    @Override public <E, V extends BaseValue<E>> Optional<V> getValue(Key<V> key) {
+    @Override
+    public <E, V extends BaseValue<E>> Optional<V> getValue(Key<V> key) {
         return Optional.empty();
     }
 
-    @Override public boolean supports(Key<?> key) {
+    @Override
+    public boolean supports(Key<?> key) {
         return false;
     }
 
-    @Override public DataHolder copy() {
+    @Override
+    public DataHolder copy() {
         return null;
     }
 
-    @Override public Set<Key<?>> getKeys() {
+    @Override
+    public Set<Key<?>> getKeys() {
         return null;
     }
 
-    @Override public Set<ImmutableValue<?>> getValues() {
+    @Override
+    public Set<ImmutableValue<?>> getValues() {
         return null;
     }
 
-    @Override public boolean canEquip(EquipmentType type) {
+    @Override
+    public boolean canEquip(EquipmentType type) {
         return false;
     }
 
-    @Override public boolean canEquip(EquipmentType type, @Nullable ItemStack equipment) {
+    @Override
+    public boolean canEquip(EquipmentType type, @Nullable ItemStack equipment) {
         return false;
     }
 
-    @Override public Optional<ItemStack> getEquipped(EquipmentType type) {
+    @Override
+    public Optional<ItemStack> getEquipped(EquipmentType type) {
         return Optional.empty();
     }
 
-    @Override public boolean equip(EquipmentType type, @Nullable ItemStack equipment) {
+    @Override
+    public boolean equip(EquipmentType type, @Nullable ItemStack equipment) {
         return false;
     }
 
-    @Override public String getName() {
+    @Override
+    public String getName() {
         return null;
     }
 
-    @Override public <T extends Projectile> Optional<T> launchProjectile(Class<T> projectileClass) {
+    @Override
+    public <T extends Projectile> Optional<T> launchProjectile(Class<T> projectileClass) {
         return Optional.empty();
     }
 
-    @Override public <T extends Projectile> Optional<T> launchProjectile(Class<T> projectileClass,
-                                                                         Vector3d velocity) {
+    @Override
+    public <T extends Projectile> Optional<T> launchProjectile(
+            Class<T> projectileClass,
+            Vector3d velocity
+    ) {
         return Optional.empty();
     }
 
-    @Override public CarriedInventory<? extends Carrier> getInventory() {
+    @Override
+    public CarriedInventory<? extends Carrier> getInventory() {
         return null;
     }
 
-    @Override public Text getTeamRepresentation() {
+    @Override
+    public Text getTeamRepresentation() {
         return null;
     }
 
-    @Override public Optional<CommandSource> getCommandSource() {
+    @Override
+    public Optional<CommandSource> getCommandSource() {
         return Optional.empty();
     }
 
-    @Override public SubjectCollection getContainingCollection() {
+    @Override
+    public SubjectCollection getContainingCollection() {
         return null;
     }
 
-    @Override public SubjectData getSubjectData() {
+    @Override
+    public SubjectData getSubjectData() {
         return null;
     }
 
-    @Override public SubjectData getTransientSubjectData() {
+    @Override
+    public SubjectData getTransientSubjectData() {
         return null;
     }
 
-    @Override public Tristate getPermissionValue(Set<Context> contexts, String permission) {
+    @Override
+    public Tristate getPermissionValue(Set<Context> contexts, String permission) {
         return null;
     }
 
-    @Override public boolean isChildOf(Set<Context> contexts, Subject parent) {
+    @Override
+    public boolean isChildOf(Set<Context> contexts, Subject parent) {
         return false;
     }
 
-    @Override public List<Subject> getParents(Set<Context> contexts) {
+    @Override
+    public List<Subject> getParents(Set<Context> contexts) {
         return null;
     }
 
-    @Override public Optional<String> getOption(Set<Context> contexts, String key) {
+    @Override
+    public Optional<String> getOption(Set<Context> contexts, String key) {
         return Optional.empty();
     }
 
-    @Override public String getIdentifier() {
+    @Override
+    public String getIdentifier() {
         return null;
     }
 
-    @Override public Set<Context> getActiveContexts() {
+    @Override
+    public Set<Context> getActiveContexts() {
         return null;
     }
 
-    @Override public void sendMessage(ChatType type, Text message) {
+    @Override
+    public void sendMessage(ChatType type, Text message) {
 
     }
 
-    @Override public void sendMessage(Text message) {
+    @Override
+    public void sendMessage(Text message) {
 
     }
 
-    @Override public MessageChannel getMessageChannel() {
+    @Override
+    public MessageChannel getMessageChannel() {
         return null;
     }
 
-    @Override public void setMessageChannel(MessageChannel channel) {
+    @Override
+    public void setMessageChannel(MessageChannel channel) {
 
     }
 
-    @Override public Translation getTranslation() {
+    @Override
+    public Translation getTranslation() {
         return null;
     }
 
-    @Override public Location<World> getLocation() {
+    @Override
+    public Location<World> getLocation() {
         return null;
     }
+
 }

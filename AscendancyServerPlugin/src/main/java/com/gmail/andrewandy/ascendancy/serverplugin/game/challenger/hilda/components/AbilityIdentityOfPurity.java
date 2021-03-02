@@ -82,4 +82,5 @@ public class AbilityIdentityOfPurity extends AbstractAbility {
         entity.offer(peData);
         mirrorData.removeMirror(mirror);
     }
+
 }

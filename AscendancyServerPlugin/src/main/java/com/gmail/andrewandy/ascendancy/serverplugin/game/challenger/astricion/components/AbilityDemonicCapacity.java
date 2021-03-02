@@ -89,4 +89,5 @@ public final class AbilityDemonicCapacity extends AbstractTickableAbility {
             player.offer(peData);
         }
     }
+
 }

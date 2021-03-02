@@ -11,8 +11,10 @@ public class GamePlayerUseItemEvent extends GameEvent {
     private final Entity victim;
     private final ItemStack itemStack;
 
-    public GamePlayerUseItemEvent(final Player target, final Team targetTeam, final Entity victim,
-                                  final Team victimTeam, final ItemStack used) {
+    public GamePlayerUseItemEvent(
+            final Player target, final Team targetTeam, final Entity victim,
+            final Team victimTeam, final ItemStack used
+    ) {
         super(target, targetTeam);
         this.victim = victim;
         this.victimTeam = victimTeam;
@@ -32,4 +34,5 @@ public class GamePlayerUseItemEvent extends GameEvent {
     public ItemStack getItemStack() {
         return itemStack;
     }
+
 }

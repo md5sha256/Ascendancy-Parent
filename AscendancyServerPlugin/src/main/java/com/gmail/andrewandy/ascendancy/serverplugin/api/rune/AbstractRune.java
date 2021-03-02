@@ -23,4 +23,5 @@ public abstract class AbstractRune implements PlayerSpecificRune {
     public UUID getUniqueID() {
         return uuid;
     }
+
 }

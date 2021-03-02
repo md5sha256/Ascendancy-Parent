@@ -6,6 +6,7 @@ import com.gmail.andrewandy.ascendancy.serverplugin.matchmaking.match.PlayerMatc
 import com.gmail.andrewandy.ascendancy.serverplugin.util.Common;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
@@ -26,9 +27,11 @@ public class RuneExpandingAgony extends AbstractRune {
     private final PlayerMatchManager matchManager;
 
     @AssistedInject
-    RuneExpandingAgony(@Assisted final AbilityCircletOfTheAccused boundAbility,
-                       @Assisted final RuneCoupDEclat boundRune,
-                       final PlayerMatchManager matchManager) {
+    RuneExpandingAgony(
+            @Assisted final AbilityCircletOfTheAccused boundAbility,
+            @Assisted final RuneCoupDEclat boundRune,
+            final PlayerMatchManager matchManager
+    ) {
         super(boundAbility.getBoundChallenger());
         this.boundAbility = boundAbility;
         this.boundRune = boundRune;
@@ -47,7 +50,7 @@ public class RuneExpandingAgony extends AbstractRune {
     }
 
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return "Expanding Agony";
     }
 
@@ -99,4 +102,5 @@ public class RuneExpandingAgony extends AbstractRune {
     public DataContainer toContainer() {
         return null;
     }
+
 }

@@ -72,4 +72,5 @@ public class AscendancyResultPacket extends AscendancyPacket implements ResultPa
     public String getIdentifier() {
         return AscendancyResultPacket.class.getCanonicalName();
     }
+
 }

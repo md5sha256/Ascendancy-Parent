@@ -1,5 +1,5 @@
 apply plugin: "net.minecraftforge.gradle.forge"
-apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: "com.github.johnrengelman.shadow"
 
 minecraft {
     version = parent.forgeVersion
@@ -14,20 +14,19 @@ minecraft {
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
-version = '0.1-SNAPSHOT'
+version = "0.1-SNAPSHOT"
 
-group = modGroup
-version = modVersion
+group = project.properties.modGroup
+version = project.properties.modVersion
 archivesBaseName = "ascendancy-lib"
 
 repositories {
     mavenCentral()
-
 }
 
 dependencies {
-    compileOnly 'io.netty:netty-buffer:4.0.23.Final'
-    compileOnly 'org.jetbrains:annotations:16.0.2'
+    compileOnly "io.netty:netty-buffer:4.0.23.Final"
+    compileOnly "org.jetbrains:annotations:19.0.0"
 }
 
 java {
@@ -39,7 +38,7 @@ compileJava {
     // Keep params
     options.compilerArgs += ["-parameters"]
     options.fork = true
-    options.forkOptions.executable = 'javac'
+    options.forkOptions.executable = "javac"
 }
 
 

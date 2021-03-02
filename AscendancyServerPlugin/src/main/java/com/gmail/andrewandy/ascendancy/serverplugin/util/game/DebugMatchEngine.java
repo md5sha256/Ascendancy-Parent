@@ -51,4 +51,5 @@ public class DebugMatchEngine implements GameEngine {
     public Collection<Player> getPlayersOfChallenger(final Challenger challenger) {
         return null;
     }
+
 }

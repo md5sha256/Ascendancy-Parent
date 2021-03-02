@@ -29,7 +29,8 @@ public class Listeners {
     @Listener(order = Order.EARLY)
     @IsCancelled(value = Tristate.UNDEFINED)
     public void onMove(
-            final MoveEntityEvent event) {
+            final MoveEntityEvent event
+    ) {
         final Entity player = event.getTargetEntity();
         if (!(player instanceof Player)) {
             return;
@@ -74,8 +75,9 @@ public class Listeners {
     @Listener(order = Order.EARLY)
     public void onHit(final DamageEntityEvent event) {
         final Entity entity = event.getTargetEntity();
-        if (!(entity instanceof Player))
+        if (!(entity instanceof Player)) {
             return;
+        }
         final EntityPlayer player = (EntityPlayer) entity;
         player.hurtTime = 0; //Reset the player's damage cooldown to 0.
         final KnockbackData knockbackData = entity.getOrCreate(KnockbackData.class)

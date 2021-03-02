@@ -19,4 +19,5 @@ public class WaitingUI extends AscendancyGui {
     public void initGui() {
         super.initGui();
     }
+
 }

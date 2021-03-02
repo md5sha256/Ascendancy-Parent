@@ -21,7 +21,8 @@ public class MathUtils {
      */
     @NotNull
     public static Collection<Location<World>> createCircleWithCentre(
-            @NotNull final Location<World> centre, int radius) {
+            @NotNull final Location<World> centre, int radius
+    ) {
         if (radius == 0) {
             throw new UnsupportedOperationException();
         }
@@ -51,21 +52,27 @@ public class MathUtils {
         return collection;
     }
 
-    public static boolean isWithinCircle(@NotNull final Location<World> centre, final int radius,
-                                         @NotNull final Location<World> target) {
+    public static boolean isWithinCircle(
+            @NotNull final Location<World> centre, final int radius,
+            @NotNull final Location<World> target
+    ) {
         return centre.getPosition().distanceSquared(target.getPosition()) <= radius * radius;
     }
 
 
     @NotNull
-    public static Predicate<Location<World>> isWithinSphere(@NotNull final Location<World> centre,
-                                                            final int radius) {
+    public static Predicate<Location<World>> isWithinSphere(
+            @NotNull final Location<World> centre,
+            final int radius
+    ) {
         return (Location<World> location) -> location.getPosition().distanceSquared(centre.getPosition()) <= radius * radius;
     }
 
-    public static <E extends Extent> boolean isWithinSphere(@NotNull final Location<E> centre,
-                                                            final double radius,
-                                                            @NotNull final Location<E> target) {
+    public static <E extends Extent> boolean isWithinSphere(
+            @NotNull final Location<E> centre,
+            final double radius,
+            @NotNull final Location<E> target
+    ) {
         return centre.getPosition().distanceSquared(target.getPosition()) <= radius * radius;
     }
 

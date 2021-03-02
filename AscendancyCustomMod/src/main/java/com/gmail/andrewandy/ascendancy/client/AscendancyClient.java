@@ -96,6 +96,7 @@ public class AscendancyClient {
      */
     @Mod.EventBusSubscriber
     public static class ObjectRegistryHandler {
+
         /**
          * Listen for the register event for creating custom items
          */
@@ -116,6 +117,7 @@ public class AscendancyClient {
              event.getRegistry().register(new MySpecialBlock().setRegistryName(MOD_ID, "mySpecialBlock"));
             */
         }
+
     }
     /* EXAMPLE ITEM AND BLOCK - you probably want these in separate files
     public static class MySpecialItem extends Item {

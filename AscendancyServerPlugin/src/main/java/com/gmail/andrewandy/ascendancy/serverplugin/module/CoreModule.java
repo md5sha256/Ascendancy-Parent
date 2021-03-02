@@ -37,4 +37,5 @@ public class CoreModule extends AbstractModule {
         bind(CCImmunityManager.class).to(AscendancyCCManager.class).asEagerSingleton();
         bind(AttributeInitializer.class).asEagerSingleton();
     }
+
 }
