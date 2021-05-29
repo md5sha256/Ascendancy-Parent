@@ -1,3 +1,4 @@
+include ':ForgeGradle'
 include ':AscendancyLib'
 include ':AscendancyCustomMod'
 include ':AscendancyServerPlugin'

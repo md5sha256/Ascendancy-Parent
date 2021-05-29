@@ -7,3 +7,6 @@
 [submodule "AscendancyServerPlugin"]
 	path = AscendancyServerPlugin
 	url = https://github.com/md5sha256/AscendancyServerPlugin.git
+[submodule "ForgeGradle"]
+	path = ForgeGradle
+	url = https://github.com/md5sha256/ForgeGradle.git
